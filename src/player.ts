@@ -58,15 +58,15 @@ export class Player {
 
     if (joystickInput.length() < 0.1) return;
 
-    // Direct movement: joystick X = world X, joystick Y = world -Z
+    // Direct movement: joystick X = world X, joystick Y = world Z
     const moveX = joystickInput.x * CONFIG.player.speed * dt;
-    const moveZ = -joystickInput.y * CONFIG.player.speed * dt;
+    const moveZ = joystickInput.y * CONFIG.player.speed * dt;
 
     this.mesh.position.x += moveX;
     this.mesh.position.z += moveZ;
 
     // Face movement direction
-    const angle = Math.atan2(joystickInput.x, -joystickInput.y);
+    const angle = Math.atan2(joystickInput.x, joystickInput.y);
     this.mesh.rotation.y = angle;
   }
 }
