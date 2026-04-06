@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { cloneAsset, normalizeToHeight } from "./assets.ts";
-import { cellToWorld, getCell, normalizeLevel } from "./level-grid.ts";
+import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./level-grid.ts";
 import { entityAssetPath, preloadEntityAsset, preloadLevelAssets } from "./level-assets.ts";
 import { buildKenney } from "./kenney-buildings.ts";
 import type { Collider, LevelData, LevelEntity } from "./types.ts";
@@ -87,11 +87,18 @@ export class MapScene {
   private scene: THREE.Scene;
   private root = new THREE.Group();
   private surfaceRoot = new THREE.Group();
+  private pathRoot = new THREE.Group();
+  private waterRoot = new THREE.Group();
   private entityRoot = new THREE.Group();
   private entityObjects = new Map<string, THREE.Group>();
   private entityColliders = new Map<string, Collider>();
-  private waterColliders: Collider[] = [];
+  private pathTiles = new Map<string, THREE.Mesh>();
+  private waterTiles = new Map<string, THREE.Mesh>();
+  private waterColliders = new Map<string, Collider>();
   private groundMesh = createGround(1);
+  private tileGeometry = new THREE.PlaneGeometry(1, 1);
+  private pathMaterial = new THREE.MeshStandardMaterial({ color: COL.path });
+  private waterMaterial = new THREE.MeshStandardMaterial({ color: COL.water, transparent: true, opacity: 0.8 });
 
   mapSize = 90;
   level: LevelData | null = null;
@@ -128,7 +135,7 @@ export class MapScene {
   }
 
   getColliders(): Collider[] {
-    return [...this.entityColliders.values(), ...this.waterColliders];
+    return [...this.entityColliders.values(), ...this.waterColliders.values()];
   }
 
   getEntityObjects(): THREE.Group[] {
@@ -165,6 +172,12 @@ export class MapScene {
     else this.entityColliders.delete(entity.id);
   }
 
+  setEntityTransform(entity: LevelEntity): void {
+    const object = this.entityObjects.get(entity.id);
+    if (!object) return;
+    applyEntityTransform(object, entity);
+  }
+
   removeEntity(id: string): void {
     const object = this.entityObjects.get(id);
     if (object) {
@@ -180,39 +193,34 @@ export class MapScene {
     this.rebuildSurfaces();
   }
 
-  private rebuildSurfaces(): void {
-    while (this.surfaceRoot.children.length > 0) this.surfaceRoot.remove(this.surfaceRoot.children[0]);
-    this.waterColliders = [];
+  updateSurfaceCell(type: "path" | "water", cell: GridCell, filled: boolean): void {
     if (!this.level) return;
+    if (filled) {
+      if (this.getSurfaceTile(type, cell)) return;
+      this.addSurfaceTile(type, cell);
+      return;
+    }
+    this.removeSurfaceTile(type, cell);
+  }
 
-    const pathMaterial = new THREE.MeshStandardMaterial({ color: COL.path });
-    const waterMaterial = new THREE.MeshStandardMaterial({
-      color: COL.water,
-      transparent: true,
-      opacity: 0.8,
-    });
-
-    for (const [type, y, material] of [
-      ["path", 0.02, pathMaterial],
-      ["water", 0.05, waterMaterial],
-    ] as const) {
-      const group = new THREE.Group();
+  private rebuildSurfaces(): void {
+    this.surfaceRoot.clear();
+    this.pathRoot = new THREE.Group();
+    this.waterRoot = new THREE.Group();
+    this.surfaceRoot.add(this.pathRoot, this.waterRoot);
+    this.pathTiles.clear();
+    this.waterTiles.clear();
+    this.waterColliders.clear();
+    if (!this.level) return;
+    for (const type of ["path", "water"] as const) {
       const layer = this.level.surfaceLayers[type];
       for (let row = 0; row < layer.rows.length; row++) {
         for (let col = 0; col < layer.rows[row].length; col++) {
-          if (!getCell(layer, { col, row })) continue;
-          const tile = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
-          const pos = cellToWorld({ col, row }, this.mapSize);
-          tile.rotation.x = -Math.PI / 2;
-          tile.position.set(pos.x, y, pos.z);
-          group.add(tile);
-
-          if (type === "water") {
-            this.waterColliders.push({ x: pos.x, z: pos.z, hw: 0.5, hd: 0.5, name: "water" });
-          }
+          const cell = { col, row };
+          if (!getCell(layer, cell)) continue;
+          this.addSurfaceTile(type, cell);
         }
       }
-      this.surfaceRoot.add(group);
     }
   }
 
@@ -220,9 +228,42 @@ export class MapScene {
     this.scene.remove(this.root);
     this.root = new THREE.Group();
     this.surfaceRoot = new THREE.Group();
+    this.pathRoot = new THREE.Group();
+    this.waterRoot = new THREE.Group();
     this.entityRoot = new THREE.Group();
     this.entityObjects.clear();
     this.entityColliders.clear();
-    this.waterColliders = [];
+    this.pathTiles.clear();
+    this.waterTiles.clear();
+    this.waterColliders.clear();
+  }
+
+  private getSurfaceTile(type: "path" | "water", cell: GridCell): THREE.Mesh | undefined {
+    return (type === "path" ? this.pathTiles : this.waterTiles).get(cellKey(cell));
+  }
+
+  private addSurfaceTile(type: "path" | "water", cell: GridCell): void {
+    const key = cellKey(cell);
+    const tiles = type === "path" ? this.pathTiles : this.waterTiles;
+    if (tiles.has(key)) return;
+    const tile = new THREE.Mesh(this.tileGeometry, type === "path" ? this.pathMaterial : this.waterMaterial);
+    const pos = cellToWorld(cell, this.mapSize);
+    tile.rotation.x = -Math.PI / 2;
+    tile.position.set(pos.x, type === "path" ? 0.02 : 0.05, pos.z);
+    tiles.set(key, tile);
+    (type === "path" ? this.pathRoot : this.waterRoot).add(tile);
+    if (type === "water") {
+      this.waterColliders.set(key, { x: pos.x, z: pos.z, hw: 0.5, hd: 0.5, name: "water" });
+    }
+  }
+
+  private removeSurfaceTile(type: "path" | "water", cell: GridCell): void {
+    const key = cellKey(cell);
+    const tiles = type === "path" ? this.pathTiles : this.waterTiles;
+    const tile = tiles.get(key);
+    if (!tile) return;
+    (type === "path" ? this.pathRoot : this.waterRoot).remove(tile);
+    tiles.delete(key);
+    if (type === "water") this.waterColliders.delete(key);
   }
 }

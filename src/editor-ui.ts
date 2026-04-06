@@ -8,6 +8,8 @@ interface EditorUiHandlers {
   onReload: () => void;
   onPropChange: (field: string, value: string) => void;
   onEraseToggle: (enabled: boolean) => void;
+  getPreview: (item: EditorPaletteItem) => string | null;
+  onPreviewNeeded: (item: EditorPaletteItem) => void;
 }
 
 const TAB_LABELS: Record<EditorTab, string> = {
@@ -27,6 +29,8 @@ export class EditorUI {
   private propsEl: HTMLDivElement;
   private statusEl: HTMLDivElement;
   private eraseBtn: HTMLButtonElement;
+  private paletteButtons = new Map<string, HTMLButtonElement>();
+  private previewObserver: IntersectionObserver | null = null;
 
   activeTab: EditorTab = "prefabs";
   activeItemId: string | null = null;
@@ -80,6 +84,7 @@ export class EditorUI {
   }
 
   setActiveTab(tab: EditorTab): void {
+    if (tab === this.activeTab) return;
     this.activeTab = tab;
     this.activeItemId = null;
     this.renderTabs();
@@ -87,8 +92,21 @@ export class EditorUI {
   }
 
   setActiveItem(id: string | null): void {
+    if (this.activeItemId && this.paletteButtons.has(this.activeItemId)) {
+      this.paletteButtons.get(this.activeItemId)?.classList.remove("selected");
+    }
     this.activeItemId = id;
-    this.renderPalette();
+    if (id && this.paletteButtons.has(id)) {
+      this.paletteButtons.get(id)?.classList.add("selected");
+    }
+  }
+
+  updatePreview(itemId: string, preview: string): void {
+    const button = this.paletteButtons.get(itemId);
+    if (!button) return;
+    const thumb = button.querySelector(".editor-palette-thumb");
+    if (!thumb) return;
+    thumb.innerHTML = `<img src="${preview}" alt="${button.dataset.label ?? itemId}" />`;
   }
 
   renderSelection(entity: LevelEntity | null): void {
@@ -130,17 +148,46 @@ export class EditorUI {
 
   private renderPalette(): void {
     const items = this.items.filter((item) => item.tab === this.activeTab);
+    this.previewObserver?.disconnect();
+    this.paletteButtons.clear();
     this.paletteEl.innerHTML = "";
     for (const item of items) {
       const button = document.createElement("button");
       button.className = `editor-palette-item ${item.id === this.activeItemId ? "selected" : ""}`;
-      button.textContent = item.label;
+      button.dataset.itemId = item.id;
+      button.dataset.label = item.label;
+      const preview = this.handlers.getPreview(item);
+      button.innerHTML = `
+        <span class="editor-palette-thumb">${preview ? `<img src="${preview}" alt="${item.label}" />` : `<span class="editor-thumb-placeholder">${item.label.slice(0, 2).toUpperCase()}</span>`}</span>
+        <span class="editor-palette-label">${item.label}</span>
+      `;
       button.addEventListener("click", () => {
         this.setActiveItem(item.id);
         this.handlers.onPick(item);
       });
+      this.paletteButtons.set(item.id, button);
       this.paletteEl.appendChild(button);
     }
+    this.bindPreviewObserver(items);
+  }
+
+  private bindPreviewObserver(items: EditorPaletteItem[]): void {
+    const byId = new Map(items.map((item) => [item.id, item]));
+    this.previewObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const button = entry.target as HTMLButtonElement;
+          if (button.dataset.previewRequested === "1") continue;
+          const item = byId.get(button.dataset.itemId ?? "");
+          if (!item || this.handlers.getPreview(item)) continue;
+          button.dataset.previewRequested = "1";
+          this.handlers.onPreviewNeeded(item);
+        }
+      },
+      { root: this.paletteEl, rootMargin: "120px 0px" },
+    );
+    for (const button of this.paletteButtons.values()) this.previewObserver.observe(button);
   }
 
   private onPropEvent(event: Event): void {

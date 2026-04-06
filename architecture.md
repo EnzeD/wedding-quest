@@ -21,6 +21,8 @@
 | `src/level-grid.ts` | Utilitaires de grille pour surfaces path/water et conversion monde/cellule |
 | `src/level-assets.ts` | Resolution et preload des assets utilises par les entites du niveau |
 | `src/level-catalog.ts` | Construction du catalogue de palette de l'editeur depuis les catalogues Kenney |
+| `src/editor-entity.ts` | Helpers d'entites pour l'editeur (creation depuis palette, update de proprietes, snap) |
+| `src/editor-preview.ts` | Generation lazy de previews 3D pour chaque item de palette de l'editeur |
 | `src/editor-ui.ts` | Overlay DOM de l'editeur : palette, onglets, proprietes, status |
 | `src/editor.ts` | Controleur de l'editeur : raycast, selection, drag, pinceau, save/reload |
 | `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, mode jeu et mode editeur |
