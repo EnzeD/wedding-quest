@@ -32,4 +32,5 @@
 | `public/assets/kenney-mini-characters/*.glb` | Modeles GLB Kenney Mini Characters pour joueurs, PNJ, accessoires et fauteuils |
 | `public/assets/kenney-mini-characters/Textures/colormap.png` | Texture partagee du kit Kenney Mini Characters |
 | `public/assets/kenney-mini-characters/License.txt` | Licence CC0 du kit Kenney Mini Characters copiee dans le projet |
+| `.codex/skills/threejs-*/SKILL.md` | Copies locales des skills Three.js vendorises pour ce projet |
 | `AGENTS.md` | Instructions projet canoniques et source unique pour les agents/outils |

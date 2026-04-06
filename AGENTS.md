@@ -45,6 +45,12 @@ Course contre la montre en vue 3eme personne. Le joueur incarne Sarah ou Nicolas
 - Utiliser de preference les `.glb` de ce pack pour le joueur, les PNJ et les variantes low-poly humaines. Les accessoires (`aid-*`) et fauteuils (`wheelchair*`) peuvent servir d'objets decoratifs ou pickups.
 - Si tu ajoutes de nouveaux usages de ce kit, mettre a jour `public/kenney-mini-characters.json` et `architecture.md`.
 
+## Skills Three.js locaux
+
+- Les skills Three.js vendorises pour ce projet vivent dans `.codex/skills/threejs-*/SKILL.md`.
+- Pour le travail Three.js dans ce repo, preferer ces copies locales au lieu de dependre d'une installation globale.
+- Si tu mets a jour ces skills depuis l'upstream `cloudai-x/threejs-skills`, committer aussi les copies locales du repo.
+
 ## Structure du projet
 
 Voir `architecture.md` pour le detail fichier par fichier.

@@ -11,6 +11,12 @@ const WEAPON_NODES = [
 
 type AnimState = "idle" | "walk" | "run";
 
+const CLIP_ALIASES: Record<AnimState, string[]> = {
+  idle: ["idle", "Idle", "static"],
+  walk: ["walk", "Walk"],
+  run: ["sprint", "run", "Run"],
+};
+
 export class Player {
   mesh: THREE.Group;
   velocity = new THREE.Vector2(0, 0);
@@ -18,6 +24,7 @@ export class Player {
   private mixer: THREE.AnimationMixer | null = null;
   private actions = new Map<string, THREE.AnimationAction>();
   private currentAnim: AnimState = "idle";
+  private missingClips = new Set<AnimState>();
 
   constructor(scene: THREE.Scene) {
     this.mesh = new THREE.Group();
@@ -64,6 +71,7 @@ export class Player {
     this.mixer = null;
     this.actions.clear();
     this.currentAnim = "idle";
+    this.missingClips.clear();
 
     // Hide weapon nodes (hides the node and all its mesh children)
     model.traverse((child) => {
@@ -91,27 +99,33 @@ export class Player {
   }
 
   private playAnim(state: AnimState): void {
-    if (state === this.currentAnim && this.actions.get(this.clipName(state))?.isRunning()) return;
+    const nextClip = this.findClipName(state);
+    if (!nextClip) return;
+    if (state === this.currentAnim && this.actions.get(nextClip)?.isRunning()) return;
 
-    const prevClip = this.clipName(this.currentAnim);
-    const nextClip = this.clipName(state);
+    const prevClip = this.findClipName(this.currentAnim);
     const prev = this.actions.get(prevClip);
     const next = this.actions.get(nextClip);
 
     if (next) {
-      next.reset().setEffectiveWeight(1).play();
+      next.reset().setEffectiveWeight(1).fadeIn(0.2).play();
       if (prev && prev !== next) prev.crossFadeTo(next, 0.2, false);
     }
 
     this.currentAnim = state;
   }
 
-  private clipName(state: AnimState): string {
-    switch (state) {
-      case "idle": return "Idle";
-      case "walk": return "Walk";
-      case "run": return "Run";
+  private findClipName(state: AnimState): string | null {
+    for (const alias of CLIP_ALIASES[state]) {
+      if (this.actions.has(alias)) return alias;
     }
+
+    if (!this.missingClips.has(state)) {
+      console.warn(`Missing animation clip for state "${state}"`);
+      this.missingClips.add(state);
+    }
+
+    return null;
   }
 
   update(joystickInput: THREE.Vector2, dt: number): void {
