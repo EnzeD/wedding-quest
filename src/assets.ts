@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import type { AssetManifest } from "./types.ts";
 
 const loader = new GLTFLoader();
@@ -67,7 +68,8 @@ export function cloneAsset(path: string): THREE.Group {
     console.warn(`Asset not cached: ${path}`);
     return new THREE.Group();
   }
-  return entry.scene.clone();
+  // SkeletonUtils.clone handles SkinnedMesh + skeleton bindings correctly
+  return SkeletonUtils.clone(entry.scene) as THREE.Group;
 }
 
 export function getAnimations(path: string): THREE.AnimationClip[] {

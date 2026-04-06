@@ -2,7 +2,11 @@ import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { cloneAsset, normalizeToHeight, getManifest, getAnimations } from "./assets.ts";
 
-const WEAPON_NODES = ["Pistol", "Shotgun"];
+const WEAPON_NODES = [
+  "AK", "GrenadeLauncher", "Knife_1", "Knife_2", "Pistol",
+  "Revolver", "Revolver_Small", "RocketLauncher", "ShortCannon",
+  "Shotgun", "Shovel", "SMG", "Sniper", "Sniper_2",
+];
 
 type AnimState = "idle" | "walk" | "run";
 
@@ -55,7 +59,7 @@ export class Player {
     const model = cloneAsset(path);
     if (model.children.length === 0) return;
 
-    // Hide weapon nodes
+    // Hide weapon nodes (hides the node and all its mesh children)
     model.traverse((child) => {
       if (WEAPON_NODES.includes(child.name)) {
         child.visible = false;
