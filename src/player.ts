@@ -66,7 +66,7 @@ export class Player {
       }
     });
 
-    const normalized = normalizeToHeight(model, CONFIG.player.height);
+    const normalized = normalizeToHeight(model, CONFIG.player.height, true);
 
     // Remove placeholder children
     while (this.mesh.children.length > 0) this.mesh.remove(this.mesh.children[0]);

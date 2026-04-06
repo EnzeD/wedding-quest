@@ -77,7 +77,11 @@ export function getAnimations(path: string): THREE.AnimationClip[] {
   return entry ? entry.animations : [];
 }
 
-export function normalizeToHeight(root: THREE.Group, targetHeight: number): THREE.Group {
+export function normalizeToHeight(
+  root: THREE.Group,
+  targetHeight: number,
+  keepPivot = false,
+): THREE.Group {
   const box = new THREE.Box3().setFromObject(root);
   const size = box.getSize(new THREE.Vector3());
   const currentHeight = size.y || 1;
@@ -87,7 +91,13 @@ export function normalizeToHeight(root: THREE.Group, targetHeight: number): THRE
   // Re-center at origin, bottom at y=0
   const newBox = new THREE.Box3().setFromObject(root);
   const center = newBox.getCenter(new THREE.Vector3());
-  root.position.set(-center.x, -newBox.min.y, -center.z);
+
+  if (keepPivot) {
+    // Only adjust Y (feet on ground), preserve model's built-in X/Z pivot
+    root.position.set(0, -newBox.min.y, 0);
+  } else {
+    root.position.set(-center.x, -newBox.min.y, -center.z);
+  }
 
   const wrapper = new THREE.Group();
   wrapper.add(root);
