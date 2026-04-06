@@ -26,6 +26,7 @@
 | `src/editor-preview.ts` | Generation lazy de previews 3D pour chaque item de palette de l'editeur |
 | `src/editor-ui.ts` | Overlay DOM de l'editeur : palette, onglets, proprietes, status |
 | `src/editor.ts` | Controleur de l'editeur : raycast, selection, drag, pinceau, save/reload |
+| `src/surface-layer-renderer.ts` | Rendu lisse des couches path/water a partir de la grille du niveau, sans tuiles carrees visibles |
 | `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, mode jeu et mode editeur |
 | `src/player.ts` | Classe Player : mesh placeholder ou GLTF, deplacement direct (top-down) |
 | `src/camera.ts` | Classe TopDownCamera : vue du dessus qui suit le joueur avec look-ahead |

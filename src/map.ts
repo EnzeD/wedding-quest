@@ -3,6 +3,7 @@ import { cloneAsset, normalizeToHeight } from "./assets.ts";
 import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./level-grid.ts";
 import { entityAssetPath, preloadEntityAsset, preloadLevelAssets } from "./level-assets.ts";
 import { buildKenney } from "./kenney-buildings.ts";
+import { SurfaceLayerRenderer } from "./surface-layer-renderer.ts";
 import type { Collider, LevelData, LevelEntity } from "./types.ts";
 
 const COL = {
@@ -87,18 +88,13 @@ export class MapScene {
   private scene: THREE.Scene;
   private root = new THREE.Group();
   private surfaceRoot = new THREE.Group();
-  private pathRoot = new THREE.Group();
-  private waterRoot = new THREE.Group();
   private entityRoot = new THREE.Group();
   private entityObjects = new Map<string, THREE.Group>();
   private entityColliders = new Map<string, Collider>();
-  private pathTiles = new Map<string, THREE.Mesh>();
-  private waterTiles = new Map<string, THREE.Mesh>();
   private waterColliders = new Map<string, Collider>();
   private groundMesh = createGround(1);
-  private tileGeometry = new THREE.PlaneGeometry(1, 1);
-  private pathMaterial = new THREE.MeshStandardMaterial({ color: COL.path });
-  private waterMaterial = new THREE.MeshStandardMaterial({ color: COL.water, transparent: true, opacity: 0.8 });
+  private pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.1, blur: 0.3, y: 0.02 });
+  private waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.82, bleed: 0.16, blur: 0.42, y: 0.05 });
 
   mapSize = 90;
   level: LevelData | null = null;
@@ -117,6 +113,8 @@ export class MapScene {
     this.groundMesh = createGround(this.mapSize);
     this.root.add(this.groundMesh);
     this.root.add(createBoundary(this.mapSize));
+    this.pathSurface.attachTo(this.surfaceRoot);
+    this.waterSurface.attachTo(this.surfaceRoot);
 
     this.rebuildSurfaces();
     for (const entity of this.level.entities) {
@@ -195,75 +193,52 @@ export class MapScene {
 
   updateSurfaceCell(type: "path" | "water", cell: GridCell, filled: boolean): void {
     if (!this.level) return;
-    if (filled) {
-      if (this.getSurfaceTile(type, cell)) return;
-      this.addSurfaceTile(type, cell);
-      return;
-    }
-    this.removeSurfaceTile(type, cell);
+    const layer = this.level.surfaceLayers[type];
+    if (getCell(layer, cell) === filled) return;
+    const row = layer.rows[cell.row] ?? "";
+    layer.rows[cell.row] = `${row.slice(0, cell.col)}${filled ? "1" : "0"}${row.slice(cell.col + 1)}`;
+    this.redrawSurface(type);
   }
 
   private rebuildSurfaces(): void {
-    this.surfaceRoot.clear();
-    this.pathRoot = new THREE.Group();
-    this.waterRoot = new THREE.Group();
-    this.surfaceRoot.add(this.pathRoot, this.waterRoot);
-    this.pathTiles.clear();
-    this.waterTiles.clear();
-    this.waterColliders.clear();
     if (!this.level) return;
-    for (const type of ["path", "water"] as const) {
-      const layer = this.level.surfaceLayers[type];
-      for (let row = 0; row < layer.rows.length; row++) {
-        for (let col = 0; col < layer.rows[row].length; col++) {
-          const cell = { col, row };
-          if (!getCell(layer, cell)) continue;
-          this.addSurfaceTile(type, cell);
-        }
-      }
-    }
+    this.redrawSurface("path");
+    this.redrawSurface("water");
   }
 
   private clear(): void {
     this.scene.remove(this.root);
     this.root = new THREE.Group();
     this.surfaceRoot = new THREE.Group();
-    this.pathRoot = new THREE.Group();
-    this.waterRoot = new THREE.Group();
     this.entityRoot = new THREE.Group();
     this.entityObjects.clear();
     this.entityColliders.clear();
-    this.pathTiles.clear();
-    this.waterTiles.clear();
     this.waterColliders.clear();
+    this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.1, blur: 0.3, y: 0.02 });
+    this.waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.82, bleed: 0.16, blur: 0.42, y: 0.05 });
   }
 
-  private getSurfaceTile(type: "path" | "water", cell: GridCell): THREE.Mesh | undefined {
-    return (type === "path" ? this.pathTiles : this.waterTiles).get(cellKey(cell));
-  }
-
-  private addSurfaceTile(type: "path" | "water", cell: GridCell): void {
-    const key = cellKey(cell);
-    const tiles = type === "path" ? this.pathTiles : this.waterTiles;
-    if (tiles.has(key)) return;
-    const tile = new THREE.Mesh(this.tileGeometry, type === "path" ? this.pathMaterial : this.waterMaterial);
-    const pos = cellToWorld(cell, this.mapSize);
-    tile.rotation.x = -Math.PI / 2;
-    tile.position.set(pos.x, type === "path" ? 0.02 : 0.05, pos.z);
-    tiles.set(key, tile);
-    (type === "path" ? this.pathRoot : this.waterRoot).add(tile);
-    if (type === "water") {
-      this.waterColliders.set(key, { x: pos.x, z: pos.z, hw: 0.5, hd: 0.5, name: "water" });
+  private redrawSurface(type: "path" | "water"): void {
+    if (!this.level) return;
+    if (type === "path") {
+      this.pathSurface.render(this.mapSize, this.level.surfaceLayers.path);
+      return;
     }
+    this.waterSurface.render(this.mapSize, this.level.surfaceLayers.water);
+    this.rebuildWaterColliders();
   }
 
-  private removeSurfaceTile(type: "path" | "water", cell: GridCell): void {
-    const key = cellKey(cell);
-    const tiles = type === "path" ? this.pathTiles : this.waterTiles;
-    const tile = tiles.get(key);
-    if (!tile) return;
-    (type === "path" ? this.pathRoot : this.waterRoot).remove(tile);
-    tiles.delete(key);
-    if (type === "water") this.waterColliders.delete(key);
+  private rebuildWaterColliders(): void {
+    if (!this.level) return;
+    this.waterColliders.clear();
+    const layer = this.level.surfaceLayers.water;
+    for (let row = 0; row < layer.rows.length; row++) {
+      for (let col = 0; col < layer.rows[row].length; col++) {
+        const cell = { col, row };
+        if (!getCell(layer, cell)) continue;
+        const pos = cellToWorld(cell, this.mapSize);
+        this.waterColliders.set(cellKey(cell), { x: pos.x, z: pos.z, hw: 0.5, hd: 0.5, name: "water" });
+      }
+    }
   }
 }
