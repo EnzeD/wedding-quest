@@ -8,6 +8,9 @@ Course contre la montre en vue 3eme personne. Le joueur incarne Sarah ou Nicolas
 
 ## Regles de dev
 
+- Always read `architecture.md` at the start of each conversation.
+- Keep `architecture.md` up to date when adding or removing files.
+- Before committing, verify all new/removed files are reflected in `architecture.md`.
 - Lire `game-design-document.md` avant tout travail sur le gameplay, le scoring, les objets, ou le flow du jeu.
 - Mobile first : tout doit etre jouable au tactile, tester les joysticks et boutons sur mobile.
 - Performance : budget strict, smartphones moyens. Limiter les draw calls, utiliser des assets low-poly.
@@ -25,10 +28,4 @@ Course contre la montre en vue 3eme personne. Le joueur incarne Sarah ou Nicolas
 
 ## Structure du projet
 
-```
-src/
-  main.js          - point d'entree, initialisation
-  (a organiser au fur et a mesure)
-public/
-  (assets 3D, textures, sons)
-```
+Voir `architecture.md` pour le detail fichier par fichier.
