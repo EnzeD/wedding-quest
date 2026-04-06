@@ -1,41 +1,7 @@
-# Wedding Quest
+# CLAUDE.md
 
-Jeu mobile web 3D (Three.js + Vite) pour le mariage de Sarah et Nicolas. Envoye aux invites (~100) comme cadeau avant le mariage.
+Ce fichier n'est plus la source de verite.
 
-## Concept
+Lire `AGENTS.md` pour toutes les instructions projet. `AGENTS.md` est la seule source canonique.
 
-Course contre la montre en vue 3eme personne. Le joueur incarne Sarah ou Nicolas, reveille en sous-vetements le matin du mariage, et doit retrouver ses affaires eparpillees sur la map (le lieu du mariage) en 10 minutes.
-
-## Regles de dev
-
-- Always read `architecture.md` at the start of each conversation.
-- Keep `architecture.md` up to date when adding or removing files.
-- Before committing, verify all new/removed files are reflected in `architecture.md`.
-- Files must be < 300 lines — split into smaller modules if approaching this limit.
-- Lire `game-design-document.md` avant tout travail sur le gameplay, le scoring, les objets, ou le flow du jeu.
-- Mobile first : tout doit etre jouable au tactile, tester les joysticks et boutons sur mobile.
-- Performance : budget strict, smartphones moyens. Limiter les draw calls, utiliser des assets low-poly.
-- Assets 3D : style low-poly cartoon (Polygon/Synty). Modeles batiments fournis par Nicolas, objets et personnages generes via Tripo AI.
-- Backend : Supabase pour le leaderboard uniquement. Ne pas pousser de config Supabase en local.
-- Le jeu doit fonctionner offline sauf pour le leaderboard.
-- Poids total des assets < 20 MB.
-
-## Stack
-
-- Three.js (vanilla, pas de framework par-dessus)
-- Vite (dev + build)
-- Supabase (leaderboard)
-- Deploiement : a definir (Vercel/Netlify)
-
-## Assets Kenney Fantasy Town Kit 2.0
-
-- 167 modeles modulaires GLB dans `public/assets/kenney/`, licence CC0.
-- Catalogue complet dans `public/kenney-catalog.json` : categories, dimensions, vertices, regles d'assemblage.
-- Grille modulaire de 1.0 unite. Les murs font 1.0 de haut, places au bord +X de la cellule (x=0.4 a 0.5).
-- Pour assembler un batiment : sol (planks) a Y=0, murs autour du perimetre, empiler (Y += 1.0 par etage), toit par-dessus, puis details (cheminee, bannieres, etc).
-- Les murs se tournent par increments de 90 degres pour couvrir les 4 cotes.
-- Toujours consulter `kenney-catalog.json` avant d'assembler des batiments pour verifier les dimensions et les regles de snap.
-
-## Structure du projet
-
-Voir `architecture.md` pour le detail fichier par fichier.
+Ce fichier reste present uniquement comme point d'entree de compatibilite pour les outils qui cherchent encore `CLAUDE.md`.

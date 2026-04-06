@@ -23,8 +23,9 @@
 | `src/hud.ts` | HUD : timer, compteur d'objets, notifications, ecrans menu/score |
 | `game-design-document.md` | Game design document complet (concept, objets, scoring, flow, PNJ, planning) |
 | `implementation-plan.md` | Plan d'implementation en 10 etapes avec checklist |
-| `CLAUDE.md` | Instructions projet pour Claude Code |
+| `CLAUDE.md` | Fichier de compatibilite qui redirige vers `AGENTS.md` |
 | `src/kenney-buildings.ts` | Assemblage de batiments modulaires Kenney (definitions de pieces, preloading, construction) |
 | `public/kenney-catalog.json` | Catalogue des 167 pieces Kenney Fantasy Town Kit 2.0 (categories, dimensions, snap rules) |
 | `public/assets/kenney/*.glb` | Modeles GLB modulaires Kenney (murs, toits, escaliers, routes, vegetation, decorations) |
 | `public/assets/kenney/colormap.png` | Texture partagee par tous les modeles Kenney |
+| `AGENTS.md` | Instructions projet canoniques et source unique pour les agents/outils |
