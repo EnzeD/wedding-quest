@@ -1,10 +1,10 @@
 import * as THREE from "three";
+import { CONFIG } from "./config.ts";
 import { MAP_SIZE } from "./map.ts";
 import type { Collider, PondData } from "./types.ts";
 
-const PLAYER_RADIUS = 0.4;
 const MAP_HALF = MAP_SIZE / 2;
-const MAP_MARGIN = MAP_HALF - PLAYER_RADIUS;
+const MAP_MARGIN = MAP_HALF - CONFIG.player.radius;
 
 export function resolveCollisions(
   position: THREE.Vector3,
@@ -17,8 +17,8 @@ export function resolveCollisions(
 
   // Building collisions (AABB push-out)
   for (const c of colliders) {
-    const overlapX = (c.hw + PLAYER_RADIUS) - Math.abs(position.x - c.x);
-    const overlapZ = (c.hd + PLAYER_RADIUS) - Math.abs(position.z - c.z);
+    const overlapX = (c.hw + CONFIG.player.radius) - Math.abs(position.x - c.x);
+    const overlapZ = (c.hd + CONFIG.player.radius) - Math.abs(position.z - c.z);
 
     if (overlapX > 0 && overlapZ > 0) {
       if (overlapX < overlapZ) {

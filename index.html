@@ -4,23 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Wedding Quest</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        overflow: hidden;
-        touch-action: none;
-        background: #000;
-      }
-      canvas {
-        display: block;
-      }
-    </style>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
+    <canvas id="game-canvas"></canvas>
+
+    <!-- HUD overlay (visible during gameplay) -->
+    <div id="hud" style="display: none"></div>
+
+    <!-- Menu screen -->
+    <div id="menu-screen" class="overlay-screen">
+      <div class="menu-panel">
+        <h1>Wedding Quest</h1>
+        <p class="subtitle">Sarah & Nicolas</p>
+        <input type="text" id="player-name" placeholder="Ton prenom" maxlength="20" />
+        <div class="character-select">
+          <button class="char-btn selected" data-char="nicolas">Nicolas</button>
+          <button class="char-btn" data-char="sarah">Sarah</button>
+        </div>
+        <button id="play-btn" class="primary-btn">Jouer</button>
+      </div>
+    </div>
+
+    <!-- Score screen -->
+    <div id="score-screen" class="overlay-screen" style="display: none">
+      <div class="menu-panel">
+        <h2>C'est l'heure !</h2>
+        <div id="score-detail"></div>
+        <button id="replay-btn" class="primary-btn">Rejouer</button>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

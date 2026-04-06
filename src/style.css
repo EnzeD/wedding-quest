@@ -1,0 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Barlow:wght@400;600;700&display=swap');
+
+:root {
+  --font-display: 'Bangers', sans-serif;
+  --font-body: 'Barlow', system-ui, sans-serif;
+  --panel-bg: rgba(15, 18, 22, 0.85);
+  --panel-border: rgba(255, 255, 255, 0.12);
+  --gold: #ffd700;
+  --warning: #ff6b35;
+  --critical: #ff2244;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  overflow: hidden;
+  touch-action: none;
+  background: #000;
+  font-family: var(--font-body);
+  color: #fff;
+}
+
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* HUD */
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.hud-panel {
+  position: absolute;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-family: var(--font-display);
+  font-size: clamp(16px, 3vw, 28px);
+  letter-spacing: 1px;
+}
+
+.hud-top-center {
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.hud-top-left {
+  top: 12px;
+  left: 12px;
+}
+
+.hud-panel.warning { color: var(--warning); }
+.hud-panel.critical { color: var(--critical); animation: blink 0.5s infinite; }
+
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
+
+.hud-notification {
+  position: absolute;
+  bottom: 220px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel-bg);
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 2.5vw, 22px);
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.hud-notification.visible { opacity: 1; }
+
+/* Overlay screens */
+.overlay-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+}
+
+.menu-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 32px 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 90vw;
+}
+
+.menu-panel h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 48px);
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.menu-panel h2 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 5vw, 36px);
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+.menu-panel input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 16px;
+  font-family: var(--font-body);
+  margin-bottom: 16px;
+  outline: none;
+}
+
+.menu-panel input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+.character-select {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.char-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.char-btn.selected {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.15);
+  color: var(--gold);
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: var(--gold);
+  color: #1b1f26;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 3vw, 24px);
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.primary-btn:active { transform: scale(0.96); }
+
+/* Score screen */
+.score-section {
+  text-align: left;
+  margin: 12px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.score-section h3 {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 14px;
+}
+
+.score-item span { color: var(--gold); }
+
+.score-total {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 4vw, 32px);
+  color: var(--gold);
+  margin: 16px 0;
+}

@@ -2,20 +2,25 @@
 
 | Fichier | Description |
 |---|---|
-| `index.html` | Page HTML principale, meta viewport mobile, charge `src/main.ts` |
+| `index.html` | Page HTML avec canvas, HUD overlay, ecrans menu et score |
 | `vite.config.ts` | Configuration Vite (host expose pour test mobile) |
 | `tsconfig.json` | Configuration TypeScript (strict, ESNext modules) |
 | `package.json` | Dependances (three, vite, typescript, @types/three) et scripts (dev, build, preview) |
-| `src/types.ts` | Interfaces partagees : Collider (AABB batiments) et PondData (ellipse etang) |
-| `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, collisions |
-| `src/player.ts` | Classe Player : mesh placeholder (corps + tete + calecon), deplacement tank controls |
-| `src/camera.ts` | Classe ThirdPersonCamera : suit le joueur par derriere, freelook tactile avec retour automatique |
-| `src/controls.ts` | Classe VirtualJoystick : joystick fixe tactile en bas a gauche, input normalise |
-| `src/map.ts` | Orchestration de la map : terrain, chemins, gravier, collines, placement de tout |
-| `src/buildings.ts` | Creation des batiments detailles : manoir (lucarnes, arches), grange (vitres), cottage, annexes |
-| `src/vegetation.ts` | Types de vegetation : arbres (conifere, chene, peuplier, saule), buissons, parterres de fleurs, haies |
-| `src/decorations.ts` | Elements de decor : bancs, tables, murets de pierre, lanternes, roseaux et nenufars de l'etang |
+| `public/assets.json` | Manifeste des assets GLTF (chemins vers modeles par categorie) |
+| `public/assets/toonshooter/` | Assets GLTF placeholder (Quaternius low-poly) : Characters, Environment, Guns, Texture |
+| `src/style.css` | Styles globaux : HUD, ecrans menu/score, joystick, notifications |
+| `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu |
+| `src/types.ts` | Interfaces partagees : Collider, PondData, GameMode, ItemDef, AssetManifest |
+| `src/state.ts` | Gestion de l'etat du jeu : creation, reset, score, items collectes |
+| `src/assets.ts` | Chargement GLTF : manifeste, cache, clone, normalisation de taille |
+| `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, orchestration |
+| `src/player.ts` | Classe Player : mesh placeholder ou GLTF, deplacement direct (top-down) |
+| `src/camera.ts` | Classe TopDownCamera : vue du dessus qui suit le joueur avec look-ahead |
+| `src/controls.ts` | Classe VirtualJoystick : joystick tactile + clavier WASD, input normalise |
+| `src/map.ts` | Construction de la map : terrain, chemins, batiments GLTF, vegetation, decorations |
 | `src/collision.ts` | Resolution des collisions : limites de map, AABB batiments, ellipse etang |
+| `src/items.ts` | ItemManager : spawn des objets collectables, animation, detection de ramassage |
+| `src/hud.ts` | HUD : timer, compteur d'objets, notifications, ecrans menu/score |
 | `game-design-document.md` | Game design document complet (concept, objets, scoring, flow, PNJ, planning) |
 | `implementation-plan.md` | Plan d'implementation en 10 etapes avec checklist |
 | `CLAUDE.md` | Instructions projet pour Claude Code |

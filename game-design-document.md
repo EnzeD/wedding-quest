@@ -80,10 +80,11 @@ Le joueur avance le texte en tappant l'ecran.
 
 ### Camera et controles
 
-- Vue 3eme personne (camera derriere le personnage, legere plongee)
-- Style Mario 3D / Zelda
-- **Joystick gauche** : deplacement (virtuel, tactile)
-- **Pas de joystick droit** : la camera suit le personnage automatiquement
+- Vue top-down (camera au-dessus du personnage, regard vers le bas)
+- Style top-down action/adventure
+- **Joystick gauche** : deplacement direct (haut/bas/gauche/droite dans le monde)
+- **Clavier** : WASD ou fleches pour desktop
+- La camera suit le joueur avec un leger look-ahead dans la direction du mouvement
 - Bouton d'interaction (A) pour parler aux PNJ quand on est a proximite
 
 ### La map

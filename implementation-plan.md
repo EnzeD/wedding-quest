@@ -6,75 +6,78 @@ Chaque etape produit un resultat jouable/testable sur mobile. Tester et valider 
 
 ## Etape 1 - Personnage et controles ✅
 
-**Objectif** : un personnage (cube) qui se deplace sur un sol plat avec un joystick tactile, camera 3eme personne.
+**Objectif** : un personnage qui se deplace avec un joystick tactile, camera top-down.
 
-- [x] Creer un personnage placeholder (capsule corps + tete + calecon)
+- [x] Creer un personnage placeholder (capsule corps + tete + calecon) + chargement GLTF
 - [x] Joystick virtuel tactile fixe (zone bas-gauche de l'ecran)
-- [x] Deplacement tank controls (gauche/droite = rotation, haut = avance)
-- [x] Camera 3eme personne qui suit le personnage par derriere
-- [x] Freelook tactile (glisser ailleurs sur l'ecran) avec retour automatique
+- [x] Deplacement direct (joystick = direction monde, pas tank controls)
+- [x] Clavier WASD/fleches pour desktop
+- [x] Camera top-down qui suit le joueur avec look-ahead
 - [x] DeltaTime pour un mouvement constant
 
 ---
 
 ## Etape 2 - La map ✅
 
-**Objectif** : un terrain avec des zones distinctes, des batiments detailles, et des limites.
+**Objectif** : un terrain avec des zones distinctes, des batiments GLTF placeholder, et des limites.
 
-- [x] Terrain 90x90 base sur le lieu reel (photo aerienne)
-- [x] Chemins de pierre + aires de gravier entre les batiments
-- [x] Batiments detailles : manoir (lucarnes, arches, cheminees), grange (baies vitrees), cottage, 2 annexes
-- [x] Collisions AABB sur batiments + ellipse sur l'etang
+- [x] Terrain 90x90 base sur le lieu reel
+- [x] Chemins de pierre entre les batiments
+- [x] Systeme de chargement GLTF (manifeste assets.json, cache, normalisation)
+- [x] Batiments GLTF placeholder (Structure_1-4 de Quaternius) avec collisions AABB
+- [x] Vegetation GLTF placeholder (Tree_1-4) aux positions du lieu reel
+- [x] Decorations GLTF placeholder (Barrier, Crate, StreetLight, Sign, etc.)
+- [x] Etang avec collision ellipse
 - [x] Limites de la map (haies de bordure)
-- [x] Vegetation variee : peupliers, chenes, saules, coniferes, buissons, parterres de fleurs, haies
-- [x] Decorations : bancs, tables, lanternes, murets de pierre, roseaux, nenufars
-- [x] Collines en arriere-plan
 
 **Test** : parcourir toute la map sur mobile, verifier que ca prend ~1 minute, que les collisions marchent.
 
 ---
 
-## Etape 3 - Les objets collectables
+## Etape 3 - Les objets collectables ✅
 
 **Objectif** : des objets apparaissent sur la map, flottent, brillent, et sont ramasses au contact.
 
-- [ ] Systeme de spawn d'objets a des positions fixes
-- [ ] Objets flottants avec rotation lente + effet glow/particules
-- [ ] Detection de collision joueur/objet (ramassage au contact)
-- [ ] Suppression de l'objet au ramassage + feedback visuel (flash, texte)
-- [ ] HUD : compteur d'objets (X/10) en haut a gauche
-- [ ] Notification temporaire au ramassage ("Pantalon recupere ! +400")
-- [ ] Charger la bonne liste d'objets selon le personnage choisi (placeholder pour l'instant)
+- [x] Systeme de spawn d'objets a des positions fixes (ItemManager)
+- [x] Objets flottants avec rotation lente + anneau glow dore
+- [x] Detection de collision joueur/objet (ramassage au contact)
+- [x] Suppression de l'objet au ramassage + notification texte
+- [x] HUD : compteur d'objets (X/10) en haut a gauche
+- [x] Notification temporaire au ramassage ("Pantalon +400")
+- [x] Liste d'objets differente selon le personnage (Sarah / Nicolas)
+- [x] Asset GLTF placeholder (Key) pour les objets
 
 **Test** : se balader et ramasser des objets, verifier le compteur et les notifications.
 
 ---
 
-## Etape 4 - Timer et scoring
+## Etape 4 - Timer et scoring ✅
 
 **Objectif** : la boucle de jeu complete fonctionne du debut a la fin.
 
-- [ ] Timer de 10 minutes affiche en haut au centre
-- [ ] Timer rouge clignotant sous 60 secondes
-- [ ] Fin de partie quand timer = 0 OU tous les objets ramasses
-- [ ] Calcul du score : points objets + bonus temps (secondes x2) + bonus completion (+500)
-- [ ] Fondu au noir a la fin
-- [ ] Ecran de score : liste des objets (check/croix), detail des points, score total
+- [x] Timer de 10 minutes affiche en haut au centre
+- [x] Timer orange sous 60s, rouge clignotant sous 30s
+- [x] Fin de partie quand timer = 0 OU tous les objets ramasses
+- [x] Calcul du score : points objets + bonus temps (secondes x2) + bonus completion (+500)
+- [x] Ecran de score : liste des objets, detail des points, score total
+- [ ] Fondu au noir a la fin (a ajouter)
 
 **Test** : jouer une partie complete, verifier que le score est correct, tester le cas "temps ecoule" et "tous les objets trouves".
 
 ---
 
-## Etape 5 - Les ecrans (flow complet)
+## Etape 5 - Les ecrans (flow complet) ✅ (partiel)
 
 **Objectif** : le joueur peut enchainer tout le flow sans interruption.
 
-- [ ] Ecran titre (logo, bouton Jouer)
-- [ ] Ecran saisie du prenom
-- [ ] Ecran choix du personnage (Sarah / Nicolas) avec apercu
+- [x] Ecran titre (logo "Wedding Quest", bouton Jouer)
+- [x] Saisie du prenom sur l'ecran titre
+- [x] Choix du personnage (Sarah / Nicolas) avec boutons
+- [x] Ecran de score avec bouton "Rejouer"
+- [x] Gestion des etats du jeu (menu, playing, score)
 - [ ] Transitions entre les ecrans (fondu ou slide)
-- [ ] Ecran de score avec bouton "Voir le leaderboard" et "Rejouer"
-- [ ] Gestion des etats du jeu (menu, playing, score, leaderboard)
+- [ ] Bouton "Voir le leaderboard"
+- [ ] Apercu 3D du personnage sur l'ecran de selection
 
 **Test** : parcourir tout le flow sur mobile, du titre jusqu'au score, puis rejouer.
 

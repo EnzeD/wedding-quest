@@ -1,46 +1,72 @@
 import * as THREE from "three";
+import { CONFIG } from "./config.ts";
+import { cloneAsset, normalizeToHeight, getManifest } from "./assets.ts";
 
 export class Player {
-  speed = 8;
-  turnSpeed = 3.5;
   mesh: THREE.Group;
+  velocity = new THREE.Vector2(0, 0);
 
   constructor(scene: THREE.Scene) {
     this.mesh = new THREE.Group();
+    this.buildPlaceholder();
+    scene.add(this.mesh);
+  }
 
-    // Body
-    const bodyGeometry = new THREE.CylinderGeometry(0.35, 0.35, 1, 12);
-    const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xf5c6a0 });
-    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+  private buildPlaceholder(): void {
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf5c6a0 });
+
+    const body = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.35, 0.35, 1, 12),
+      bodyMat,
+    );
     body.position.y = 0.7;
     body.castShadow = true;
     this.mesh.add(body);
 
-    // Head
-    const headGeometry = new THREE.SphereGeometry(0.3, 12, 8);
-    const head = new THREE.Mesh(headGeometry, bodyMaterial);
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.3, 12, 8),
+      bodyMat,
+    );
     head.position.y = 1.5;
     head.castShadow = true;
     this.mesh.add(head);
 
-    // Underwear (calecon)
-    const underwearGeometry = new THREE.CylinderGeometry(0.38, 0.36, 0.3, 12);
-    const underwearMaterial = new THREE.MeshStandardMaterial({ color: 0x4444ff });
-    const underwear = new THREE.Mesh(underwearGeometry, underwearMaterial);
+    const underwear = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.38, 0.36, 0.3, 12),
+      new THREE.MeshStandardMaterial({ color: 0x4444ff }),
+    );
     underwear.position.y = 0.35;
     this.mesh.add(underwear);
-
-    this.mesh.position.set(0, 0, 0);
-    scene.add(this.mesh);
   }
 
-  update(joystickInput: THREE.Vector2, deltaTime: number): void {
+  loadModel(): void {
+    const m = getManifest();
+    const path = m.characters.player;
+    if (!path) return;
+
+    const model = cloneAsset(path);
+    if (model.children.length === 0) return;
+
+    const normalized = normalizeToHeight(model, CONFIG.player.height);
+    // Remove placeholder children
+    while (this.mesh.children.length > 0) this.mesh.remove(this.mesh.children[0]);
+    this.mesh.add(normalized);
+  }
+
+  update(joystickInput: THREE.Vector2, dt: number): void {
+    this.velocity.copy(joystickInput);
+
     if (joystickInput.length() < 0.1) return;
 
-    this.mesh.rotation.y -= joystickInput.x * this.turnSpeed * deltaTime;
+    // Direct movement: joystick X = world X, joystick Y = world -Z
+    const moveX = joystickInput.x * CONFIG.player.speed * dt;
+    const moveZ = -joystickInput.y * CONFIG.player.speed * dt;
 
-    const forward = -joystickInput.y;
-    this.mesh.position.x += Math.sin(this.mesh.rotation.y) * forward * this.speed * deltaTime;
-    this.mesh.position.z += Math.cos(this.mesh.rotation.y) * forward * this.speed * deltaTime;
+    this.mesh.position.x += moveX;
+    this.mesh.position.z += moveZ;
+
+    // Face movement direction
+    const angle = Math.atan2(joystickInput.x, -joystickInput.y);
+    this.mesh.rotation.y = angle;
   }
 }
