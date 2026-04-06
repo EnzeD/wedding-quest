@@ -105,6 +105,41 @@ export function createWillow(scene, x, z) {
   scene.add(group);
 }
 
+export function createBeechTree(scene, x, z) {
+  const group = new THREE.Group();
+  // Massive trunk
+  const bTrunkGeo = new THREE.CylinderGeometry(0.6, 0.8, 4, 8);
+  const trunk = new THREE.Mesh(bTrunkGeo, trunkMat);
+  trunk.position.y = 2;
+  trunk.castShadow = true;
+  group.add(trunk);
+  // Large spreading canopy (multiple overlapping spheres)
+  const canopyMat = new THREE.MeshStandardMaterial({ color: 0x2a6e1a });
+  const positions = [
+    [0, 6.5, 0, 3.5], [-2, 5.5, -1.5, 2.5], [2, 5.5, 1, 2.5],
+    [-1, 6, 2, 2.8], [1.5, 6, -1.5, 2.6], [0, 5, 0, 3],
+  ];
+  for (const [cx, cy, cz, r] of positions) {
+    const canopyGeo = new THREE.SphereGeometry(r, 8, 6);
+    const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+    canopy.position.set(cx, cy, cz);
+    canopy.castShadow = true;
+    group.add(canopy);
+  }
+  // Visible roots
+  const rootGeo = new THREE.CylinderGeometry(0.08, 0.15, 2, 4);
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2;
+    const root = new THREE.Mesh(rootGeo, trunkMat);
+    root.position.set(Math.cos(angle) * 0.9, 0.3, Math.sin(angle) * 0.9);
+    root.rotation.z = (Math.random() - 0.5) * 0.8;
+    root.rotation.x = (Math.random() - 0.5) * 0.8;
+    group.add(root);
+  }
+  group.position.set(x, 0, z);
+  scene.add(group);
+}
+
 export function createBush(scene, x, z, scale) {
   const s = scale || 0.6 + Math.random() * 0.6;
   const mat = Math.random() > 0.5 ? bushMat : bushDarkMat;

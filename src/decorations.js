@@ -124,3 +124,121 @@ export function createPondDetails(scene, pondX, pondZ, rx, rz) {
     scene.add(pad);
   }
 }
+
+export function createCeremonyChairs(scene, x, z, facing, rows, seatsPerRow) {
+  const chairSeatGeo = new THREE.BoxGeometry(0.4, 0.04, 0.4);
+  const chairBackGeo = new THREE.BoxGeometry(0.4, 0.4, 0.04);
+  const chairLegGeo = new THREE.BoxGeometry(0.04, 0.4, 0.04);
+  const chairMat = new THREE.MeshStandardMaterial({ color: 0xf5f0e8 });
+
+  const group = new THREE.Group();
+  const spacingX = 0.55;
+  const spacingZ = 0.7;
+  const aisleWidth = 1.2;
+
+  for (let row = 0; row < rows; row++) {
+    for (let seat = 0; seat < seatsPerRow; seat++) {
+      const chair = new THREE.Group();
+
+      const seatMesh = new THREE.Mesh(chairSeatGeo, chairMat);
+      seatMesh.position.y = 0.4;
+      chair.add(seatMesh);
+
+      const back = new THREE.Mesh(chairBackGeo, chairMat);
+      back.position.set(0, 0.6, -0.18);
+      chair.add(back);
+
+      for (const [lx, lz] of [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]]) {
+        const leg = new THREE.Mesh(chairLegGeo, chairMat);
+        leg.position.set(lx, 0.2, lz);
+        chair.add(leg);
+      }
+
+      // Position: split into two halves with aisle in the middle
+      const half = seatsPerRow / 2;
+      let offsetX;
+      if (seat < half) {
+        offsetX = (seat - half / 2) * spacingX - aisleWidth / 2;
+      } else {
+        offsetX = ((seat - half) - half / 2) * spacingX + aisleWidth / 2;
+      }
+      const offsetZ = row * spacingZ;
+
+      chair.position.set(offsetX, 0, offsetZ);
+      group.add(chair);
+    }
+  }
+
+  group.position.set(x, 0, z);
+  group.rotation.y = facing || 0;
+  scene.add(group);
+}
+
+export function createTennisCourt(scene, x, z, rotation) {
+  const group = new THREE.Group();
+
+  // Court surface
+  const surfaceGeo = new THREE.PlaneGeometry(11, 6);
+  const surfaceMat = new THREE.MeshStandardMaterial({ color: 0xcc5533 });
+  const surface = new THREE.Mesh(surfaceGeo, surfaceMat);
+  surface.rotation.x = -Math.PI / 2;
+  surface.position.y = 0.02;
+  group.add(surface);
+
+  // Lines
+  const lineMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const lines = [
+    // Outer
+    { w: 11, d: 0.06, x: 0, z: -3 }, { w: 11, d: 0.06, x: 0, z: 3 },
+    { w: 0.06, d: 6, x: -5.5, z: 0 }, { w: 0.06, d: 6, x: 5.5, z: 0 },
+    // Service
+    { w: 0.06, d: 6, x: 0, z: 0 },
+    { w: 6.4, d: 0.06, x: -2.3, z: 0 }, { w: 6.4, d: 0.06, x: 2.3, z: 0 },
+  ];
+  for (const l of lines) {
+    const geo = new THREE.PlaneGeometry(l.w, l.d);
+    const mesh = new THREE.Mesh(geo, lineMat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(l.x, 0.025, l.z);
+    group.add(mesh);
+  }
+
+  // Net
+  const netGeo = new THREE.PlaneGeometry(0.06, 1, 1, 4);
+  const netMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.6, side: THREE.DoubleSide,
+  });
+  const netMeshGeo = new THREE.PlaneGeometry(6.2, 1);
+  const net = new THREE.Mesh(netMeshGeo, netMat);
+  net.position.set(0, 0.5, 0);
+  net.rotation.y = Math.PI / 2;
+  group.add(net);
+
+  // Net poles
+  const poleMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+  const poleGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.1, 6);
+  for (const pz of [-3.1, 3.1]) {
+    const pole = new THREE.Mesh(poleGeo, poleMat);
+    pole.position.set(0, 0.55, pz);
+    group.add(pole);
+  }
+
+  // Fence around
+  const fenceGeo = new THREE.BoxGeometry(13, 2, 0.05);
+  const fenceMat = new THREE.MeshStandardMaterial({
+    color: 0x228833, transparent: true, opacity: 0.3,
+  });
+  for (const [fx, fz, ry] of [[0, -4, 0], [0, 4, 0], [-6.5, 0, Math.PI / 2], [6.5, 0, Math.PI / 2]]) {
+    const fence = new THREE.Mesh(
+      ry ? new THREE.BoxGeometry(8, 2, 0.05) : fenceGeo,
+      fenceMat
+    );
+    fence.position.set(fx, 1, fz);
+    fence.rotation.y = ry;
+    group.add(fence);
+  }
+
+  group.position.set(x, 0, z);
+  group.rotation.y = rotation || 0;
+  scene.add(group);
+}

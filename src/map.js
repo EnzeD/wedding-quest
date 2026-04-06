@@ -1,12 +1,12 @@
 import * as THREE from "three";
 import { createManoir, createGrange, createCottage, createAnnexe } from "./buildings.js";
 import {
-  createTree, createPoplar, createOak, createWillow,
+  createTree, createPoplar, createOak, createWillow, createBeechTree,
   createBush, createFlowerBed, createHedgeRow,
 } from "./vegetation.js";
 import {
   createBench, createTable, createStoneWall,
-  createLantern, createPondDetails,
+  createLantern, createPondDetails, createCeremonyChairs, createTennisCourt,
 } from "./decorations.js";
 
 function createPond(scene, x, z, rx, rz) {
@@ -104,6 +104,15 @@ export function buildMap(scene) {
   const pond = createPond(scene, 28, -28, 10, 7);
   createPondDetails(scene, 28, -28, 10, 7);
 
+  // --- Ceremony area (grand hetre + chairs) ---
+  // Hetre in the middle of the lawn (where the table is in reality)
+  createBeechTree(scene, 0, 15);
+  // Chairs south of the tree, facing north toward it
+  createCeremonyChairs(scene, 0, 21, Math.PI, 6, 10);
+
+  // --- Tennis court (upper-left) ---
+  createTennisCourt(scene, -25, -35, 0);
+
   // --- Vegetation ---
   // Poplars around the pond
   const poplars = [
@@ -161,7 +170,6 @@ export function buildMap(scene) {
   createBench(scene, 18, 15, -Math.PI / 3);
   createBench(scene, -12, 2, Math.PI / 2);
 
-  createTable(scene, 0, 15, 0);
   createTable(scene, 22, 2, Math.PI / 6);
 
   createStoneWall(scene, -28, -28, -28, -12, 0.8);
