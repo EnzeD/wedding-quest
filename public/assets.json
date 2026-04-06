@@ -1,6 +1,6 @@
 {
   "characters": {
-    "player": "assets/toonshooter/Characters/glTF/Character_Soldier.gltf"
+    "player": "assets/toonshooter/Characters/glTF/Character_Hazmat.gltf"
   },
   "buildings": {
     "manoir": "assets/toonshooter/Environment/glTF/Structure_1.gltf",

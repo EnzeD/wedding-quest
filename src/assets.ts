@@ -3,7 +3,13 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import type { AssetManifest } from "./types.ts";
 
 const loader = new GLTFLoader();
-const cache = new Map<string, THREE.Group>();
+
+interface CachedAsset {
+  scene: THREE.Group;
+  animations: THREE.AnimationClip[];
+}
+
+const cache = new Map<string, CachedAsset>();
 
 let manifest: AssetManifest | null = null;
 
@@ -18,8 +24,8 @@ export function getManifest(): AssetManifest {
   return manifest;
 }
 
-async function loadGltf(path: string): Promise<THREE.Group> {
-  if (cache.has(path)) return cache.get(path)!.clone();
+async function loadGltf(path: string): Promise<CachedAsset> {
+  if (cache.has(path)) return cache.get(path)!;
 
   return new Promise((resolve, reject) => {
     loader.load(
@@ -32,8 +38,9 @@ async function loadGltf(path: string): Promise<THREE.Group> {
             child.receiveShadow = true;
           }
         });
-        cache.set(path, root);
-        resolve(root.clone());
+        const entry: CachedAsset = { scene: root, animations: gltf.animations };
+        cache.set(path, entry);
+        resolve(entry);
       },
       undefined,
       reject,
@@ -55,12 +62,17 @@ export async function loadAllAssets(): Promise<void> {
 }
 
 export function cloneAsset(path: string): THREE.Group {
-  const original = cache.get(path);
-  if (!original) {
+  const entry = cache.get(path);
+  if (!entry) {
     console.warn(`Asset not cached: ${path}`);
     return new THREE.Group();
   }
-  return original.clone();
+  return entry.scene.clone();
+}
+
+export function getAnimations(path: string): THREE.AnimationClip[] {
+  const entry = cache.get(path);
+  return entry ? entry.animations : [];
 }
 
 export function normalizeToHeight(root: THREE.Group, targetHeight: number): THREE.Group {

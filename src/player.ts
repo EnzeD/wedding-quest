@@ -1,10 +1,18 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
-import { cloneAsset, normalizeToHeight, getManifest } from "./assets.ts";
+import { cloneAsset, normalizeToHeight, getManifest, getAnimations } from "./assets.ts";
+
+const WEAPON_NODES = ["Pistol", "Shotgun"];
+
+type AnimState = "idle" | "walk" | "run";
 
 export class Player {
   mesh: THREE.Group;
   velocity = new THREE.Vector2(0, 0);
+
+  private mixer: THREE.AnimationMixer | null = null;
+  private actions = new Map<string, THREE.AnimationAction>();
+  private currentAnim: AnimState = "idle";
 
   constructor(scene: THREE.Scene) {
     this.mesh = new THREE.Group();
@@ -47,20 +55,74 @@ export class Player {
     const model = cloneAsset(path);
     if (model.children.length === 0) return;
 
+    // Hide weapon nodes
+    model.traverse((child) => {
+      if (WEAPON_NODES.includes(child.name)) {
+        child.visible = false;
+      }
+    });
+
     const normalized = normalizeToHeight(model, CONFIG.player.height);
+
     // Remove placeholder children
     while (this.mesh.children.length > 0) this.mesh.remove(this.mesh.children[0]);
     this.mesh.add(normalized);
+
+    // Setup animations
+    const clips = getAnimations(path);
+    if (clips.length > 0) {
+      this.mixer = new THREE.AnimationMixer(normalized);
+      for (const clip of clips) {
+        const action = this.mixer.clipAction(clip);
+        this.actions.set(clip.name, action);
+      }
+      this.playAnim("idle");
+    }
+  }
+
+  private playAnim(state: AnimState): void {
+    if (state === this.currentAnim && this.actions.get(this.clipName(state))?.isRunning()) return;
+
+    const prevClip = this.clipName(this.currentAnim);
+    const nextClip = this.clipName(state);
+    const prev = this.actions.get(prevClip);
+    const next = this.actions.get(nextClip);
+
+    if (next) {
+      next.reset().setEffectiveWeight(1).play();
+      if (prev && prev !== next) prev.crossFadeTo(next, 0.2, false);
+    }
+
+    this.currentAnim = state;
+  }
+
+  private clipName(state: AnimState): string {
+    switch (state) {
+      case "idle": return "Idle";
+      case "walk": return "Walk";
+      case "run": return "Run";
+    }
   }
 
   update(joystickInput: THREE.Vector2, dt: number): void {
     this.velocity.copy(joystickInput);
 
-    if (joystickInput.length() < 0.1) return;
+    // Update animation mixer
+    this.mixer?.update(dt);
 
-    // Direct movement: joystick X = world X, joystick Y = world Z
-    const moveX = joystickInput.x * CONFIG.player.speed * dt;
-    const moveZ = joystickInput.y * CONFIG.player.speed * dt;
+    const inputLen = joystickInput.length();
+
+    if (inputLen < 0.1) {
+      this.playAnim("idle");
+      return;
+    }
+
+    // Choose walk vs run based on joystick intensity
+    this.playAnim(inputLen > 0.7 ? "run" : "walk");
+
+    const speed = CONFIG.player.speed * (inputLen > 0.7 ? 1 : 0.5);
+    const moveX = joystickInput.x * speed * dt;
+    const moveZ = joystickInput.y * speed * dt;
 
     this.mesh.position.x += moveX;
     this.mesh.position.z += moveZ;
