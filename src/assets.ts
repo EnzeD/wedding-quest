@@ -72,6 +72,10 @@ export function cloneAsset(path: string): THREE.Group {
   return SkeletonUtils.clone(entry.scene) as THREE.Group;
 }
 
+export async function preloadAsset(path: string): Promise<void> {
+  await loadGltf(path);
+}
+
 export function getAnimations(path: string): THREE.AnimationClip[] {
   const entry = cache.get(path);
   return entry ? entry.animations : [];

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { loadManifest, loadAllAssets } from "./assets.ts";
+import { preloadKenneyPieces } from "./kenney-buildings.ts";
 import { Player } from "./player.ts";
 import { TopDownCamera } from "./camera.ts";
 import { VirtualJoystick } from "./controls.ts";
@@ -68,7 +69,7 @@ function resize(): void {
 
 async function init(): Promise<void> {
   await loadManifest();
-  await loadAllAssets();
+  await Promise.all([loadAllAssets(), preloadKenneyPieces()]);
 
   const map = buildMap(scene);
   colliders = map.colliders;

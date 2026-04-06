@@ -1,0 +1,4942 @@
+{
+  "meta": {
+    "kit": "Kenney Fantasy Town Kit 2.0",
+    "license": "CC0 1.0 Universal",
+    "gridUnit": 1,
+    "wallHeight": 1,
+    "basePath": "assets/kenney/",
+    "texture": "colormap.png",
+    "totalModels": 167,
+    "assemblyNotes": {
+      "coordinate_system": "Y-up. Walls extend along Z axis (-0.5 to 0.5) at the +X edge (x=0.4 to 0.5).",
+      "stacking": "Stack walls vertically by adding Y offset = floor * 1.0. Roofs go on top.",
+      "rotation": "Rotate wall pieces by 90 degree increments (0, PI/2, PI, 3*PI/2) to build all 4 sides.",
+      "building_recipe": "1) Place floor (planks) at Y=0. 2) Place walls around perimeter. 3) Stack for multi-story. 4) Add roof on top. 5) Add details (chimney, banners, etc)."
+    }
+  },
+  "pieces": {
+    "balcony-wall-fence": {
+      "file": "balcony-wall-fence.glb",
+      "category": "wall",
+      "subcategory": "balcony",
+      "vertices": 192,
+      "fileSize": 11236,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "balcony-wall": {
+      "file": "balcony-wall.glb",
+      "category": "wall",
+      "subcategory": "balcony",
+      "vertices": 116,
+      "fileSize": 7424,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "banner-green": {
+      "file": "banner-green.glb",
+      "category": "decoration",
+      "subcategory": "banner",
+      "vertices": 170,
+      "fileSize": 10200,
+      "size": {
+        "x": 0.05,
+        "y": 0.839,
+        "z": 0.5
+      },
+      "bounds": {
+        "min": [
+          0.375,
+          0.161,
+          -0.25
+        ],
+        "max": [
+          0.425,
+          1,
+          0.25
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "banner-red": {
+      "file": "banner-red.glb",
+      "category": "decoration",
+      "subcategory": "banner",
+      "vertices": 166,
+      "fileSize": 9988,
+      "size": {
+        "x": 0.05,
+        "y": 0.839,
+        "z": 0.5
+      },
+      "bounds": {
+        "min": [
+          0.375,
+          0.161,
+          -0.25
+        ],
+        "max": [
+          0.425,
+          1,
+          0.25
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "blade": {
+      "file": "blade.glb",
+      "category": "decoration",
+      "subcategory": "blade",
+      "vertices": 332,
+      "fileSize": 18792,
+      "size": {
+        "x": 0.111,
+        "y": 2,
+        "z": 0.43
+      },
+      "bounds": {
+        "min": [
+          -0.055,
+          0,
+          -0.055
+        ],
+        "max": [
+          0.055,
+          2,
+          0.375
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "cart-high": {
+      "file": "cart-high.glb",
+      "category": "structure",
+      "subcategory": "cart",
+      "vertices": 1628,
+      "fileSize": 88560,
+      "size": {
+        "x": 0.65,
+        "y": 0.861,
+        "z": 1.39
+      },
+      "bounds": {
+        "min": [
+          -0.325,
+          0,
+          -0.645
+        ],
+        "max": [
+          0.325,
+          0.861,
+          0.745
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "cart": {
+      "file": "cart.glb",
+      "category": "structure",
+      "subcategory": "cart",
+      "vertices": 940,
+      "fileSize": 52920,
+      "size": {
+        "x": 0.65,
+        "y": 0.536,
+        "z": 1.34
+      },
+      "bounds": {
+        "min": [
+          -0.325,
+          0,
+          -0.645
+        ],
+        "max": [
+          0.325,
+          0.536,
+          0.695
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "chimney-base": {
+      "file": "chimney-base.glb",
+      "category": "structure",
+      "subcategory": "chimney",
+      "vertices": 134,
+      "fileSize": 8408,
+      "size": {
+        "x": 0.344,
+        "y": 1,
+        "z": 0.52
+      },
+      "bounds": {
+        "min": [
+          0.081,
+          0,
+          -0.26
+        ],
+        "max": [
+          0.425,
+          1,
+          0.26
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "chimney-top": {
+      "file": "chimney-top.glb",
+      "category": "structure",
+      "subcategory": "chimney",
+      "vertices": 124,
+      "fileSize": 7896,
+      "size": {
+        "x": 0.252,
+        "y": 0.625,
+        "z": 0.34
+      },
+      "bounds": {
+        "min": [
+          0.213,
+          0,
+          -0.17
+        ],
+        "max": [
+          0.465,
+          0.625,
+          0.17
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "chimney": {
+      "file": "chimney.glb",
+      "category": "structure",
+      "subcategory": "chimney",
+      "vertices": 60,
+      "fileSize": 4656,
+      "size": {
+        "x": 0.212,
+        "y": 1,
+        "z": 0.34
+      },
+      "bounds": {
+        "min": [
+          0.213,
+          0,
+          -0.17
+        ],
+        "max": [
+          0.425,
+          1,
+          0.17
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fence-broken": {
+      "file": "fence-broken.glb",
+      "category": "fence",
+      "subcategory": "broken",
+      "vertices": 206,
+      "fileSize": 11960,
+      "size": {
+        "x": 0.255,
+        "y": 0.38,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.245,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.38,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "fence-curved": {
+      "file": "fence-curved.glb",
+      "category": "fence",
+      "subcategory": "curved",
+      "vertices": 456,
+      "fileSize": 25408,
+      "size": {
+        "x": 1,
+        "y": 0.38,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.38,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fence-gate": {
+      "file": "fence-gate.glb",
+      "category": "fence",
+      "subcategory": "gate",
+      "vertices": 842,
+      "fileSize": 46340,
+      "size": {
+        "x": 0.519,
+        "y": 0.55,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.019,
+          -0.17,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.38,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fence": {
+      "file": "fence.glb",
+      "category": "fence",
+      "subcategory": "straight",
+      "vertices": 120,
+      "fileSize": 7672,
+      "size": {
+        "x": 0.075,
+        "y": 0.38,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.425,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.38,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "fountain-center": {
+      "file": "fountain-center.glb",
+      "category": "fountain",
+      "subcategory": "modular",
+      "vertices": 8,
+      "fileSize": 3280,
+      "size": {
+        "x": 1,
+        "y": 0,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-corner-inner-square": {
+      "file": "fountain-corner-inner-square.glb",
+      "category": "fountain",
+      "subcategory": "modular",
+      "vertices": 78,
+      "fileSize": 6908,
+      "size": {
+        "x": 1,
+        "y": 0.28,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.28,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-corner-inner": {
+      "file": "fountain-corner-inner.glb",
+      "category": "fountain",
+      "subcategory": "modular",
+      "vertices": 240,
+      "fileSize": 15000,
+      "size": {
+        "x": 1,
+        "y": 0.28,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.28,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-corner": {
+      "file": "fountain-corner.glb",
+      "category": "fountain",
+      "subcategory": "modular",
+      "vertices": 106,
+      "fileSize": 8272,
+      "size": {
+        "x": 1,
+        "y": 0.28,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.28,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-curved": {
+      "file": "fountain-curved.glb",
+      "category": "fountain",
+      "subcategory": "modular",
+      "vertices": 426,
+      "fileSize": 25048,
+      "size": {
+        "x": 1,
+        "y": 0.28,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.28,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-edge": {
+      "file": "fountain-edge.glb",
+      "category": "fountain",
+      "subcategory": "modular",
+      "vertices": 62,
+      "fileSize": 6024,
+      "size": {
+        "x": 1,
+        "y": 0.28,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.28,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-round-detail": {
+      "file": "fountain-round-detail.glb",
+      "category": "fountain",
+      "subcategory": "complete",
+      "vertices": 2592,
+      "fileSize": 136888,
+      "size": {
+        "x": 2,
+        "y": 0.48,
+        "z": 2
+      },
+      "bounds": {
+        "min": [
+          -1,
+          0,
+          -1
+        ],
+        "max": [
+          1,
+          0.48,
+          1
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-round": {
+      "file": "fountain-round.glb",
+      "category": "fountain",
+      "subcategory": "complete",
+      "vertices": 1584,
+      "fileSize": 84848,
+      "size": {
+        "x": 2,
+        "y": 0.28,
+        "z": 2
+      },
+      "bounds": {
+        "min": [
+          -1,
+          0,
+          -1
+        ],
+        "max": [
+          1,
+          0.28,
+          1
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-square-detail": {
+      "file": "fountain-square-detail.glb",
+      "category": "fountain",
+      "subcategory": "complete",
+      "vertices": 564,
+      "fileSize": 32092,
+      "size": {
+        "x": 2,
+        "y": 0.48,
+        "z": 2
+      },
+      "bounds": {
+        "min": [
+          -1,
+          0,
+          -1
+        ],
+        "max": [
+          1,
+          0.48,
+          1
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "fountain-square": {
+      "file": "fountain-square.glb",
+      "category": "fountain",
+      "subcategory": "complete",
+      "vertices": 468,
+      "fileSize": 27104,
+      "size": {
+        "x": 2,
+        "y": 0.455,
+        "z": 2
+      },
+      "bounds": {
+        "min": [
+          -1,
+          0,
+          -1
+        ],
+        "max": [
+          1,
+          0.455,
+          1
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "hedge-curved": {
+      "file": "hedge-curved.glb",
+      "category": "hedge",
+      "subcategory": "small",
+      "vertices": 478,
+      "fileSize": 26312,
+      "size": {
+        "x": 1,
+        "y": 0.25,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.25,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "hedge-gate": {
+      "file": "hedge-gate.glb",
+      "category": "hedge",
+      "subcategory": "small",
+      "vertices": 136,
+      "fileSize": 8432,
+      "size": {
+        "x": 0.25,
+        "y": 0.25,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.25,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.25,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "hedge-large-curved": {
+      "file": "hedge-large-curved.glb",
+      "category": "hedge",
+      "subcategory": "large",
+      "vertices": 454,
+      "fileSize": 25024,
+      "size": {
+        "x": 1,
+        "y": 0.6,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.6,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "hedge-large-gate": {
+      "file": "hedge-large-gate.glb",
+      "category": "hedge",
+      "subcategory": "large",
+      "vertices": 320,
+      "fileSize": 18072,
+      "size": {
+        "x": 0.4,
+        "y": 0.6,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.1,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.6,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "hedge-large": {
+      "file": "hedge-large.glb",
+      "category": "hedge",
+      "subcategory": "large",
+      "vertices": 158,
+      "fileSize": 9568,
+      "size": {
+        "x": 0.4,
+        "y": 0.6,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.1,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.6,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "hedge": {
+      "file": "hedge.glb",
+      "category": "hedge",
+      "subcategory": "small",
+      "vertices": 98,
+      "fileSize": 6524,
+      "size": {
+        "x": 0.25,
+        "y": 0.25,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.25,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.25,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "lantern": {
+      "file": "lantern.glb",
+      "category": "decoration",
+      "subcategory": "lantern",
+      "vertices": 256,
+      "fileSize": 14984,
+      "size": {
+        "x": 0.216,
+        "y": 1.556,
+        "z": 0.224
+      },
+      "bounds": {
+        "min": [
+          -0.108,
+          0,
+          -0.112
+        ],
+        "max": [
+          0.108,
+          1.556,
+          0.112
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "overhang": {
+      "file": "overhang.glb",
+      "category": "decoration",
+      "subcategory": "overhang",
+      "vertices": 120,
+      "fileSize": 7648,
+      "size": {
+        "x": 0.285,
+        "y": 0.33,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.14,
+          0.67,
+          -0.5
+        ],
+        "max": [
+          0.425,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "pillar-stone": {
+      "file": "pillar-stone.glb",
+      "category": "structure",
+      "subcategory": "pillar",
+      "material": "stone",
+      "vertices": 192,
+      "fileSize": 11324,
+      "size": {
+        "x": 0.16,
+        "y": 1,
+        "z": 0.16
+      },
+      "bounds": {
+        "min": [
+          -0.08,
+          0,
+          -0.08
+        ],
+        "max": [
+          0.08,
+          1,
+          0.08
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "pillar-wood": {
+      "file": "pillar-wood.glb",
+      "category": "structure",
+      "subcategory": "pillar",
+      "material": "wood",
+      "vertices": 72,
+      "fileSize": 5312,
+      "size": {
+        "x": 0.16,
+        "y": 1,
+        "z": 0.16
+      },
+      "bounds": {
+        "min": [
+          -0.08,
+          0,
+          -0.08
+        ],
+        "max": [
+          0.08,
+          1,
+          0.08
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "planks-half": {
+      "file": "planks-half.glb",
+      "category": "floor",
+      "subcategory": "planks",
+      "material": "wood",
+      "vertices": 168,
+      "fileSize": 10164,
+      "size": {
+        "x": 0.5,
+        "y": 0.06,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.06,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "planks-opening": {
+      "file": "planks-opening.glb",
+      "category": "floor",
+      "subcategory": "planks",
+      "material": "wood",
+      "vertices": 288,
+      "fileSize": 16360,
+      "size": {
+        "x": 1,
+        "y": 0.06,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.06,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "planks": {
+      "file": "planks.glb",
+      "category": "floor",
+      "subcategory": "planks",
+      "material": "wood",
+      "vertices": 192,
+      "fileSize": 11148,
+      "size": {
+        "x": 1,
+        "y": 0.06,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.06,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "poles-horizontal": {
+      "file": "poles-horizontal.glb",
+      "category": "decoration",
+      "subcategory": "poles",
+      "vertices": 80,
+      "fileSize": 5660,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "poles": {
+      "file": "poles.glb",
+      "category": "decoration",
+      "subcategory": "poles",
+      "vertices": 52,
+      "fileSize": 4212,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges."
+      }
+    },
+    "road-bend": {
+      "file": "road-bend.glb",
+      "category": "road",
+      "subcategory": "bend",
+      "vertices": 452,
+      "fileSize": 25044,
+      "size": {
+        "x": 3,
+        "y": 0.05,
+        "z": 3
+      },
+      "bounds": {
+        "min": [
+          -1.5,
+          0,
+          -1.5
+        ],
+        "max": [
+          1.5,
+          0.05,
+          1.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road-corner-inner": {
+      "file": "road-corner-inner.glb",
+      "category": "road",
+      "subcategory": "corner",
+      "vertices": 238,
+      "fileSize": 13552,
+      "size": {
+        "x": 1,
+        "y": 0.05,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.05,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road-corner": {
+      "file": "road-corner.glb",
+      "category": "road",
+      "subcategory": "corner",
+      "vertices": 242,
+      "fileSize": 13736,
+      "size": {
+        "x": 1,
+        "y": 0.05,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.05,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road-curb-end": {
+      "file": "road-curb-end.glb",
+      "category": "road",
+      "subcategory": "curb",
+      "vertices": 64,
+      "fileSize": 4828,
+      "size": {
+        "x": 1,
+        "y": 0.05,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.05,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road-curb": {
+      "file": "road-curb.glb",
+      "category": "road",
+      "subcategory": "curb",
+      "vertices": 24,
+      "fileSize": 2804,
+      "size": {
+        "x": 1,
+        "y": 0.05,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.05,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road-edge-slope": {
+      "file": "road-edge-slope.glb",
+      "category": "road",
+      "subcategory": "edge",
+      "vertices": 82,
+      "fileSize": 5724,
+      "size": {
+        "x": 1,
+        "y": 0.25,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.25,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road-edge": {
+      "file": "road-edge.glb",
+      "category": "road",
+      "subcategory": "edge",
+      "vertices": 66,
+      "fileSize": 4912,
+      "size": {
+        "x": 1,
+        "y": 0.05,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.05,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road-slope": {
+      "file": "road-slope.glb",
+      "category": "road",
+      "subcategory": "slope",
+      "vertices": 24,
+      "fileSize": 2820,
+      "size": {
+        "x": 1,
+        "y": 0.225,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.225,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "road": {
+      "file": "road.glb",
+      "category": "road",
+      "subcategory": "straight",
+      "vertices": 24,
+      "fileSize": 2788,
+      "size": {
+        "x": 1,
+        "y": 0.025,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.025,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "center",
+        "notes": "Centered on cell. Y=0 ground level."
+      }
+    },
+    "rock-large": {
+      "file": "rock-large.glb",
+      "category": "vegetation",
+      "subcategory": "rock",
+      "vertices": 330,
+      "fileSize": 18876,
+      "size": {
+        "x": 1.67,
+        "y": 1.163,
+        "z": 1.549
+      },
+      "bounds": {
+        "min": [
+          -0.871,
+          0,
+          -0.725
+        ],
+        "max": [
+          0.799,
+          1.163,
+          0.824
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "rock-small": {
+      "file": "rock-small.glb",
+      "category": "vegetation",
+      "subcategory": "rock",
+      "vertices": 216,
+      "fileSize": 12620,
+      "size": {
+        "x": 0.998,
+        "y": 1.02,
+        "z": 1.326
+      },
+      "bounds": {
+        "min": [
+          -0.527,
+          0,
+          -0.785
+        ],
+        "max": [
+          0.471,
+          1.02,
+          0.542
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "rock-wide": {
+      "file": "rock-wide.glb",
+      "category": "vegetation",
+      "subcategory": "rock",
+      "vertices": 258,
+      "fileSize": 15172,
+      "size": {
+        "x": 1.094,
+        "y": 1.02,
+        "z": 1.567
+      },
+      "bounds": {
+        "min": [
+          -0.547,
+          0,
+          -0.784
+        ],
+        "max": [
+          0.547,
+          1.02,
+          0.784
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "roof-corner-inner": {
+      "file": "roof-corner-inner.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 56,
+      "fileSize": 4464,
+      "size": {
+        "x": 1,
+        "y": 0.626,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.626,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner. Place on top of walls at Y = wallCount * 1.0.",
+        "stackable": false
+      }
+    },
+    "roof-corner-round": {
+      "file": "roof-corner-round.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 82,
+      "fileSize": 5836,
+      "size": {
+        "x": 1.067,
+        "y": 0.648,
+        "z": 1.067
+      },
+      "bounds": {
+        "min": [
+          -0.567,
+          -0.022,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.626,
+          0.567
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner. Place on top of walls at Y = wallCount * 1.0.",
+        "stackable": false
+      }
+    },
+    "roof-corner": {
+      "file": "roof-corner.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 66,
+      "fileSize": 4996,
+      "size": {
+        "x": 1.067,
+        "y": 0.648,
+        "z": 1.067
+      },
+      "bounds": {
+        "min": [
+          -0.567,
+          -0.022,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.626,
+          0.567
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner. Place on top of walls at Y = wallCount * 1.0.",
+        "stackable": false
+      }
+    },
+    "roof-flat": {
+      "file": "roof-flat.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 36,
+      "fileSize": 3448,
+      "size": {
+        "x": 1,
+        "y": 0.126,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.126,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-gable-detail": {
+      "file": "roof-gable-detail.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 206,
+      "fileSize": 12028,
+      "size": {
+        "x": 1.1,
+        "y": 0.677,
+        "z": 1.212
+      },
+      "bounds": {
+        "min": [
+          -0.55,
+          -0.035,
+          -0.606
+        ],
+        "max": [
+          0.55,
+          0.641,
+          0.606
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-gable-end": {
+      "file": "roof-gable-end.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 86,
+      "fileSize": 6056,
+      "size": {
+        "x": 1.085,
+        "y": 0.571,
+        "z": 1.071
+      },
+      "bounds": {
+        "min": [
+          -0.535,
+          0,
+          -0.535
+        ],
+        "max": [
+          0.55,
+          0.571,
+          0.535
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-gable-top": {
+      "file": "roof-gable-top.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 98,
+      "fileSize": 6572,
+      "size": {
+        "x": 1,
+        "y": 0.376,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.376,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-gable": {
+      "file": "roof-gable.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 118,
+      "fileSize": 7632,
+      "size": {
+        "x": 1.1,
+        "y": 0.571,
+        "z": 1.071
+      },
+      "bounds": {
+        "min": [
+          -0.55,
+          0,
+          -0.535
+        ],
+        "max": [
+          0.55,
+          0.571,
+          0.535
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-corner-round": {
+      "file": "roof-high-corner-round.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 86,
+      "fileSize": 6056,
+      "size": {
+        "x": 1.071,
+        "y": 1.176,
+        "z": 1.071
+      },
+      "bounds": {
+        "min": [
+          -0.571,
+          -0.035,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.141,
+          0.571
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner. Place on top of walls at Y = wallCount * 1.0.",
+        "stackable": false
+      }
+    },
+    "roof-high-corner": {
+      "file": "roof-high-corner.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 66,
+      "fileSize": 5008,
+      "size": {
+        "x": 1.071,
+        "y": 1.176,
+        "z": 1.071
+      },
+      "bounds": {
+        "min": [
+          -0.571,
+          -0.035,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.141,
+          0.571
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner. Place on top of walls at Y = wallCount * 1.0.",
+        "stackable": false
+      }
+    },
+    "roof-high-cornerinner": {
+      "file": "roof-high-cornerinner.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 52,
+      "fileSize": 4284,
+      "size": {
+        "x": 1,
+        "y": 1.141,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.141,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner. Place on top of walls at Y = wallCount * 1.0.",
+        "stackable": false
+      }
+    },
+    "roof-high-flat": {
+      "file": "roof-high-flat.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 36,
+      "fileSize": 3464,
+      "size": {
+        "x": 1,
+        "y": 0.141,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.141,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-gable-detail": {
+      "file": "roof-high-gable-detail.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 222,
+      "fileSize": 12840,
+      "size": {
+        "x": 1.1,
+        "y": 1.313,
+        "z": 1.268
+      },
+      "bounds": {
+        "min": [
+          -0.6,
+          -0.089,
+          -0.634
+        ],
+        "max": [
+          0.5,
+          1.224,
+          0.634
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-gable-end": {
+      "file": "roof-high-gable-end.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 90,
+      "fileSize": 6268,
+      "size": {
+        "x": 1.118,
+        "y": 1.157,
+        "z": 1.134
+      },
+      "bounds": {
+        "min": [
+          -0.568,
+          -0.045,
+          -0.567
+        ],
+        "max": [
+          0.55,
+          1.112,
+          0.567
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-gable-top": {
+      "file": "roof-high-gable-top.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 98,
+      "fileSize": 6568,
+      "size": {
+        "x": 1,
+        "y": 0.641,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.641,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-gable": {
+      "file": "roof-high-gable.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 114,
+      "fileSize": 7456,
+      "size": {
+        "x": 1.1,
+        "y": 1.157,
+        "z": 1.134
+      },
+      "bounds": {
+        "min": [
+          -0.55,
+          -0.045,
+          -0.567
+        ],
+        "max": [
+          0.55,
+          1.112,
+          0.567
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-left": {
+      "file": "roof-high-left.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 196,
+      "fileSize": 11376,
+      "size": {
+        "x": 1.141,
+        "y": 1.261,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.641,
+          -0.071,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.191,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-point": {
+      "file": "roof-high-point.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 88,
+      "fileSize": 6192,
+      "size": {
+        "x": 1.1,
+        "y": 1,
+        "z": 1.1
+      },
+      "bounds": {
+        "min": [
+          -0.55,
+          0,
+          -0.55
+        ],
+        "max": [
+          0.55,
+          1,
+          0.55
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-right": {
+      "file": "roof-high-right.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 188,
+      "fileSize": 10996,
+      "size": {
+        "x": 1.141,
+        "y": 1.261,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.641,
+          -0.071,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.191,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high-window": {
+      "file": "roof-high-window.glb",
+      "category": "roof",
+      "subcategory": "high",
+      "vertices": 364,
+      "fileSize": 20732,
+      "size": {
+        "x": 1.071,
+        "y": 1.176,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.571,
+          -0.035,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.141,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-high": {
+      "file": "roof-high.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 129,
+      "fileSize": 8088,
+      "size": {
+        "x": 1.071,
+        "y": 1.176,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.571,
+          -0.035,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.141,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-left": {
+      "file": "roof-left.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 228,
+      "fileSize": 12904,
+      "size": {
+        "x": 1.134,
+        "y": 0.721,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.634,
+          -0.045,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.676,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-point": {
+      "file": "roof-point.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 88,
+      "fileSize": 6180,
+      "size": {
+        "x": 1.1,
+        "y": 0.5,
+        "z": 1.1
+      },
+      "bounds": {
+        "min": [
+          -0.55,
+          0,
+          -0.55
+        ],
+        "max": [
+          0.55,
+          0.5,
+          0.55
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-right": {
+      "file": "roof-right.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 230,
+      "fileSize": 13004,
+      "size": {
+        "x": 1.134,
+        "y": 0.721,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.634,
+          -0.045,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.676,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof-window": {
+      "file": "roof-window.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 266,
+      "fileSize": 15524,
+      "size": {
+        "x": 1.067,
+        "y": 0.648,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.567,
+          -0.022,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.626,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "roof": {
+      "file": "roof.glb",
+      "category": "roof",
+      "subcategory": "standard",
+      "vertices": 155,
+      "fileSize": 9324,
+      "size": {
+        "x": 1.067,
+        "y": 0.648,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.567,
+          -0.022,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.626,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackable": false,
+        "notes": " Place on top of walls at Y = wallCount * 1.0."
+      }
+    },
+    "stairs-full-corner-inner": {
+      "file": "stairs-full-corner-inner.glb",
+      "category": "stairs",
+      "subcategory": "full",
+      "material": "stone",
+      "vertices": 132,
+      "fileSize": 8304,
+      "size": {
+        "x": 1,
+        "y": 0.5,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "stairs-full-corner-outer": {
+      "file": "stairs-full-corner-outer.glb",
+      "category": "stairs",
+      "subcategory": "full",
+      "material": "stone",
+      "vertices": 154,
+      "fileSize": 9440,
+      "size": {
+        "x": 1.02,
+        "y": 0.5,
+        "z": 1.02
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.52
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "stairs-full": {
+      "file": "stairs-full.glb",
+      "category": "other",
+      "subcategory": "stairs-full",
+      "vertices": 108,
+      "fileSize": 7064,
+      "size": {
+        "x": 1.02,
+        "y": 0.5,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "stairs-stone-corner": {
+      "file": "stairs-stone-corner.glb",
+      "category": "stairs",
+      "subcategory": "standard",
+      "material": "stone",
+      "vertices": 222,
+      "fileSize": 12792,
+      "size": {
+        "x": 1.02,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-stone-handrail": {
+      "file": "stairs-stone-handrail.glb",
+      "category": "stairs",
+      "subcategory": "standard",
+      "material": "stone",
+      "vertices": 418,
+      "fileSize": 23428,
+      "size": {
+        "x": 1.02,
+        "y": 1.445,
+        "z": 0.5
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.25
+        ],
+        "max": [
+          0.5,
+          1.445,
+          0.25
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-stone-round": {
+      "file": "stairs-stone-round.glb",
+      "category": "stairs",
+      "subcategory": "standard",
+      "material": "stone",
+      "vertices": 316,
+      "fileSize": 17840,
+      "size": {
+        "x": 0.862,
+        "y": 1,
+        "z": 0.495
+      },
+      "bounds": {
+        "min": [
+          -0.431,
+          0,
+          -0.055
+        ],
+        "max": [
+          0.431,
+          1,
+          0.439
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-stone": {
+      "file": "stairs-stone.glb",
+      "category": "stairs",
+      "subcategory": "standard",
+      "material": "stone",
+      "vertices": 210,
+      "fileSize": 12172,
+      "size": {
+        "x": 1.02,
+        "y": 1,
+        "z": 0.5
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.25
+        ],
+        "max": [
+          0.5,
+          1,
+          0.25
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-wide-stone-handrail": {
+      "file": "stairs-wide-stone-handrail.glb",
+      "category": "stairs",
+      "subcategory": "wide",
+      "material": "stone",
+      "vertices": 418,
+      "fileSize": 23440,
+      "size": {
+        "x": 1.02,
+        "y": 1.445,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.445,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-wide-stone": {
+      "file": "stairs-wide-stone.glb",
+      "category": "stairs",
+      "subcategory": "wide",
+      "material": "stone",
+      "vertices": 210,
+      "fileSize": 12188,
+      "size": {
+        "x": 1.02,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-wide-wood-handrail": {
+      "file": "stairs-wide-wood-handrail.glb",
+      "category": "stairs",
+      "subcategory": "wide",
+      "material": "wood",
+      "vertices": 808,
+      "fileSize": 43904,
+      "size": {
+        "x": 1.02,
+        "y": 1.445,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.445,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-wide-wood": {
+      "file": "stairs-wide-wood.glb",
+      "category": "stairs",
+      "subcategory": "wide",
+      "material": "wood",
+      "vertices": 600,
+      "fileSize": 33060,
+      "size": {
+        "x": 1.02,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-wood-handrail": {
+      "file": "stairs-wood-handrail.glb",
+      "category": "stairs",
+      "subcategory": "standard",
+      "material": "wood",
+      "vertices": 814,
+      "fileSize": 44228,
+      "size": {
+        "x": 1.02,
+        "y": 1.445,
+        "z": 0.5
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.25
+        ],
+        "max": [
+          0.5,
+          1.445,
+          0.25
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stairs-wood": {
+      "file": "stairs-wood.glb",
+      "category": "stairs",
+      "subcategory": "standard",
+      "material": "wood",
+      "vertices": 606,
+      "fileSize": 33384,
+      "size": {
+        "x": 1.02,
+        "y": 1,
+        "z": 0.5
+      },
+      "bounds": {
+        "min": [
+          -0.52,
+          0,
+          -0.25
+        ],
+        "max": [
+          0.5,
+          1,
+          0.25
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stall-bench": {
+      "file": "stall-bench.glb",
+      "category": "structure",
+      "subcategory": "stall",
+      "vertices": 248,
+      "fileSize": 14168,
+      "size": {
+        "x": 0.26,
+        "y": 0.226,
+        "z": 0.94
+      },
+      "bounds": {
+        "min": [
+          -0.13,
+          0,
+          -0.47
+        ],
+        "max": [
+          0.13,
+          0.226,
+          0.47
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stall-green": {
+      "file": "stall-green.glb",
+      "category": "structure",
+      "subcategory": "stall",
+      "vertices": 490,
+      "fileSize": 27120,
+      "size": {
+        "x": 1,
+        "y": 1.237,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.237,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stall-red": {
+      "file": "stall-red.glb",
+      "category": "structure",
+      "subcategory": "stall",
+      "vertices": 438,
+      "fileSize": 24304,
+      "size": {
+        "x": 1,
+        "y": 1.237,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1.237,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stall-stool": {
+      "file": "stall-stool.glb",
+      "category": "structure",
+      "subcategory": "stall",
+      "vertices": 248,
+      "fileSize": 14172,
+      "size": {
+        "x": 0.26,
+        "y": 0.226,
+        "z": 0.26
+      },
+      "bounds": {
+        "min": [
+          -0.13,
+          0,
+          -0.13
+        ],
+        "max": [
+          0.13,
+          0.226,
+          0.13
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "stall": {
+      "file": "stall.glb",
+      "category": "structure",
+      "subcategory": "stall",
+      "vertices": 198,
+      "fileSize": 11500,
+      "size": {
+        "x": 0.65,
+        "y": 0.366,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.325,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.325,
+          0.366,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "tree-crooked": {
+      "file": "tree-crooked.glb",
+      "category": "vegetation",
+      "subcategory": "tree",
+      "vertices": 340,
+      "fileSize": 19252,
+      "size": {
+        "x": 1.023,
+        "y": 2.413,
+        "z": 1.023
+      },
+      "bounds": {
+        "min": [
+          -0.512,
+          0,
+          -0.512
+        ],
+        "max": [
+          0.512,
+          2.413,
+          0.512
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "tree-high-crooked": {
+      "file": "tree-high-crooked.glb",
+      "category": "vegetation",
+      "subcategory": "tree",
+      "vertices": 388,
+      "fileSize": 21744,
+      "size": {
+        "x": 1.023,
+        "y": 2.973,
+        "z": 1.023
+      },
+      "bounds": {
+        "min": [
+          -0.512,
+          0,
+          -0.512
+        ],
+        "max": [
+          0.512,
+          2.973,
+          0.512
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "tree-high-round": {
+      "file": "tree-high-round.glb",
+      "category": "vegetation",
+      "subcategory": "tree",
+      "vertices": 228,
+      "fileSize": 13176,
+      "size": {
+        "x": 1.019,
+        "y": 2.751,
+        "z": 1.019
+      },
+      "bounds": {
+        "min": [
+          -0.509,
+          0,
+          -0.509
+        ],
+        "max": [
+          0.509,
+          2.751,
+          0.509
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "tree-high": {
+      "file": "tree-high.glb",
+      "category": "vegetation",
+      "subcategory": "tree",
+      "vertices": 368,
+      "fileSize": 20700,
+      "size": {
+        "x": 1.023,
+        "y": 2.973,
+        "z": 1.023
+      },
+      "bounds": {
+        "min": [
+          -0.512,
+          0,
+          -0.512
+        ],
+        "max": [
+          0.512,
+          2.973,
+          0.512
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "tree": {
+      "file": "tree.glb",
+      "category": "vegetation",
+      "subcategory": "tree",
+      "vertices": 320,
+      "fileSize": 18188,
+      "size": {
+        "x": 1.023,
+        "y": 2.413,
+        "z": 1.023
+      },
+      "bounds": {
+        "min": [
+          -0.512,
+          0,
+          -0.512
+        ],
+        "max": [
+          0.512,
+          2.413,
+          0.512
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "wall-arch-top-detail": {
+      "file": "wall-arch-top-detail.glb",
+      "category": "wall",
+      "subcategory": "arch",
+      "material": "stone",
+      "vertices": 278,
+      "fileSize": 16076,
+      "size": {
+        "x": 0.16,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.37,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.53,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-arch-top": {
+      "file": "wall-arch-top.glb",
+      "category": "wall",
+      "subcategory": "arch",
+      "material": "stone",
+      "vertices": 224,
+      "fileSize": 12876,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-arch": {
+      "file": "wall-arch.glb",
+      "category": "wall",
+      "subcategory": "arch",
+      "material": "stone",
+      "vertices": 64,
+      "fileSize": 4840,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 0.3
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          0.2
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-block-half": {
+      "file": "wall-block-half.glb",
+      "category": "wall",
+      "subcategory": "block",
+      "material": "stone",
+      "vertices": 136,
+      "fileSize": 8564,
+      "size": {
+        "x": 1,
+        "y": 0.5,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-block": {
+      "file": "wall-block.glb",
+      "category": "wall",
+      "subcategory": "block",
+      "material": "stone",
+      "vertices": 136,
+      "fileSize": 8532,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-broken": {
+      "file": "wall-broken.glb",
+      "category": "wall",
+      "subcategory": "broken",
+      "material": "stone",
+      "vertices": 296,
+      "fileSize": 16904,
+      "size": {
+        "x": 0.117,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.398,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.514,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-corner-detail": {
+      "file": "wall-corner-detail.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "stone",
+      "vertices": 270,
+      "fileSize": 15748,
+      "size": {
+        "x": 0.16,
+        "y": 1,
+        "z": 0.16
+      },
+      "bounds": {
+        "min": [
+          0.37,
+          0,
+          0.37
+        ],
+        "max": [
+          0.53,
+          1,
+          0.53
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-corner-diagonal-half": {
+      "file": "wall-corner-diagonal-half.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "stone",
+      "vertices": 62,
+      "fileSize": 4788,
+      "size": {
+        "x": 0.55,
+        "y": 1,
+        "z": 0.975
+      },
+      "bounds": {
+        "min": [
+          -0.05,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.475
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-corner-diagonal": {
+      "file": "wall-corner-diagonal.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "stone",
+      "vertices": 88,
+      "fileSize": 6032,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-corner-edge": {
+      "file": "wall-corner-edge.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "stone",
+      "vertices": 76,
+      "fileSize": 5416,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-corner": {
+      "file": "wall-corner.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "stone",
+      "vertices": 104,
+      "fileSize": 6788,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-curved": {
+      "file": "wall-curved.glb",
+      "category": "wall",
+      "subcategory": "curved",
+      "material": "stone",
+      "vertices": 196,
+      "fileSize": 11432,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-detail-cross": {
+      "file": "wall-detail-cross.glb",
+      "category": "wall",
+      "subcategory": "detail",
+      "material": "stone",
+      "vertices": 136,
+      "fileSize": 8464,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-detail-diagonal": {
+      "file": "wall-detail-diagonal.glb",
+      "category": "wall",
+      "subcategory": "detail",
+      "material": "stone",
+      "vertices": 100,
+      "fileSize": 6672,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-detail-horizontal": {
+      "file": "wall-detail-horizontal.glb",
+      "category": "wall",
+      "subcategory": "detail",
+      "material": "stone",
+      "vertices": 92,
+      "fileSize": 6240,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-diagonal": {
+      "file": "wall-diagonal.glb",
+      "category": "wall",
+      "subcategory": "diagonal",
+      "material": "stone",
+      "vertices": 72,
+      "fileSize": 5212,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-door": {
+      "file": "wall-door.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "stone",
+      "vertices": 516,
+      "fileSize": 29276,
+      "size": {
+        "x": 0.525,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.025,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-doorway-base": {
+      "file": "wall-doorway-base.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "stone",
+      "vertices": 128,
+      "fileSize": 8028,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-doorway-round": {
+      "file": "wall-doorway-round.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "stone",
+      "vertices": 232,
+      "fileSize": 13332,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-doorway-square-wide-curved": {
+      "file": "wall-doorway-square-wide-curved.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "stone",
+      "vertices": 252,
+      "fileSize": 14316,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-doorway-square-wide": {
+      "file": "wall-doorway-square-wide.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "stone",
+      "vertices": 84,
+      "fileSize": 5864,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-doorway-square": {
+      "file": "wall-doorway-square.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "stone",
+      "vertices": 124,
+      "fileSize": 7844,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-half": {
+      "file": "wall-half.glb",
+      "category": "wall",
+      "subcategory": "half",
+      "material": "stone",
+      "vertices": 64,
+      "fileSize": 4808,
+      "size": {
+        "x": 0.1,
+        "y": 0.5,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-rounded": {
+      "file": "wall-rounded.glb",
+      "category": "wall",
+      "subcategory": "rounded",
+      "material": "stone",
+      "vertices": 220,
+      "fileSize": 12616,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-side": {
+      "file": "wall-side.glb",
+      "category": "wall",
+      "subcategory": "side",
+      "material": "stone",
+      "vertices": 44,
+      "fileSize": 3852,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 0.26
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          0.24
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-slope": {
+      "file": "wall-slope.glb",
+      "category": "wall",
+      "subcategory": "slope",
+      "material": "stone",
+      "vertices": 64,
+      "fileSize": 4812,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-window-glass": {
+      "file": "wall-window-glass.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "stone",
+      "vertices": 270,
+      "fileSize": 15708,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-window-round": {
+      "file": "wall-window-round.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "stone",
+      "vertices": 396,
+      "fileSize": 22356,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-window-shutters": {
+      "file": "wall-window-shutters.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "stone",
+      "vertices": 426,
+      "fileSize": 23892,
+      "size": {
+        "x": 0.175,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.325,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-window-small": {
+      "file": "wall-window-small.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "stone",
+      "vertices": 154,
+      "fileSize": 9376,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-window-stone": {
+      "file": "wall-window-stone.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "stone",
+      "vertices": 216,
+      "fileSize": 12484,
+      "size": {
+        "x": 0.15,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.375,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.525,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-arch-top-detail": {
+      "file": "wall-wood-arch-top-detail.glb",
+      "category": "wall",
+      "subcategory": "arch",
+      "material": "wood",
+      "vertices": 278,
+      "fileSize": 16092,
+      "size": {
+        "x": 0.16,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.37,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.53,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-arch-top": {
+      "file": "wall-wood-arch-top.glb",
+      "category": "wall",
+      "subcategory": "arch",
+      "material": "wood",
+      "vertices": 224,
+      "fileSize": 12892,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-arch": {
+      "file": "wall-wood-arch.glb",
+      "category": "wall",
+      "subcategory": "arch",
+      "material": "wood",
+      "vertices": 64,
+      "fileSize": 4856,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 0.3
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          0.2
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-block-half": {
+      "file": "wall-wood-block-half.glb",
+      "category": "wall",
+      "subcategory": "block",
+      "material": "wood",
+      "vertices": 136,
+      "fileSize": 8580,
+      "size": {
+        "x": 1,
+        "y": 0.5,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-block": {
+      "file": "wall-wood-block.glb",
+      "category": "wall",
+      "subcategory": "block",
+      "material": "wood",
+      "vertices": 136,
+      "fileSize": 8548,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-broken": {
+      "file": "wall-wood-broken.glb",
+      "category": "wall",
+      "subcategory": "broken",
+      "material": "wood",
+      "vertices": 284,
+      "fileSize": 16344,
+      "size": {
+        "x": 0.113,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.397,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.51,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-corner-diagonal-half": {
+      "file": "wall-wood-corner-diagonal-half.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "wood",
+      "vertices": 62,
+      "fileSize": 4804,
+      "size": {
+        "x": 0.55,
+        "y": 1,
+        "z": 0.975
+      },
+      "bounds": {
+        "min": [
+          -0.05,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.475
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-corner-diagonal": {
+      "file": "wall-wood-corner-diagonal.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "wood",
+      "vertices": 88,
+      "fileSize": 6048,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-corner-edge": {
+      "file": "wall-wood-corner-edge.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "wood",
+      "vertices": 76,
+      "fileSize": 5432,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-corner": {
+      "file": "wall-wood-corner.glb",
+      "category": "wall",
+      "subcategory": "corner",
+      "material": "wood",
+      "vertices": 104,
+      "fileSize": 6804,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "corner",
+        "notes": "Fills cell corner. Rotate to match desired corner.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-curved": {
+      "file": "wall-wood-curved.glb",
+      "category": "wall",
+      "subcategory": "curved",
+      "material": "wood",
+      "vertices": 196,
+      "fileSize": 11444,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-detail-cross": {
+      "file": "wall-wood-detail-cross.glb",
+      "category": "wall",
+      "subcategory": "detail",
+      "material": "wood",
+      "vertices": 136,
+      "fileSize": 8480,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-detail-diagonal": {
+      "file": "wall-wood-detail-diagonal.glb",
+      "category": "wall",
+      "subcategory": "detail",
+      "material": "wood",
+      "vertices": 100,
+      "fileSize": 6684,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-detail-horizontal": {
+      "file": "wall-wood-detail-horizontal.glb",
+      "category": "wall",
+      "subcategory": "detail",
+      "material": "wood",
+      "vertices": 92,
+      "fileSize": 6256,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-diagonal": {
+      "file": "wall-wood-diagonal.glb",
+      "category": "wall",
+      "subcategory": "diagonal",
+      "material": "wood",
+      "vertices": 72,
+      "fileSize": 5228,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-door": {
+      "file": "wall-wood-door.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "wood",
+      "vertices": 534,
+      "fileSize": 30744,
+      "size": {
+        "x": 0.525,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.025,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-doorway-base": {
+      "file": "wall-wood-doorway-base.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "wood",
+      "vertices": 128,
+      "fileSize": 8044,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-doorway-round": {
+      "file": "wall-wood-doorway-round.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "wood",
+      "vertices": 257,
+      "fileSize": 15068,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-doorway-square-wide-curved": {
+      "file": "wall-wood-doorway-square-wide-curved.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "wood",
+      "vertices": 252,
+      "fileSize": 14332,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-doorway-square-wide": {
+      "file": "wall-wood-doorway-square-wide.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "wood",
+      "vertices": 84,
+      "fileSize": 5876,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-doorway-square": {
+      "file": "wall-wood-doorway-square.glb",
+      "category": "wall",
+      "subcategory": "doorway",
+      "material": "wood",
+      "vertices": 140,
+      "fileSize": 8664,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-half": {
+      "file": "wall-wood-half.glb",
+      "category": "wall",
+      "subcategory": "half",
+      "material": "wood",
+      "vertices": 64,
+      "fileSize": 4824,
+      "size": {
+        "x": 0.1,
+        "y": 0.5,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-rounded": {
+      "file": "wall-wood-rounded.glb",
+      "category": "wall",
+      "subcategory": "rounded",
+      "material": "wood",
+      "vertices": 220,
+      "fileSize": 12632,
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-side": {
+      "file": "wall-wood-side.glb",
+      "category": "wall",
+      "subcategory": "side",
+      "material": "wood",
+      "vertices": 44,
+      "fileSize": 3868,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 0.26
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          0.24
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-slope": {
+      "file": "wall-wood-slope.glb",
+      "category": "wall",
+      "subcategory": "slope",
+      "material": "wood",
+      "vertices": 138,
+      "fileSize": 8544,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-window-glass": {
+      "file": "wall-wood-window-glass.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "wood",
+      "vertices": 190,
+      "fileSize": 11184,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-window-round": {
+      "file": "wall-wood-window-round.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "wood",
+      "vertices": 420,
+      "fileSize": 23636,
+      "size": {
+        "x": 0.2,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.35,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.55,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-window-shutters": {
+      "file": "wall-wood-window-shutters.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "wood",
+      "vertices": 178,
+      "fileSize": 10612,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-window-small": {
+      "file": "wall-wood-window-small.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "wood",
+      "vertices": 202,
+      "fileSize": 11808,
+      "size": {
+        "x": 0.2,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.35,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.55,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood-window-stone": {
+      "file": "wall-wood-window-stone.glb",
+      "category": "wall",
+      "subcategory": "window",
+      "material": "wood",
+      "vertices": 290,
+      "fileSize": 16844,
+      "size": {
+        "x": 0.15,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.375,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.525,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall-wood": {
+      "file": "wall-wood.glb",
+      "category": "wall",
+      "subcategory": "base",
+      "material": "wood",
+      "vertices": 64,
+      "fileSize": 4808,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "wall": {
+      "file": "wall.glb",
+      "category": "wall",
+      "subcategory": "base",
+      "material": "stone",
+      "vertices": 64,
+      "fileSize": 4792,
+      "size": {
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      "bounds": {
+        "min": [
+          0.4,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          1,
+          0.5
+        ]
+      },
+      "snap": {
+        "gridSize": 1,
+        "alignment": "edge",
+        "notes": "Placed at +X edge of cell. Rotate 0/90/180/270 to place on different edges.",
+        "stackHeight": 1,
+        "stackable": true
+      }
+    },
+    "watermill-wide": {
+      "file": "watermill-wide.glb",
+      "category": "structure",
+      "subcategory": "watermill",
+      "vertices": 1008,
+      "fileSize": 53872,
+      "size": {
+        "x": 1.05,
+        "y": 1.799,
+        "z": 1.799
+      },
+      "bounds": {
+        "min": [
+          -0.525,
+          -0.9,
+          -0.9
+        ],
+        "max": [
+          0.525,
+          0.9,
+          0.9
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "watermill": {
+      "file": "watermill.glb",
+      "category": "structure",
+      "subcategory": "watermill",
+      "vertices": 1008,
+      "fileSize": 53856,
+      "size": {
+        "x": 0.85,
+        "y": 1.799,
+        "z": 1.799
+      },
+      "bounds": {
+        "min": [
+          -0.425,
+          -0.9,
+          -0.9
+        ],
+        "max": [
+          0.425,
+          0.9,
+          0.9
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "wheel": {
+      "file": "wheel.glb",
+      "category": "decoration",
+      "subcategory": "wheel",
+      "vertices": 296,
+      "fileSize": 17184,
+      "size": {
+        "x": 0.238,
+        "y": 0.483,
+        "z": 0.468
+      },
+      "bounds": {
+        "min": [
+          0.199,
+          0,
+          -0.234
+        ],
+        "max": [
+          0.437,
+          0.483,
+          0.234
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    },
+    "windmill": {
+      "file": "windmill.glb",
+      "category": "structure",
+      "subcategory": "windmill",
+      "vertices": 1352,
+      "fileSize": 71160,
+      "size": {
+        "x": 0.471,
+        "y": 3.113,
+        "z": 3.113
+      },
+      "bounds": {
+        "min": [
+          -0.235,
+          -1.557,
+          -1.557
+        ],
+        "max": [
+          0.235,
+          1.557,
+          1.557
+        ]
+      },
+      "snap": {
+        "gridSize": 1
+      }
+    }
+  }
+}

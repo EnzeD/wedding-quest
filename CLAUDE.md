@@ -27,6 +27,15 @@ Course contre la montre en vue 3eme personne. Le joueur incarne Sarah ou Nicolas
 - Supabase (leaderboard)
 - Deploiement : a definir (Vercel/Netlify)
 
+## Assets Kenney Fantasy Town Kit 2.0
+
+- 167 modeles modulaires GLB dans `public/assets/kenney/`, licence CC0.
+- Catalogue complet dans `public/kenney-catalog.json` : categories, dimensions, vertices, regles d'assemblage.
+- Grille modulaire de 1.0 unite. Les murs font 1.0 de haut, places au bord +X de la cellule (x=0.4 a 0.5).
+- Pour assembler un batiment : sol (planks) a Y=0, murs autour du perimetre, empiler (Y += 1.0 par etage), toit par-dessus, puis details (cheminee, bannieres, etc).
+- Les murs se tournent par increments de 90 degres pour couvrir les 4 cotes.
+- Toujours consulter `kenney-catalog.json` avant d'assembler des batiments pour verifier les dimensions et les regles de snap.
+
 ## Structure du projet
 
 Voir `architecture.md` pour le detail fichier par fichier.

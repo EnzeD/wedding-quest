@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { cloneAsset, normalizeToHeight, getManifest } from "./assets.ts";
+import { buildCottage } from "./kenney-buildings.ts";
 import type { Collider, PondData } from "./types.ts";
 
 export const MAP_SIZE = CONFIG.map.size;
@@ -171,11 +172,23 @@ function createBoundary(scene: THREE.Scene): void {
   }
 }
 
+function placeKenneyBuildings(scene: THREE.Scene): Collider[] {
+  const colliders: Collider[] = [];
+
+  const cottage = buildCottage(4);
+  cottage.group.position.set(15, 0, 15);
+  scene.add(cottage.group);
+  colliders.push({ x: 15, z: 15, hw: cottage.hw, hd: cottage.hd, name: "kenney-cottage" });
+
+  return colliders;
+}
+
 export function buildMap(scene: THREE.Scene): { colliders: Collider[]; pond: PondData } {
   createGround(scene);
   createPaths(scene);
   createBoundary(scene);
   const colliders = placeBuildings(scene);
+  colliders.push(...placeKenneyBuildings(scene));
   const pond = createPond(scene);
   placeVegetation(scene);
   placeDecorations(scene);
