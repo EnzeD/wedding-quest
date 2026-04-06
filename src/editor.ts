@@ -1,13 +1,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createEntityFromPaletteItem, setEntityField, snapPoint } from "./editor-entity.ts";
+import { EditorPlacementPreview } from "./editor-placement-preview.ts";
 import { EditorPreviewStore } from "./editor-preview.ts";
 import { EditorUI } from "./editor-ui.ts";
 import { loadEditorCatalog, type EditorPaletteItem, type SurfaceTool } from "./level-catalog.ts";
 import { loadLevel, saveLevel } from "./level-data.ts";
 import { cellKey, cloneLevel, getCell, setCell, worldToCell } from "./level-grid.ts";
 import { MapScene } from "./map.ts";
-import type { LevelData, LevelEntity } from "./types.ts";
+import type { LevelData } from "./types.ts";
 
 export class LevelEditor {
   private mapScene: MapScene;
@@ -17,10 +18,7 @@ export class LevelEditor {
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
   private ui: EditorUI | null = null;
-  private hover = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
-    new THREE.MeshBasicMaterial({ color: 0xffb349, opacity: 0.35, transparent: true }),
-  );
+  private placementPreview: EditorPlacementPreview;
   private selectionBox = new THREE.BoxHelper(undefined, 0xffb349);
   private previews = new EditorPreviewStore();
 
@@ -46,9 +44,7 @@ export class LevelEditor {
     this.controls.maxDistance = 120;
     this.camera.position.set(0, 42, 20);
 
-    this.hover.rotation.x = -Math.PI / 2;
-    this.hover.visible = false;
-    this.mapScene.addOverlay(this.hover);
+    this.placementPreview = new EditorPlacementPreview(this.level.metadata.size, (object) => this.mapScene.addOverlay(object));
     this.mapScene.addOverlay(this.selectionBox);
     this.selectionBox.visible = false;
 
@@ -65,9 +61,11 @@ export class LevelEditor {
       onPick: (item) => {
         editor.activeItem = item;
         editor.selectEntity(null);
+        editor.placementPreview.setItem(item);
       },
       onTab: () => {
         editor.activeItem = null;
+        editor.placementPreview.setItem(null);
       },
       onSave: () => void editor.save(),
       onReload: () => void editor.reload(),
@@ -106,6 +104,7 @@ export class LevelEditor {
     try {
       this.level = await loadLevel();
       await this.mapScene.load(this.level);
+      this.placementPreview.setItem(this.activeItem);
       this.selectEntity(null);
       this.ui.setStatus(status);
     } catch (error) {
@@ -155,7 +154,7 @@ export class LevelEditor {
     const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
     if (!entity) return;
 
-    const snapped = entity.snap === "grid" ? this.snapPoint(point) : point;
+    const snapped = entity.snap === "grid" ? snapPoint(point, this.level.metadata.size) : point;
     entity.position.x = snapped.x;
     entity.position.z = snapped.z;
     this.mapScene.setEntityTransform(entity);
@@ -173,7 +172,10 @@ export class LevelEditor {
   private async onKeyDown(event: KeyboardEvent): Promise<void> {
     if ((event.target as HTMLElement).closest("input, select")) return;
     if (!this.selectedEntityId) {
-      if (event.code === "Escape") this.activeItem = null;
+      if (event.code === "Escape") {
+        this.activeItem = null;
+        this.placementPreview.setItem(null);
+      }
       return;
     }
 
@@ -202,14 +204,10 @@ export class LevelEditor {
 
   private async placeEntity(point: THREE.Vector3): Promise<void> {
     if (!this.activeItem || !this.ui) return;
-    const next = this.createEntityFromItem(this.activeItem, point);
+    const next = createEntityFromPaletteItem(this.activeItem, point, this.level.metadata.size);
     this.level.entities.push(next);
     await this.mapScene.addEntity(next);
     this.selectEntity(next.id);
-  }
-
-  private createEntityFromItem(item: EditorPaletteItem, point: THREE.Vector3): LevelEntity {
-    return createEntityFromPaletteItem(item, point, this.level.metadata.size);
   }
 
   private async updateSelected(field: string, value: string): Promise<void> {
@@ -236,10 +234,6 @@ export class LevelEditor {
     this.mapScene.updateSurfaceCell(tool, cell, nextFilled);
   }
 
-  private snapPoint(point: THREE.Vector3): THREE.Vector3 {
-    return snapPoint(point, this.level.metadata.size);
-  }
-
   private selectEntity(id: string | null): void {
     this.selectedEntityId = id;
     const entity = this.level.entities.find((item) => item.id === id) ?? null;
@@ -254,13 +248,7 @@ export class LevelEditor {
   }
 
   private updateHover(point: THREE.Vector3 | null): void {
-    if (!this.activeItem || !point) {
-      this.hover.visible = false;
-      return;
-    }
-    const pos = this.activeItem.defaultSnap === "grid" || this.activeItem.surfaceTool ? this.snapPoint(point) : point;
-    this.hover.visible = true;
-    this.hover.position.set(pos.x, 0.08, pos.z);
+    this.placementPreview.update(point);
   }
 
   private raycastGround(event: PointerEvent): THREE.Vector3 | null {
