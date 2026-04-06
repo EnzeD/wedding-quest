@@ -1,0 +1,294 @@
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { EditorUI } from "./editor-ui.ts";
+import { loadEditorCatalog, type EditorPaletteItem, type SurfaceTool } from "./level-catalog.ts";
+import { loadLevel, saveLevel } from "./level-data.ts";
+import { cellToWorld, cloneLevel, setCell, worldToCell } from "./level-grid.ts";
+import { MapScene } from "./map.ts";
+import type { LevelData, LevelEntity } from "./types.ts";
+
+function setNested(target: LevelEntity, field: string, raw: string): void {
+  const value = field === "name" || field === "snap" ? raw : Number(raw);
+  if (field.startsWith("position.")) {
+    target.position[field.slice(9) as "x" | "y" | "z"] = Number(value);
+    return;
+  }
+  if (field === "name") target.name = raw || undefined;
+  else if (field === "snap") target.snap = raw as LevelEntity["snap"];
+  else target[field as "rotationY" | "scale"] = Number(value) as never;
+}
+
+export class LevelEditor {
+  private mapScene: MapScene;
+  private camera: THREE.Camera;
+  private renderer: THREE.WebGLRenderer;
+  private controls: OrbitControls;
+  private raycaster = new THREE.Raycaster();
+  private mouse = new THREE.Vector2();
+  private ui: EditorUI | null = null;
+  private hover = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ color: 0xffb349, opacity: 0.35, transparent: true }),
+  );
+  private selectionBox = new THREE.BoxHelper(undefined, 0xffb349);
+
+  private level: LevelData;
+  private activeItem: EditorPaletteItem | null = null;
+  private selectedEntityId: string | null = null;
+  private dragging = false;
+  private painting = false;
+  private eraseMode = false;
+
+  private constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData) {
+    this.renderer = renderer;
+    this.camera = camera;
+    this.mapScene = mapScene;
+    this.level = cloneLevel(level);
+
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.target.set(0, 0, 0);
+    this.controls.maxPolarAngle = Math.PI / 2.1;
+    this.controls.minDistance = 15;
+    this.controls.maxDistance = 120;
+    this.camera.position.set(0, 42, 20);
+
+    this.hover.rotation.x = -Math.PI / 2;
+    this.hover.visible = false;
+    this.mapScene.addOverlay(this.hover);
+    this.mapScene.addOverlay(this.selectionBox);
+    this.selectionBox.visible = false;
+
+    this.renderer.domElement.addEventListener("pointerdown", (event) => void this.onPointerDown(event));
+    window.addEventListener("pointermove", (event) => void this.onPointerMove(event));
+    window.addEventListener("pointerup", () => this.onPointerUp());
+    window.addEventListener("keydown", (event) => void this.onKeyDown(event));
+  }
+
+  static async create(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData): Promise<LevelEditor> {
+    const editor = new LevelEditor(renderer, camera, mapScene, level);
+    const catalog = await loadEditorCatalog();
+    editor.ui = new EditorUI(catalog, {
+      onPick: (item) => {
+        editor.activeItem = item;
+        editor.selectEntity(null);
+      },
+      onTab: () => {
+        editor.activeItem = null;
+      },
+      onSave: () => void editor.save(),
+      onReload: () => void editor.reload(),
+      onPropChange: (field, value) => void editor.updateSelected(field, value),
+      onEraseToggle: (enabled) => {
+        editor.eraseMode = enabled;
+      },
+    });
+    editor.ui.setStatus("Editor mode actif");
+    return editor;
+  }
+
+  update(): void {
+    this.controls.update();
+    this.refreshSelectionBox();
+  }
+
+  private async save(): Promise<void> {
+    if (!this.ui) return;
+    try {
+      await saveLevel(this.level);
+      await this.reload("Sauvegarde OK");
+    } catch (error) {
+      this.ui.setStatus((error as Error).message, true);
+    }
+  }
+
+  private async reload(status = "Niveau recharge"): Promise<void> {
+    if (!this.ui) return;
+    try {
+      this.level = await loadLevel();
+      await this.mapScene.load(this.level);
+      this.selectEntity(null);
+      this.ui.setStatus(status);
+    } catch (error) {
+      this.ui.setStatus((error as Error).message, true);
+    }
+  }
+
+  private async onPointerDown(event: PointerEvent): Promise<void> {
+    if (event.button !== 0 || !this.ui) return;
+    if ((event.target as HTMLElement).closest("#editor-root")) return;
+
+    const point = this.raycastGround(event);
+    const entity = this.raycastEntity(event);
+
+    if (this.activeItem?.surfaceTool && point) {
+      this.painting = true;
+      this.controls.enabled = false;
+      this.paintAt(point, this.activeItem.surfaceTool, event.altKey || this.eraseMode);
+      return;
+    }
+
+    if (this.activeItem && point) {
+      await this.placeEntity(point);
+      return;
+    }
+
+    if (entity) {
+      this.selectEntity(entity.userData.entityId as string);
+      this.dragging = true;
+      this.controls.enabled = false;
+      return;
+    }
+
+    this.selectEntity(null);
+  }
+
+  private async onPointerMove(event: PointerEvent): Promise<void> {
+    const point = this.raycastGround(event);
+    this.updateHover(point);
+
+    if (this.painting && point && this.activeItem?.surfaceTool) {
+      this.paintAt(point, this.activeItem.surfaceTool, event.altKey || this.eraseMode);
+      return;
+    }
+
+    if (!this.dragging || !point || !this.selectedEntityId) return;
+    const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
+    if (!entity) return;
+
+    const snapped = entity.snap === "grid" ? this.snapPoint(point) : point;
+    entity.position.x = snapped.x;
+    entity.position.z = snapped.z;
+    await this.mapScene.upsertEntity(entity, false);
+    this.ui?.renderSelection(entity);
+  }
+
+  private onPointerUp(): void {
+    this.dragging = false;
+    this.painting = false;
+    this.controls.enabled = true;
+  }
+
+  private async onKeyDown(event: KeyboardEvent): Promise<void> {
+    if ((event.target as HTMLElement).closest("input, select")) return;
+    if (!this.selectedEntityId) {
+      if (event.code === "Escape") this.activeItem = null;
+      return;
+    }
+
+    if (event.code === "Delete" || event.code === "Backspace") {
+      event.preventDefault();
+      this.level.entities = this.level.entities.filter((entity) => entity.id !== this.selectedEntityId);
+      this.mapScene.removeEntity(this.selectedEntityId);
+      this.selectEntity(null);
+      return;
+    }
+
+    if (event.code === "Escape") {
+      this.selectEntity(null);
+      return;
+    }
+
+    if (event.code === "KeyR") {
+      const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
+      if (!entity) return;
+      const step = entity.kind === "prefab" || entity.kind === "kenney-piece" ? Math.PI / 2 : Math.PI / 4;
+      entity.rotationY += event.shiftKey ? -step : step;
+      await this.mapScene.upsertEntity(entity, false);
+      this.ui?.renderSelection(entity);
+    }
+  }
+
+  private async placeEntity(point: THREE.Vector3): Promise<void> {
+    if (!this.activeItem || !this.ui) return;
+    const next = this.createEntityFromItem(this.activeItem, point);
+    this.level.entities.push(next);
+    await this.mapScene.addEntity(next);
+    this.selectEntity(next.id);
+  }
+
+  private createEntityFromItem(item: EditorPaletteItem, point: THREE.Vector3): LevelEntity {
+    const position = item.defaultSnap === "grid" ? this.snapPoint(point) : point;
+    return {
+      id: crypto.randomUUID(),
+      kind: item.kind!,
+      assetId: item.id,
+      position: { x: position.x, y: 0, z: position.z },
+      rotationY: 0,
+      scale: item.defaultScale ?? 1,
+      snap: item.defaultSnap ?? "free",
+      name: item.tab === "npc" ? item.label : undefined,
+    };
+  }
+
+  private async updateSelected(field: string, value: string): Promise<void> {
+    if (!this.selectedEntityId) return;
+    const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
+    if (!entity) return;
+    if (field !== "name" && field !== "snap" && !Number.isFinite(Number(value))) return;
+
+    setNested(entity, field, value);
+    const rebuild = field === "scale";
+    await this.mapScene.upsertEntity(entity, rebuild);
+    this.ui?.renderSelection(entity);
+  }
+
+  private paintAt(point: THREE.Vector3, tool: SurfaceTool, erase: boolean): void {
+    const cell = worldToCell(point.x, point.z, this.level.metadata.size);
+    if (!cell) return;
+    this.level.surfaceLayers[tool] = setCell(this.level.surfaceLayers[tool], cell, !erase);
+    this.mapScene.updateSurfaces(this.level);
+  }
+
+  private snapPoint(point: THREE.Vector3): THREE.Vector3 {
+    const cell = worldToCell(point.x, point.z, this.level.metadata.size);
+    if (!cell) return point.clone();
+    const world = cellToWorld(cell, this.level.metadata.size);
+    return new THREE.Vector3(world.x, 0, world.z);
+  }
+
+  private selectEntity(id: string | null): void {
+    this.selectedEntityId = id;
+    const entity = this.level.entities.find((item) => item.id === id) ?? null;
+    this.ui?.renderSelection(entity);
+    this.refreshSelectionBox();
+  }
+
+  private refreshSelectionBox(): void {
+    const object = this.selectedEntityId ? this.mapScene.getEntityObject(this.selectedEntityId) : null;
+    this.selectionBox.visible = !!object;
+    if (object) this.selectionBox.setFromObject(object);
+  }
+
+  private updateHover(point: THREE.Vector3 | null): void {
+    if (!this.activeItem || !point) {
+      this.hover.visible = false;
+      return;
+    }
+    const pos = this.activeItem.defaultSnap === "grid" || this.activeItem.surfaceTool ? this.snapPoint(point) : point;
+    this.hover.visible = true;
+    this.hover.position.set(pos.x, 0.08, pos.z);
+  }
+
+  private raycastGround(event: PointerEvent): THREE.Vector3 | null {
+    this.updateMouse(event);
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const hit = this.raycaster.intersectObject(this.mapScene.getGround())[0];
+    return hit ? hit.point : null;
+  }
+
+  private raycastEntity(event: PointerEvent): THREE.Object3D | null {
+    this.updateMouse(event);
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const hit = this.raycaster.intersectObjects(this.mapScene.getEntityObjects(), true)[0];
+    let current = hit?.object ?? null;
+    while (current && !current.userData.entityId) current = current.parent;
+    return current;
+  }
+
+  private updateMouse(event: PointerEvent): void {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  }
+}

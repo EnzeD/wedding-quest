@@ -3,22 +3,32 @@
 | Fichier | Description |
 |---|---|
 | `index.html` | Page HTML avec canvas, HUD overlay, ecrans menu et score |
-| `vite.config.ts` | Configuration Vite (host expose pour test mobile) |
+| `vite.config.ts` | Configuration Vite (host expose pour test mobile) + route dev-only de sauvegarde du niveau |
 | `tsconfig.json` | Configuration TypeScript (strict, ESNext modules) |
 | `package.json` | Dependances (three, vite, typescript, @types/three) et scripts (dev, build, preview) |
 | `public/assets.json` | Manifeste des assets GLTF (chemins vers modeles par categorie) |
+| `public/levels/main.json` | Source de verite du niveau jouable et editable (entites + surfaces) |
 | `public/assets/toonshooter/` | Assets GLTF placeholder (Quaternius low-poly) : Characters, Environment, Guns, Texture |
-| `src/style.css` | Styles globaux : HUD, ecrans menu/score, joystick, notifications |
+| `src/style.css` | Point d'entree CSS qui importe les feuilles base, jeu et editeur |
+| `src/styles/base.css` | Variables globales, fonts et styles de base du document |
+| `src/styles/game-ui.css` | Styles du HUD, des overlays menu/score et des boutons de jeu |
+| `src/styles/editor.css` | Styles desktop-first de l'editeur de niveau integre |
 | `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu |
-| `src/types.ts` | Interfaces partagees : Collider, PondData, GameMode, ItemDef, AssetManifest |
+| `src/types.ts` | Interfaces partagees : collisions, etat, assets et schema du niveau data-driven |
 | `src/state.ts` | Gestion de l'etat du jeu : creation, reset, score, items collectes |
 | `src/assets.ts` | Chargement GLTF : manifeste, cache, clone, normalisation de taille |
-| `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, orchestration |
+| `src/level-data.ts` | Chargement et sauvegarde du niveau JSON principal |
+| `src/level-grid.ts` | Utilitaires de grille pour surfaces path/water et conversion monde/cellule |
+| `src/level-assets.ts` | Resolution et preload des assets utilises par les entites du niveau |
+| `src/level-catalog.ts` | Construction du catalogue de palette de l'editeur depuis les catalogues Kenney |
+| `src/editor-ui.ts` | Overlay DOM de l'editeur : palette, onglets, proprietes, status |
+| `src/editor.ts` | Controleur de l'editeur : raycast, selection, drag, pinceau, save/reload |
+| `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, mode jeu et mode editeur |
 | `src/player.ts` | Classe Player : mesh placeholder ou GLTF, deplacement direct (top-down) |
 | `src/camera.ts` | Classe TopDownCamera : vue du dessus qui suit le joueur avec look-ahead |
 | `src/controls.ts` | Classe VirtualJoystick : joystick tactile + clavier WASD, input normalise |
-| `src/map.ts` | Construction de la map : terrain, chemins, batiments GLTF, vegetation, decorations |
-| `src/collision.ts` | Resolution des collisions : limites de map, AABB batiments, ellipse etang |
+| `src/map.ts` | Scene de niveau data-driven : rendu du JSON, surfaces, entites et colliders |
+| `src/collision.ts` | Resolution des collisions : limites de map et AABB des entites/eau |
 | `src/items.ts` | ItemManager : spawn des objets collectables, animation, detection de ramassage |
 | `src/hud.ts` | HUD : timer, compteur d'objets, notifications, ecrans menu/score |
 | `game-design-document.md` | Game design document complet (concept, objets, scoring, flow, PNJ, planning) |

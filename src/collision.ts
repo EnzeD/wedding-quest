@@ -1,21 +1,20 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
-import { MAP_SIZE } from "./map.ts";
-import type { Collider, PondData } from "./types.ts";
-
-const MAP_HALF = MAP_SIZE / 2;
-const MAP_MARGIN = MAP_HALF - CONFIG.player.radius;
+import type { Collider } from "./types.ts";
 
 export function resolveCollisions(
   position: THREE.Vector3,
   colliders: Collider[],
-  pond: PondData,
+  mapSize: number,
 ): void {
-  // Map boundaries
-  position.x = Math.max(-MAP_MARGIN, Math.min(MAP_MARGIN, position.x));
-  position.z = Math.max(-MAP_MARGIN, Math.min(MAP_MARGIN, position.z));
+  const mapHalf = mapSize / 2;
+  const mapMargin = mapHalf - CONFIG.player.radius;
 
-  // Building collisions (AABB push-out)
+  // Map boundaries
+  position.x = Math.max(-mapMargin, Math.min(mapMargin, position.x));
+  position.z = Math.max(-mapMargin, Math.min(mapMargin, position.z));
+
+  // AABB push-out against blocking entities and water cells
   for (const c of colliders) {
     const overlapX = (c.hw + CONFIG.player.radius) - Math.abs(position.x - c.x);
     const overlapZ = (c.hd + CONFIG.player.radius) - Math.abs(position.z - c.z);
@@ -26,19 +25,6 @@ export function resolveCollisions(
       } else {
         position.z += overlapZ * Math.sign(position.z - c.z);
       }
-    }
-  }
-
-  // Pond collision (ellipse)
-  if (pond) {
-    const dx = position.x - pond.x;
-    const dz = position.z - pond.z;
-    const normDist = Math.sqrt((dx / pond.rx) ** 2 + (dz / pond.rz) ** 2);
-
-    if (normDist < 1 && normDist > 0) {
-      const scale = 1 / normDist;
-      position.x = pond.x + dx * scale;
-      position.z = pond.z + dz * scale;
     }
   }
 }

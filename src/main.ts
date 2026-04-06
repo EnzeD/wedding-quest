@@ -1,21 +1,21 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { loadManifest, loadAllAssets } from "./assets.ts";
-import { preloadKenneyPieces } from "./kenney-buildings.ts";
+import { loadLevel } from "./level-data.ts";
+import { LevelEditor } from "./editor.ts";
 import { Player } from "./player.ts";
 import { TopDownCamera } from "./camera.ts";
 import { VirtualJoystick } from "./controls.ts";
-import { buildMap } from "./map.ts";
+import { MapScene } from "./map.ts";
 import { resolveCollisions } from "./collision.ts";
 import { ItemManager } from "./items.ts";
 import { createHUD, updateHUD, showHUD, showNotification } from "./hud.ts";
 import { showMenu, showScore, updateScoreScreen, createMenuScreen, createScoreScreen } from "./hud.ts";
 import { createInitialState, resetForNewGame, addCollectedItem, computeFinalScore } from "./state.ts";
-import type { Collider, PondData } from "./types.ts";
 
 const state = createInitialState();
-let colliders: Collider[] = [];
-let pond: PondData;
+const editorMode = new URLSearchParams(window.location.search).get("editor") === "1";
+let editor: LevelEditor | null = null;
 
 // Camera (create first so resize() can use it)
 const cameraCtrl = new TopDownCamera();
@@ -34,6 +34,7 @@ resize();
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x9bbdec);
 scene.fog = new THREE.Fog(0x9bbdec, 50, 120);
+const mapScene = new MapScene(scene);
 
 // Lights
 const ambient = new THREE.AmbientLight(0xffffff, CONFIG.lighting.ambient);
@@ -69,14 +70,10 @@ function resize(): void {
 
 async function init(): Promise<void> {
   await loadManifest();
-  await Promise.all([loadAllAssets(), preloadKenneyPieces()]);
+  await loadAllAssets();
 
-  const map = buildMap(scene);
-  colliders = map.colliders;
-  pond = map.pond;
-
-  player.loadModel(state.character);
-  cameraCtrl.snapTo(player.mesh);
+  const level = await loadLevel();
+  await mapScene.load(level);
 
   // Wire up menu buttons now that everything is ready
   document.getElementById("play-btn")!.addEventListener("click", startGame);
@@ -88,11 +85,23 @@ async function init(): Promise<void> {
       charBtns.forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");
       state.character = btn.dataset.char as "sarah" | "nicolas";
-      player.loadModel(state.character);
+      if (!editorMode) player.loadModel(state.character);
     });
   });
 
-  setMode("menu");
+  if (editorMode) {
+    player.mesh.visible = false;
+    joystick.hide();
+    showHUD(false);
+    showMenu(false);
+    showScore(false);
+    editor = await LevelEditor.create(renderer, camera, mapScene, level);
+  } else {
+    player.loadModel(state.character);
+    cameraCtrl.snapTo(player.mesh);
+    setMode("menu");
+  }
+
   animate();
 }
 
@@ -127,7 +136,7 @@ function animate(): void {
 
   if (state.mode === "playing") {
     player.update(joystick.input, dt);
-    resolveCollisions(player.mesh.position, colliders, pond);
+    resolveCollisions(player.mesh.position, mapScene.getColliders(), mapScene.mapSize);
     items.update(dt);
 
     const collected = items.checkCollection(player.mesh.position);
@@ -154,7 +163,12 @@ function animate(): void {
     dirLight.target = player.mesh;
   }
 
-  cameraCtrl.update(player.mesh, player.velocity, dt);
+  if (editor) {
+    editor.update();
+  } else {
+    cameraCtrl.update(player.mesh, player.velocity, dt);
+  }
+
   renderer.render(scene, camera);
 }
 

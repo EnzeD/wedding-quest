@@ -8,15 +8,10 @@ export interface Collider {
   name: string;
 }
 
-export interface PondData {
-  x: number;
-  z: number;
-  rx: number;
-  rz: number;
-}
-
 export type GameMode = "menu" | "playing" | "score";
 export type Character = "sarah" | "nicolas";
+export type LevelEntityKind = "prefab" | "kenney-piece" | "decoration" | "vegetation" | "npc";
+export type LevelSnapMode = "grid" | "free";
 
 export interface ItemDef {
   id: string;
@@ -37,4 +32,50 @@ export interface AssetManifest {
   vegetation: Record<string, string>;
   decorations: Record<string, string>;
   items: Record<string, string>;
+}
+
+export interface LevelPosition {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface LevelEntity {
+  id: string;
+  kind: LevelEntityKind;
+  assetId: string;
+  position: LevelPosition;
+  rotationY: number;
+  scale: number;
+  snap: LevelSnapMode;
+  name?: string;
+  collider?: {
+    hw: number;
+    hd: number;
+  };
+}
+
+export interface LevelNpc extends LevelEntity {
+  kind: "npc";
+  name: string;
+}
+
+export interface LevelMetadata {
+  version: number;
+  name: string;
+  size: number;
+  gridUnit: number;
+}
+
+export interface LevelSurfaceLayer {
+  rows: string[];
+}
+
+export interface LevelData {
+  metadata: LevelMetadata;
+  entities: LevelEntity[];
+  surfaceLayers: {
+    path: LevelSurfaceLayer;
+    water: LevelSurfaceLayer;
+  };
 }

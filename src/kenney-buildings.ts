@@ -24,6 +24,12 @@ interface RectDef {
   chimney?: boolean;
 }
 
+export interface PrefabDefinition {
+  id: string;
+  label: string;
+  defaultScale: number;
+}
+
 const R90 = Math.PI / 2;
 const R180 = Math.PI;
 const R270 = Math.PI * 1.5;
@@ -111,7 +117,7 @@ const BLUEPRINTS: Record<string, Piece[]> = {
 };
 
 export const TREE_PIECES = ["tree", "tree-high", "tree-crooked", "tree-high-round"];
-const DECO_PIECES = [
+export const DECO_PIECES = [
   "lantern",
   "stall-green",
   "stall-red",
@@ -120,6 +126,13 @@ const DECO_PIECES = [
   "rock-small",
   "rock-wide",
   "fountain-round",
+];
+
+export const PREFAB_DEFINITIONS: PrefabDefinition[] = [
+  { id: "manoir", label: "Manoir", defaultScale: 3 },
+  { id: "grange", label: "Grange", defaultScale: 3 },
+  { id: "cottage", label: "Cottage", defaultScale: 4 },
+  { id: "annexe", label: "Annexe", defaultScale: 3 },
 ];
 
 function allPieceNames(): string[] {
@@ -136,6 +149,13 @@ export function kenneyPath(name: string): string {
 
 export async function preloadKenneyPieces(): Promise<void> {
   await Promise.all(allPieceNames().map((n) => preloadAsset(kenneyPath(n))));
+}
+
+export async function preloadKenneyPrefab(type: string): Promise<void> {
+  const pieces = BLUEPRINTS[type];
+  if (!pieces) throw new Error(`Unknown prefab: ${type}`);
+  const unique = [...new Set(pieces.map((piece) => piece.piece))];
+  await Promise.all(unique.map((name) => preloadAsset(kenneyPath(name))));
 }
 
 function assemblePieces(pieces: Piece[]): THREE.Group {

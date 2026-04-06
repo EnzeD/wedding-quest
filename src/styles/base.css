@@ -1,0 +1,58 @@
+@font-face {
+  font-family: "Kenney Future";
+  src: url("/assets/kenney-ui/fonts/kenney-future.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kenney Future Narrow";
+  src: url("/assets/kenney-ui/fonts/kenney-future-narrow.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-display: "Kenney Future", sans-serif;
+  --font-body: "Kenney Future Narrow", sans-serif;
+  --amber: #ffb349;
+  --orange: #ff8744;
+  --red: #db4e5b;
+  --blue: #5f74ca;
+  --cream: #f8d6ae;
+  --light-blue: #9bbdec;
+  --slate: #6d738a;
+  --charcoal: #3e3e44;
+  --forest: #41a479;
+  --white: #dcdce9;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
+  touch-action: none;
+  background: var(--charcoal);
+  font-family: var(--font-body);
+  color: var(--white);
+}
+
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.kenney-panel {
+  border: 0;
+  background: none;
+  border-image-source: url("/assets/kenney-ui/blue/button_rectangle_flat.png");
+  border-image-slice: 30 fill;
+  border-image-width: 15px;
+}
