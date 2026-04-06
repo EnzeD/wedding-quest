@@ -1,34 +1,33 @@
 import * as THREE from "three";
 
 export class ThirdPersonCamera {
-  constructor(camera) {
+  private camera: THREE.PerspectiveCamera;
+  private distance = 10;
+  private height = 6;
+  private lookAtOffset = new THREE.Vector3(0, 1, 0);
+  private smoothSpeed = 5;
+
+  private freelookAngle = 0;
+  private dragging = false;
+  private touchId: number | null = null;
+  private lastTouchX = 0;
+  private sensitivity = 0.006;
+  private returnSpeed = 3;
+
+  private currentPosition = new THREE.Vector3();
+  private desiredPosition = new THREE.Vector3();
+  private lookAtTarget = new THREE.Vector3();
+
+  constructor(camera: THREE.PerspectiveCamera) {
     this.camera = camera;
-    this.distance = 10;
-    this.height = 6;
-    this.lookAtOffset = new THREE.Vector3(0, 1, 0);
-    this.smoothSpeed = 5;
-
-    // Freelook
-    this.freelookAngle = 0;
-    this.dragging = false;
-    this.touchId = null;
-    this.lastTouchX = 0;
-    this.sensitivity = 0.006;
-    this.returnSpeed = 3;
-
-    this.currentPosition = new THREE.Vector3();
-    this.desiredPosition = new THREE.Vector3();
-    this.lookAtTarget = new THREE.Vector3();
-
     this.setupTouch();
   }
 
-  setupTouch() {
-    document.addEventListener("touchstart", (e) => {
+  private setupTouch(): void {
+    document.addEventListener("touchstart", (e: TouchEvent) => {
       if (this.dragging) return;
 
       for (const touch of e.changedTouches) {
-        // Ignore bottom-left quadrant (joystick)
         if (touch.clientX < window.innerWidth * 0.4 && touch.clientY > window.innerHeight * 0.5) continue;
 
         this.dragging = true;
@@ -38,7 +37,7 @@ export class ThirdPersonCamera {
       }
     });
 
-    document.addEventListener("touchmove", (e) => {
+    document.addEventListener("touchmove", (e: TouchEvent) => {
       if (!this.dragging) return;
       for (const touch of e.changedTouches) {
         if (touch.identifier === this.touchId) {
@@ -50,7 +49,7 @@ export class ThirdPersonCamera {
       }
     });
 
-    document.addEventListener("touchend", (e) => {
+    document.addEventListener("touchend", (e: TouchEvent) => {
       for (const touch of e.changedTouches) {
         if (touch.identifier === this.touchId) {
           this.dragging = false;
@@ -61,8 +60,7 @@ export class ThirdPersonCamera {
     });
   }
 
-  update(target, deltaTime) {
-    // Return freelook to 0 when not dragging
+  update(target: THREE.Object3D, deltaTime: number): void {
     if (!this.dragging) {
       this.freelookAngle *= Math.max(0, 1 - this.returnSpeed * deltaTime);
       if (Math.abs(this.freelookAngle) < 0.01) this.freelookAngle = 0;
@@ -73,13 +71,13 @@ export class ThirdPersonCamera {
     this.desiredPosition.set(
       target.position.x - Math.sin(angle) * this.distance,
       target.position.y + this.height,
-      target.position.z - Math.cos(angle) * this.distance
+      target.position.z - Math.cos(angle) * this.distance,
     );
 
     this.currentPosition.lerpVectors(
       this.camera.position,
       this.desiredPosition,
-      Math.min(1, this.smoothSpeed * deltaTime)
+      Math.min(1, this.smoothSpeed * deltaTime),
     );
 
     this.camera.position.copy(this.currentPosition);

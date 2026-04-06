@@ -1,19 +1,20 @@
 import * as THREE from "three";
+import type { Collider } from "./types.ts";
 
-const wallMat = (color) => new THREE.MeshStandardMaterial({ color });
+const wallMat = (color: number) => new THREE.MeshStandardMaterial({ color });
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
 const windowMat = new THREE.MeshStandardMaterial({ color: 0x87ceeb, emissive: 0x222244, emissiveIntensity: 0.3 });
 const doorMat = new THREE.MeshStandardMaterial({ color: 0x5c3a1e });
 const chimneyMat = new THREE.MeshStandardMaterial({ color: 0x996655 });
 const glassMat = new THREE.MeshStandardMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.5 });
 
-function addWindows(group, w, h, d, rows, cols, wallColor) {
+function addWindows(group: THREE.Group, w: number, h: number, d: number, rows: number, cols: number): void {
   const winW = 0.5, winH = 0.6;
   const faces = [
-    { axis: "x", sign: 1, depth: d },
-    { axis: "x", sign: -1, depth: d },
-    { axis: "z", sign: 1, depth: w },
-    { axis: "z", sign: -1, depth: w },
+    { axis: "x" as const, sign: 1, depth: d },
+    { axis: "x" as const, sign: -1, depth: d },
+    { axis: "z" as const, sign: 1, depth: w },
+    { axis: "z" as const, sign: -1, depth: w },
   ];
 
   for (const face of faces) {
@@ -23,7 +24,7 @@ function addWindows(group, w, h, d, rows, cols, wallColor) {
         const winGeo = new THREE.BoxGeometry(
           face.axis === "z" ? winW : 0.05,
           winH,
-          face.axis === "x" ? winW : 0.05
+          face.axis === "x" ? winW : 0.05,
         );
         const win = new THREE.Mesh(winGeo, windowMat);
         const offset = (c - (cols - 1) / 2) * (span / (cols + 1));
@@ -39,7 +40,7 @@ function addWindows(group, w, h, d, rows, cols, wallColor) {
   }
 }
 
-function addDoor(group, w, h, d, side) {
+function addDoor(group: THREE.Group, _w: number, h: number, d: number, side: "front" | "back"): void {
   const doorGeo = new THREE.BoxGeometry(0.8, 1.4, 0.08);
   const door = new THREE.Mesh(doorGeo, doorMat);
   if (side === "front") door.position.set(0, 0.7 - h / 2, d / 2 + 0.04);
@@ -47,7 +48,7 @@ function addDoor(group, w, h, d, side) {
   group.add(door);
 }
 
-function addChimney(group, h, offsetX) {
+function addChimney(group: THREE.Group, h: number, offsetX: number): void {
   const geo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
   const chimney = new THREE.Mesh(geo, chimneyMat);
   chimney.position.set(offsetX, h * 0.6 + 0.75, 0);
@@ -55,24 +56,21 @@ function addChimney(group, h, offsetX) {
   group.add(chimney);
 }
 
-export function createManoir(scene, x, z) {
+export function createManoir(scene: THREE.Scene, x: number, z: number): Collider {
   const w = 14, d = 7, h = 6;
   const group = new THREE.Group();
 
-  // Main walls
   const bodyGeo = new THREE.BoxGeometry(w, h, d);
   const body = new THREE.Mesh(bodyGeo, wallMat(0xe8d0b0));
   body.castShadow = true;
   body.receiveShadow = true;
   group.add(body);
 
-  // Stone trim (bottom)
   const trimGeo = new THREE.BoxGeometry(w + 0.1, 1, d + 0.1);
   const trim = new THREE.Mesh(trimGeo, wallMat(0xc4a882));
   trim.position.y = -h / 2 + 0.5;
   group.add(trim);
 
-  // Arched openings (ground floor, front)
   for (let i = -2; i <= 2; i++) {
     const archGeo = new THREE.BoxGeometry(1.2, 2, 0.15);
     const arch = new THREE.Mesh(archGeo, wallMat(0x3a2a1a));
@@ -80,10 +78,8 @@ export function createManoir(scene, x, z) {
     group.add(arch);
   }
 
-  // Windows (upper floor)
   addWindows(group, w, h, d, 1, 5);
 
-  // Dormers (lucarnes)
   for (let i = -2; i <= 2; i += 2) {
     const dormerGeo = new THREE.BoxGeometry(1.2, 1.2, 1);
     const dormer = new THREE.Mesh(dormerGeo, wallMat(0xe8d0b0));
@@ -92,14 +88,13 @@ export function createManoir(scene, x, z) {
     group.add(dormer);
     const dRoof = new THREE.Mesh(
       new THREE.ConeGeometry(1, 0.8, 4),
-      roofMat
+      roofMat,
     );
     dRoof.position.set(i * 2.2, h / 2 + 1.4, d / 2 - 0.2);
     dRoof.rotation.y = Math.PI / 4;
     group.add(dRoof);
   }
 
-  // Main roof
   const roofGeo = new THREE.ConeGeometry(Math.max(w, d) * 0.7, 3, 4);
   const roof = new THREE.Mesh(roofGeo, roofMat);
   roof.position.y = h / 2 + 1.5;
@@ -115,7 +110,7 @@ export function createManoir(scene, x, z) {
   return { x, z, hw: w / 2 + 0.5, hd: d / 2 + 0.5, name: "manoir" };
 }
 
-export function createGrange(scene, x, z) {
+export function createGrange(scene: THREE.Scene, x: number, z: number): Collider {
   const w = 10, d = 7, h = 5;
   const group = new THREE.Group();
 
@@ -125,13 +120,11 @@ export function createGrange(scene, x, z) {
   body.receiveShadow = true;
   group.add(body);
 
-  // Large glass windows (front)
   for (let i = -1; i <= 1; i++) {
     const glassGeo = new THREE.BoxGeometry(2.5, 3.5, 0.1);
     const glass = new THREE.Mesh(glassGeo, glassMat);
     glass.position.set(i * 3, -0.3, d / 2 + 0.05);
     group.add(glass);
-    // Frame
     const frameGeo = new THREE.BoxGeometry(2.6, 3.6, 0.05);
     const frame = new THREE.Mesh(frameGeo, wallMat(0x3a3a3a));
     frame.position.set(i * 3, -0.3, d / 2 + 0.02);
@@ -152,7 +145,7 @@ export function createGrange(scene, x, z) {
   return { x, z, hw: w / 2 + 0.5, hd: d / 2 + 0.5, name: "grange" };
 }
 
-export function createCottage(scene, x, z) {
+export function createCottage(scene: THREE.Scene, x: number, z: number): Collider {
   const w = 6, d = 5, h = 4;
   const group = new THREE.Group();
 
@@ -178,7 +171,7 @@ export function createCottage(scene, x, z) {
   return { x, z, hw: w / 2 + 0.5, hd: d / 2 + 0.5, name: "cottage" };
 }
 
-export function createAnnexe(scene, x, z, w, d, h, name) {
+export function createAnnexe(scene: THREE.Scene, x: number, z: number, w: number, d: number, h: number, name: string): Collider {
   const group = new THREE.Group();
 
   const bodyGeo = new THREE.BoxGeometry(w, h, d);

@@ -4,19 +4,16 @@ const woodMat = new THREE.MeshStandardMaterial({ color: 0x8b6b4a });
 const stoneMat = new THREE.MeshStandardMaterial({ color: 0xaaa899 });
 const metalMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
 
-export function createBench(scene, x, z, rotation) {
+export function createBench(scene: THREE.Scene, x: number, z: number, rotation?: number): void {
   const group = new THREE.Group();
-  // Seat
   const seatGeo = new THREE.BoxGeometry(1.5, 0.08, 0.5);
   const seat = new THREE.Mesh(seatGeo, woodMat);
   seat.position.y = 0.45;
   group.add(seat);
-  // Back
   const backGeo = new THREE.BoxGeometry(1.5, 0.5, 0.06);
   const back = new THREE.Mesh(backGeo, woodMat);
   back.position.set(0, 0.7, -0.22);
   group.add(back);
-  // Legs
   const legGeo = new THREE.BoxGeometry(0.06, 0.45, 0.4);
   for (const sx of [-0.6, 0.6]) {
     const leg = new THREE.Mesh(legGeo, metalMat);
@@ -24,34 +21,32 @@ export function createBench(scene, x, z, rotation) {
     group.add(leg);
   }
   group.position.set(x, 0, z);
-  group.rotation.y = rotation || 0;
+  group.rotation.y = rotation ?? 0;
   group.castShadow = true;
   scene.add(group);
 }
 
-export function createTable(scene, x, z, rotation) {
+export function createTable(scene: THREE.Scene, x: number, z: number, rotation?: number): void {
   const group = new THREE.Group();
-  // Top
   const topGeo = new THREE.BoxGeometry(1.8, 0.06, 1);
   const top = new THREE.Mesh(topGeo, woodMat);
   top.position.y = 0.75;
   group.add(top);
-  // Legs
   const legGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.75, 6);
-  for (const [lx, lz] of [[-0.7, -0.35], [0.7, -0.35], [-0.7, 0.35], [0.7, 0.35]]) {
+  for (const [lx, lz] of [[-0.7, -0.35], [0.7, -0.35], [-0.7, 0.35], [0.7, 0.35]] as const) {
     const leg = new THREE.Mesh(legGeo, metalMat);
     leg.position.set(lx, 0.375, lz);
     group.add(leg);
   }
   group.position.set(x, 0, z);
-  group.rotation.y = rotation || 0;
+  group.rotation.y = rotation ?? 0;
   scene.add(group);
 }
 
-export function createStoneWall(scene, x1, z1, x2, z2, h) {
+export function createStoneWall(scene: THREE.Scene, x1: number, z1: number, x2: number, z2: number, h?: number): void {
   const dx = x2 - x1, dz = z2 - z1;
   const len = Math.sqrt(dx * dx + dz * dz);
-  const height = h || 0.8;
+  const height = h ?? 0.8;
   const geo = new THREE.BoxGeometry(len, height, 0.5);
   const mesh = new THREE.Mesh(geo, stoneMat);
   mesh.position.set((x1 + x2) / 2, height / 2, (z1 + z2) / 2);
@@ -60,14 +55,12 @@ export function createStoneWall(scene, x1, z1, x2, z2, h) {
   scene.add(mesh);
 }
 
-export function createLantern(scene, x, z) {
+export function createLantern(scene: THREE.Scene, x: number, z: number): void {
   const group = new THREE.Group();
-  // Pole
   const poleGeo = new THREE.CylinderGeometry(0.04, 0.05, 2.5, 6);
   const pole = new THREE.Mesh(poleGeo, metalMat);
   pole.position.y = 1.25;
   group.add(pole);
-  // Light housing
   const housingGeo = new THREE.BoxGeometry(0.25, 0.35, 0.25);
   const housingMat = new THREE.MeshStandardMaterial({
     color: 0xffdd88,
@@ -81,8 +74,7 @@ export function createLantern(scene, x, z) {
   scene.add(group);
 }
 
-export function createPondDetails(scene, pondX, pondZ, rx, rz) {
-  // Reeds around edges
+export function createPondDetails(scene: THREE.Scene, pondX: number, pondZ: number, rx: number, rz: number): void {
   const reedGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.2, 4);
   const reedMat = new THREE.MeshStandardMaterial({ color: 0x6b8a3a });
   const reedTopGeo = new THREE.SphereGeometry(0.08, 4, 3);
@@ -107,7 +99,6 @@ export function createPondDetails(scene, pondX, pondZ, rx, rz) {
     }
   }
 
-  // Lily pads
   const padGeo = new THREE.CircleGeometry(0.3, 8);
   const padMat = new THREE.MeshStandardMaterial({ color: 0x3a7a3a, side: THREE.DoubleSide });
   for (let i = 0; i < 8; i++) {
@@ -118,14 +109,14 @@ export function createPondDetails(scene, pondX, pondZ, rx, rz) {
     pad.position.set(
       pondX + Math.cos(angle) * rx * r,
       0.07,
-      pondZ + Math.sin(angle) * rz * r
+      pondZ + Math.sin(angle) * rz * r,
     );
     pad.rotation.z = Math.random() * Math.PI;
     scene.add(pad);
   }
 }
 
-export function createCeremonyChairs(scene, x, z, facing, rows, seatsPerRow) {
+export function createCeremonyChairs(scene: THREE.Scene, x: number, z: number, facing: number, rows: number, seatsPerRow: number): void {
   const chairSeatGeo = new THREE.BoxGeometry(0.4, 0.04, 0.4);
   const chairBackGeo = new THREE.BoxGeometry(0.4, 0.4, 0.04);
   const chairLegGeo = new THREE.BoxGeometry(0.04, 0.4, 0.04);
@@ -148,15 +139,14 @@ export function createCeremonyChairs(scene, x, z, facing, rows, seatsPerRow) {
       back.position.set(0, 0.6, -0.18);
       chair.add(back);
 
-      for (const [lx, lz] of [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]]) {
+      for (const [lx, lz] of [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]] as const) {
         const leg = new THREE.Mesh(chairLegGeo, chairMat);
         leg.position.set(lx, 0.2, lz);
         chair.add(leg);
       }
 
-      // Position: split into two halves with aisle in the middle
       const half = seatsPerRow / 2;
-      let offsetX;
+      let offsetX: number;
       if (seat < half) {
         offsetX = (seat - half / 2) * spacingX - aisleWidth / 2;
       } else {
@@ -170,14 +160,13 @@ export function createCeremonyChairs(scene, x, z, facing, rows, seatsPerRow) {
   }
 
   group.position.set(x, 0, z);
-  group.rotation.y = facing || 0;
+  group.rotation.y = facing;
   scene.add(group);
 }
 
-export function createTennisCourt(scene, x, z, rotation) {
+export function createTennisCourt(scene: THREE.Scene, x: number, z: number, rotation?: number): void {
   const group = new THREE.Group();
 
-  // Court surface
   const surfaceGeo = new THREE.PlaneGeometry(11, 6);
   const surfaceMat = new THREE.MeshStandardMaterial({ color: 0xcc5533 });
   const surface = new THREE.Mesh(surfaceGeo, surfaceMat);
@@ -185,13 +174,10 @@ export function createTennisCourt(scene, x, z, rotation) {
   surface.position.y = 0.02;
   group.add(surface);
 
-  // Lines
   const lineMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
   const lines = [
-    // Outer
     { w: 11, d: 0.06, x: 0, z: -3 }, { w: 11, d: 0.06, x: 0, z: 3 },
     { w: 0.06, d: 6, x: -5.5, z: 0 }, { w: 0.06, d: 6, x: 5.5, z: 0 },
-    // Service
     { w: 0.06, d: 6, x: 0, z: 0 },
     { w: 6.4, d: 0.06, x: -2.3, z: 0 }, { w: 6.4, d: 0.06, x: 2.3, z: 0 },
   ];
@@ -203,8 +189,6 @@ export function createTennisCourt(scene, x, z, rotation) {
     group.add(mesh);
   }
 
-  // Net
-  const netGeo = new THREE.PlaneGeometry(0.06, 1, 1, 4);
   const netMat = new THREE.MeshStandardMaterial({
     color: 0xffffff, transparent: true, opacity: 0.6, side: THREE.DoubleSide,
   });
@@ -214,7 +198,6 @@ export function createTennisCourt(scene, x, z, rotation) {
   net.rotation.y = Math.PI / 2;
   group.add(net);
 
-  // Net poles
   const poleMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
   const poleGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.1, 6);
   for (const pz of [-3.1, 3.1]) {
@@ -223,15 +206,14 @@ export function createTennisCourt(scene, x, z, rotation) {
     group.add(pole);
   }
 
-  // Fence around
   const fenceGeo = new THREE.BoxGeometry(13, 2, 0.05);
   const fenceMat = new THREE.MeshStandardMaterial({
     color: 0x228833, transparent: true, opacity: 0.3,
   });
-  for (const [fx, fz, ry] of [[0, -4, 0], [0, 4, 0], [-6.5, 0, Math.PI / 2], [6.5, 0, Math.PI / 2]]) {
+  for (const [fx, fz, ry] of [[0, -4, 0], [0, 4, 0], [-6.5, 0, Math.PI / 2], [6.5, 0, Math.PI / 2]] as const) {
     const fence = new THREE.Mesh(
       ry ? new THREE.BoxGeometry(8, 2, 0.05) : fenceGeo,
-      fenceMat
+      fenceMat,
     );
     fence.position.set(fx, 1, fz);
     fence.rotation.y = ry;
@@ -239,6 +221,6 @@ export function createTennisCourt(scene, x, z, rotation) {
   }
 
   group.position.set(x, 0, z);
-  group.rotation.y = rotation || 0;
+  group.rotation.y = rotation ?? 0;
   scene.add(group);
 }

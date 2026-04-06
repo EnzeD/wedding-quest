@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { Player } from "./player.js";
-import { ThirdPersonCamera } from "./camera.js";
-import { VirtualJoystick } from "./controls.js";
-import { buildMap } from "./map.js";
-import { resolveCollisions } from "./collision.js";
+import { Player } from "./player.ts";
+import { ThirdPersonCamera } from "./camera.ts";
+import { VirtualJoystick } from "./controls.ts";
+import { buildMap } from "./map.ts";
+import { resolveCollisions } from "./collision.ts";
 
 // Scene
 const scene = new THREE.Scene();
@@ -15,7 +15,7 @@ const camera = new THREE.PerspectiveCamera(
   60,
   window.innerWidth / window.innerHeight,
   0.1,
-  200
+  200,
 );
 
 // Renderer
@@ -65,7 +65,7 @@ window.addEventListener("resize", () => {
 });
 
 // Game loop
-function animate() {
+function animate(): void {
   requestAnimationFrame(animate);
   const deltaTime = Math.min(clock.getDelta(), 0.1);
 
@@ -77,7 +77,7 @@ function animate() {
   directionalLight.position.set(
     player.mesh.position.x + 10,
     20,
-    player.mesh.position.z + 10
+    player.mesh.position.z + 10,
   );
   directionalLight.target = player.mesh;
 

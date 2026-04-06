@@ -1,11 +1,11 @@
 import * as THREE from "three";
 
 export class Player {
-  constructor(scene) {
-    this.speed = 8;
-    this.turnSpeed = 3.5;
+  speed = 8;
+  turnSpeed = 3.5;
+  mesh: THREE.Group;
 
-    // Capsule-shaped placeholder: body + head
+  constructor(scene: THREE.Scene) {
     this.mesh = new THREE.Group();
 
     // Body
@@ -34,15 +34,12 @@ export class Player {
     scene.add(this.mesh);
   }
 
-  update(joystickInput, deltaTime) {
+  update(joystickInput: THREE.Vector2, deltaTime: number): void {
     if (joystickInput.length() < 0.1) return;
 
-    // Joystick controls rotation directly: left/right turns, up = forward
-    // Left/right on joystick = turn the character
     this.mesh.rotation.y -= joystickInput.x * this.turnSpeed * deltaTime;
 
-    // Forward/backward relative to character's facing direction
-    const forward = -joystickInput.y; // up on joystick = forward
+    const forward = -joystickInput.y;
     this.mesh.position.x += Math.sin(this.mesh.rotation.y) * forward * this.speed * deltaTime;
     this.mesh.position.z += Math.cos(this.mesh.rotation.y) * forward * this.speed * deltaTime;
   }

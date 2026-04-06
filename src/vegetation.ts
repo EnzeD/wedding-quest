@@ -3,37 +3,31 @@ import * as THREE from "three";
 // --- Shared geometries ---
 const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8b5e3c });
 
-// Regular tree
 const treeTrunkGeo = new THREE.CylinderGeometry(0.2, 0.3, 2, 6);
 const treeLeafGeo = new THREE.ConeGeometry(1.5, 3, 6);
 const treeLeafMat = new THREE.MeshStandardMaterial({ color: 0x3a7d2c });
 
-// Tall poplar
 const poplarTrunkGeo = new THREE.CylinderGeometry(0.15, 0.2, 5, 6);
 const poplarLeafGeo = new THREE.CylinderGeometry(0.5, 0.7, 8, 6);
 const poplarLeafMat = new THREE.MeshStandardMaterial({ color: 0x4a8c3f });
 
-// Oak (round canopy)
 const oakTrunkGeo = new THREE.CylinderGeometry(0.3, 0.4, 2.5, 6);
 const oakLeafGeo = new THREE.SphereGeometry(2.2, 8, 6);
 const oakLeafMat = new THREE.MeshStandardMaterial({ color: 0x2e6b1e });
 
-// Willow
 const willowTrunkGeo = new THREE.CylinderGeometry(0.25, 0.35, 2, 6);
 const willowLeafGeo = new THREE.SphereGeometry(2.5, 8, 6);
 const willowLeafMat = new THREE.MeshStandardMaterial({ color: 0x6aad55 });
 const willowDroopGeo = new THREE.CylinderGeometry(0.02, 0.02, 2.5, 4);
 const willowDroopMat = new THREE.MeshStandardMaterial({ color: 0x5a9a45 });
 
-// Bush
 const bushGeo = new THREE.SphereGeometry(0.7, 6, 5);
 const bushMat = new THREE.MeshStandardMaterial({ color: 0x357a28 });
 const bushDarkMat = new THREE.MeshStandardMaterial({ color: 0x2a5f1e });
 
-// Flower
 const flowerGeo = new THREE.SphereGeometry(0.15, 5, 4);
 
-export function createTree(scene, x, z, scale) {
+export function createTree(scene: THREE.Scene, x: number, z: number, scale?: number): void {
   const group = new THREE.Group();
   const trunk = new THREE.Mesh(treeTrunkGeo, trunkMat);
   trunk.position.y = 1;
@@ -44,12 +38,12 @@ export function createTree(scene, x, z, scale) {
   leaves.castShadow = true;
   group.add(leaves);
   group.position.set(x, 0, z);
-  const s = scale || 0.8 + Math.random() * 0.6;
+  const s = scale ?? 0.8 + Math.random() * 0.6;
   group.scale.set(s, s, s);
   scene.add(group);
 }
 
-export function createPoplar(scene, x, z) {
+export function createPoplar(scene: THREE.Scene, x: number, z: number): void {
   const group = new THREE.Group();
   const trunk = new THREE.Mesh(poplarTrunkGeo, trunkMat);
   trunk.position.y = 2.5;
@@ -65,7 +59,7 @@ export function createPoplar(scene, x, z) {
   scene.add(group);
 }
 
-export function createOak(scene, x, z) {
+export function createOak(scene: THREE.Scene, x: number, z: number): void {
   const group = new THREE.Group();
   const trunk = new THREE.Mesh(oakTrunkGeo, trunkMat);
   trunk.position.y = 1.25;
@@ -81,7 +75,7 @@ export function createOak(scene, x, z) {
   scene.add(group);
 }
 
-export function createWillow(scene, x, z) {
+export function createWillow(scene: THREE.Scene, x: number, z: number): void {
   const group = new THREE.Group();
   const trunk = new THREE.Mesh(willowTrunkGeo, trunkMat);
   trunk.position.y = 1;
@@ -91,7 +85,6 @@ export function createWillow(scene, x, z) {
   canopy.position.y = 3.5;
   canopy.castShadow = true;
   group.add(canopy);
-  // Drooping branches
   for (let i = 0; i < 10; i++) {
     const angle = (i / 10) * Math.PI * 2;
     const r = 1.8 + Math.random() * 0.5;
@@ -105,17 +98,15 @@ export function createWillow(scene, x, z) {
   scene.add(group);
 }
 
-export function createBeechTree(scene, x, z) {
+export function createBeechTree(scene: THREE.Scene, x: number, z: number): void {
   const group = new THREE.Group();
-  // Massive trunk
   const bTrunkGeo = new THREE.CylinderGeometry(0.6, 0.8, 4, 8);
   const trunk = new THREE.Mesh(bTrunkGeo, trunkMat);
   trunk.position.y = 2;
   trunk.castShadow = true;
   group.add(trunk);
-  // Large spreading canopy (multiple overlapping spheres)
   const canopyMat = new THREE.MeshStandardMaterial({ color: 0x2a6e1a });
-  const positions = [
+  const positions: [number, number, number, number][] = [
     [0, 6.5, 0, 3.5], [-2, 5.5, -1.5, 2.5], [2, 5.5, 1, 2.5],
     [-1, 6, 2, 2.8], [1.5, 6, -1.5, 2.6], [0, 5, 0, 3],
   ];
@@ -126,7 +117,6 @@ export function createBeechTree(scene, x, z) {
     canopy.castShadow = true;
     group.add(canopy);
   }
-  // Visible roots
   const rootGeo = new THREE.CylinderGeometry(0.08, 0.15, 2, 4);
   for (let i = 0; i < 6; i++) {
     const angle = (i / 6) * Math.PI * 2;
@@ -140,8 +130,8 @@ export function createBeechTree(scene, x, z) {
   scene.add(group);
 }
 
-export function createBush(scene, x, z, scale) {
-  const s = scale || 0.6 + Math.random() * 0.6;
+export function createBush(scene: THREE.Scene, x: number, z: number, scale?: number): void {
+  const s = scale ?? 0.6 + Math.random() * 0.6;
   const mat = Math.random() > 0.5 ? bushMat : bushDarkMat;
   const mesh = new THREE.Mesh(bushGeo, mat);
   mesh.position.set(x, s * 0.5, z);
@@ -150,7 +140,7 @@ export function createBush(scene, x, z, scale) {
   scene.add(mesh);
 }
 
-export function createFlowerBed(scene, x, z, radius, count) {
+export function createFlowerBed(scene: THREE.Scene, x: number, z: number, radius: number, count: number): void {
   const colors = [0xff6b8a, 0xffaa44, 0xeedd44, 0xff55aa, 0xaa66ff, 0xffffff];
   const group = new THREE.Group();
   for (let i = 0; i < count; i++) {
@@ -161,7 +151,6 @@ export function createFlowerBed(scene, x, z, radius, count) {
     const flower = new THREE.Mesh(flowerGeo, mat);
     flower.position.set(Math.cos(angle) * r, 0.15, Math.sin(angle) * r);
     group.add(flower);
-    // Stem
     const stemGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.15, 3);
     const stemMat = new THREE.MeshStandardMaterial({ color: 0x44882a });
     const stem = new THREE.Mesh(stemGeo, stemMat);
@@ -172,12 +161,13 @@ export function createFlowerBed(scene, x, z, radius, count) {
   scene.add(group);
 }
 
-export function createHedgeRow(scene, x1, z1, x2, z2, height) {
+export function createHedgeRow(scene: THREE.Scene, x1: number, z1: number, x2: number, z2: number, height?: number): void {
   const dx = x2 - x1, dz = z2 - z1;
   const len = Math.sqrt(dx * dx + dz * dz);
-  const geo = new THREE.BoxGeometry(len, height || 1.2, 0.8);
+  const h = height ?? 1.2;
+  const geo = new THREE.BoxGeometry(len, h, 0.8);
   const mesh = new THREE.Mesh(geo, bushDarkMat);
-  mesh.position.set((x1 + x2) / 2, (height || 1.2) / 2, (z1 + z2) / 2);
+  mesh.position.set((x1 + x2) / 2, h / 2, (z1 + z2) / 2);
   mesh.rotation.y = Math.atan2(dx, dz) + Math.PI / 2;
   mesh.castShadow = true;
   scene.add(mesh);

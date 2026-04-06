@@ -1,10 +1,16 @@
-import { MAP_SIZE } from "./map.js";
+import * as THREE from "three";
+import { MAP_SIZE } from "./map.ts";
+import type { Collider, PondData } from "./types.ts";
 
 const PLAYER_RADIUS = 0.4;
 const MAP_HALF = MAP_SIZE / 2;
 const MAP_MARGIN = MAP_HALF - PLAYER_RADIUS;
 
-export function resolveCollisions(position, colliders, pond) {
+export function resolveCollisions(
+  position: THREE.Vector3,
+  colliders: Collider[],
+  pond: PondData,
+): void {
   // Map boundaries
   position.x = Math.max(-MAP_MARGIN, Math.min(MAP_MARGIN, position.x));
   position.z = Math.max(-MAP_MARGIN, Math.min(MAP_MARGIN, position.z));
@@ -27,12 +33,10 @@ export function resolveCollisions(position, colliders, pond) {
   if (pond) {
     const dx = position.x - pond.x;
     const dz = position.z - pond.z;
-    // Normalized distance on ellipse (< 1 means inside)
     const normDist = Math.sqrt((dx / pond.rx) ** 2 + (dz / pond.rz) ** 2);
 
     if (normDist < 1 && normDist > 0) {
-      // Push out along the radial direction
-      const scale = (1 / normDist);
+      const scale = 1 / normDist;
       position.x = pond.x + dx * scale;
       position.z = pond.z + dz * scale;
     }

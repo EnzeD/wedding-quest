@@ -1,13 +1,19 @@
 import * as THREE from "three";
 
 export class VirtualJoystick {
+  input = new THREE.Vector2(0, 0);
+  private active = false;
+  private touchId: number | null = null;
+
+  private maxRadius = 55;
+
+  private container: HTMLDivElement;
+  private knob: HTMLDivElement;
+
+  private centerX = 0;
+  private centerY = 0;
+
   constructor() {
-    this.input = new THREE.Vector2(0, 0);
-    this.active = false;
-    this.touchId = null;
-
-    this.maxRadius = 55;
-
     this.container = document.createElement("div");
     this.container.style.cssText = `
       position: fixed;
@@ -39,15 +45,12 @@ export class VirtualJoystick {
     this.container.appendChild(this.knob);
     document.body.appendChild(this.container);
 
-    this.centerX = 0;
-    this.centerY = 0;
-
     this.container.addEventListener("touchstart", (e) => this.onTouchStart(e), { passive: false });
     document.addEventListener("touchmove", (e) => this.onTouchMove(e), { passive: false });
     document.addEventListener("touchend", (e) => this.onTouchEnd(e));
   }
 
-  onTouchStart(e) {
+  private onTouchStart(e: TouchEvent): void {
     if (this.active) return;
     e.preventDefault();
     e.stopPropagation();
@@ -62,7 +65,7 @@ export class VirtualJoystick {
     this.updateInput(touch.clientX, touch.clientY);
   }
 
-  onTouchMove(e) {
+  private onTouchMove(e: TouchEvent): void {
     if (!this.active) return;
 
     for (const touch of e.changedTouches) {
@@ -74,7 +77,7 @@ export class VirtualJoystick {
     }
   }
 
-  onTouchEnd(e) {
+  private onTouchEnd(e: TouchEvent): void {
     for (const touch of e.changedTouches) {
       if (touch.identifier === this.touchId) {
         this.active = false;
@@ -86,7 +89,7 @@ export class VirtualJoystick {
     }
   }
 
-  updateInput(clientX, clientY) {
+  private updateInput(clientX: number, clientY: number): void {
     let dx = clientX - this.centerX;
     let dy = clientY - this.centerY;
 
@@ -102,7 +105,7 @@ export class VirtualJoystick {
     this.input.y = dy / this.maxRadius;
   }
 
-  dispose() {
+  dispose(): void {
     this.container.remove();
   }
 }
