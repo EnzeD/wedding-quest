@@ -4,31 +4,31 @@ Chaque etape produit un resultat jouable/testable sur mobile. Tester et valider 
 
 ---
 
-## Etape 1 - Personnage et controles
+## Etape 1 - Personnage et controles ✅
 
 **Objectif** : un personnage (cube) qui se deplace sur un sol plat avec un joystick tactile, camera 3eme personne.
 
-- [ ] Creer un personnage placeholder (cube ou capsule)
-- [ ] Joystick virtuel tactile (zone bas-gauche de l'ecran)
-- [ ] Deplacement du personnage selon l'input du joystick
-- [ ] Camera 3eme personne qui suit le personnage (derriere, legere plongee)
-- [ ] Rotation du personnage dans la direction du mouvement
-- [ ] Limiter le framerate / deltaTime pour un mouvement constant
-
-**Test** : ouvrir sur mobile, deplacer le cube dans toutes les directions, verifier que la camera suit bien.
+- [x] Creer un personnage placeholder (capsule corps + tete + calecon)
+- [x] Joystick virtuel tactile fixe (zone bas-gauche de l'ecran)
+- [x] Deplacement tank controls (gauche/droite = rotation, haut = avance)
+- [x] Camera 3eme personne qui suit le personnage par derriere
+- [x] Freelook tactile (glisser ailleurs sur l'ecran) avec retour automatique
+- [x] DeltaTime pour un mouvement constant
 
 ---
 
-## Etape 2 - La map
+## Etape 2 - La map ✅
 
-**Objectif** : un terrain avec des zones distinctes, des batiments placeholder, et des limites.
+**Objectif** : un terrain avec des zones distinctes, des batiments detailles, et des limites.
 
-- [ ] Terrain plus grand (dimensions a definir selon le lieu reel)
-- [ ] Sol avec texture ou couleur par zone (herbe, chemin, eau)
-- [ ] Batiments placeholder (boites avec couleurs differentes)
-- [ ] Collisions : le personnage ne traverse pas les batiments
-- [ ] Limites de la map (murs invisibles ou bord naturel)
-- [ ] Arbres/vegetation placeholder pour meubler
+- [x] Terrain 90x90 base sur le lieu reel (photo aerienne)
+- [x] Chemins de pierre + aires de gravier entre les batiments
+- [x] Batiments detailles : manoir (lucarnes, arches, cheminees), grange (baies vitrees), cottage, 2 annexes
+- [x] Collisions AABB sur batiments + ellipse sur l'etang
+- [x] Limites de la map (haies de bordure)
+- [x] Vegetation variee : peupliers, chenes, saules, coniferes, buissons, parterres de fleurs, haies
+- [x] Decorations : bancs, tables, lanternes, murets de pierre, roseaux, nenufars
+- [x] Collines en arriere-plan
 
 **Test** : parcourir toute la map sur mobile, verifier que ca prend ~1 minute, que les collisions marchent.
 
