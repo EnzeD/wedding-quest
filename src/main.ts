@@ -32,13 +32,13 @@ resize();
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87ceeb);
-scene.fog = new THREE.Fog(0x87ceeb, 50, 120);
+scene.background = new THREE.Color(0x9bbdec);
+scene.fog = new THREE.Fog(0x9bbdec, 50, 120);
 
 // Lights
 const ambient = new THREE.AmbientLight(0xffffff, CONFIG.lighting.ambient);
-const hemi = new THREE.HemisphereLight(0xffffff, 0x96754b, CONFIG.lighting.hemi);
-const dirLight = new THREE.DirectionalLight(0xfff2d6, CONFIG.lighting.dir);
+const hemi = new THREE.HemisphereLight(0xdcdce9, 0x905743, CONFIG.lighting.hemi);
+const dirLight = new THREE.DirectionalLight(0xf8d6ae, CONFIG.lighting.dir);
 dirLight.position.set(12, 24, 8);
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.set(CONFIG.lighting.shadowMapSize, CONFIG.lighting.shadowMapSize);

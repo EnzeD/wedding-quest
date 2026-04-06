@@ -2,27 +2,9 @@
   "characters": {
     "player": "assets/toonshooter/Characters/glTF/Character_Hazmat.gltf"
   },
-  "buildings": {
-    "manoir": "assets/toonshooter/Environment/glTF/Structure_1.gltf",
-    "grange": "assets/toonshooter/Environment/glTF/Structure_2.gltf",
-    "cottage": "assets/toonshooter/Environment/glTF/Structure_3.gltf",
-    "annexe": "assets/toonshooter/Environment/glTF/Structure_4.gltf"
-  },
-  "vegetation": {
-    "tree1": "assets/toonshooter/Environment/glTF/Tree_1.gltf",
-    "tree2": "assets/toonshooter/Environment/glTF/Tree_2.gltf",
-    "tree3": "assets/toonshooter/Environment/glTF/Tree_3.gltf",
-    "tree4": "assets/toonshooter/Environment/glTF/Tree_4.gltf"
-  },
-  "decorations": {
-    "barrier": "assets/toonshooter/Environment/glTF/Barrier_Fixed.gltf",
-    "crate": "assets/toonshooter/Environment/glTF/Crate.gltf",
-    "barrel": "assets/toonshooter/Environment/glTF/ExplodingBarrel.gltf",
-    "fence": "assets/toonshooter/Environment/glTF/Fence.gltf",
-    "bench": "assets/toonshooter/Environment/glTF/Pallet.gltf",
-    "streetlight": "assets/toonshooter/Environment/glTF/StreetLight.gltf",
-    "sign": "assets/toonshooter/Environment/glTF/Sign.gltf"
-  },
+  "buildings": {},
+  "vegetation": {},
+  "decorations": {},
   "items": {
     "pickup": "assets/toonshooter/Environment/glTF/Key.gltf"
   }

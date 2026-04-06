@@ -19,8 +19,8 @@ export class VirtualJoystick {
     this.container.style.cssText = `
       position: fixed; bottom: 60px; left: 30px;
       width: 140px; height: 140px; border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(71,74,88,0.4);
+      border: 2px solid rgba(109,115,138,0.5);
       touch-action: none; z-index: 100;
     `;
 
@@ -30,7 +30,7 @@ export class VirtualJoystick {
       width: 56px; height: 56px;
       margin-left: -28px; margin-top: -28px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.5);
+      background: rgba(157,164,196,0.6);
       pointer-events: none;
     `;
 

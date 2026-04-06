@@ -3,7 +3,7 @@ import * as THREE from "three";
 export const CONFIG = {
   map: {
     size: 90,
-    groundColor: 0x7cba5c,
+    groundColor: 0x41a479,
   },
   camera: {
     height: 30,
@@ -36,7 +36,7 @@ export const CONFIG = {
     floatSpeed: 2,
     rotateSpeed: 1.5,
     pickupRadius: 1.5,
-    glowColor: 0xffd700,
+    glowColor: 0xffb349,
   },
   render: {
     maxDpr: 2,

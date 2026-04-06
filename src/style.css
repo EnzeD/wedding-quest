@@ -3,11 +3,32 @@
 :root {
   --font-display: 'Bangers', sans-serif;
   --font-body: 'Barlow', system-ui, sans-serif;
-  --panel-bg: rgba(15, 18, 22, 0.85);
-  --panel-border: rgba(255, 255, 255, 0.12);
-  --gold: #ffd700;
-  --warning: #ff6b35;
-  --critical: #ff2244;
+  /* Kenney palette */
+  --amber: #ffb349;
+  --orange: #ff8744;
+  --coral: #e76047;
+  --red: #db4e5b;
+  --blue: #5f74ca;
+  --light-blue: #9bbdec;
+  --purple: #8158cf;
+  --cream: #f8d6ae;
+  --peach: #f0c59d;
+  --tan: #dd9f79;
+  --brown: #d07b56;
+  --dark-brown: #995a41;
+  --wood: #905743;
+  --copper: #c58161;
+  --green: #3da679;
+  --forest: #41a479;
+  --teal: #53b29a;
+  --white: #dcdce9;
+  --blue-gray: #9da4c4;
+  --slate: #6d738a;
+  --dark-slate: #474a58;
+  --charcoal: #3e3e44;
+  /* Derived */
+  --panel-bg: rgba(62, 62, 68, 0.9);
+  --panel-border: rgba(109, 115, 138, 0.4);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,9 +36,9 @@
 body {
   overflow: hidden;
   touch-action: none;
-  background: #000;
+  background: var(--charcoal);
   font-family: var(--font-body);
-  color: #fff;
+  color: var(--white);
 }
 
 canvas {
@@ -43,6 +64,7 @@ canvas {
   font-family: var(--font-display);
   font-size: clamp(16px, 3vw, 28px);
   letter-spacing: 1px;
+  color: var(--cream);
 }
 
 .hud-top-center {
@@ -56,8 +78,8 @@ canvas {
   left: 12px;
 }
 
-.hud-panel.warning { color: var(--warning); }
-.hud-panel.critical { color: var(--critical); animation: blink 0.5s infinite; }
+.hud-panel.warning { color: var(--orange); }
+.hud-panel.critical { color: var(--red); animation: blink 0.5s infinite; }
 
 @keyframes blink {
   50% { opacity: 0.3; }
@@ -69,12 +91,12 @@ canvas {
   left: 50%;
   transform: translateX(-50%);
   background: var(--panel-bg);
-  border: 1px solid var(--gold);
+  border: 1px solid var(--amber);
   border-radius: 8px;
   padding: 8px 20px;
   font-family: var(--font-display);
   font-size: clamp(14px, 2.5vw, 22px);
-  color: var(--gold);
+  color: var(--amber);
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
@@ -89,7 +111,7 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(62, 62, 68, 0.7);
   z-index: 200;
 }
 
@@ -106,20 +128,20 @@ canvas {
 .menu-panel h1 {
   font-family: var(--font-display);
   font-size: clamp(28px, 6vw, 48px);
-  color: var(--gold);
+  color: var(--amber);
   margin-bottom: 4px;
 }
 
 .menu-panel h2 {
   font-family: var(--font-display);
   font-size: clamp(22px, 5vw, 36px);
-  color: var(--gold);
+  color: var(--amber);
   margin-bottom: 12px;
 }
 
 .subtitle {
   font-size: 14px;
-  opacity: 0.7;
+  color: var(--blue-gray);
   margin-bottom: 20px;
 }
 
@@ -128,15 +150,19 @@ canvas {
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid var(--panel-border);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: rgba(71, 74, 88, 0.6);
+  color: var(--white);
   font-size: 16px;
   font-family: var(--font-body);
   margin-bottom: 16px;
   outline: none;
 }
 
-.menu-panel input::placeholder { color: rgba(255, 255, 255, 0.4); }
+.menu-panel input:focus {
+  border-color: var(--amber);
+}
+
+.menu-panel input::placeholder { color: var(--slate); }
 
 .character-select {
   display: flex;
@@ -149,8 +175,8 @@ canvas {
   padding: 10px 20px;
   border-radius: 8px;
   border: 2px solid var(--panel-border);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(71, 74, 88, 0.4);
+  color: var(--blue-gray);
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
@@ -159,9 +185,9 @@ canvas {
 }
 
 .char-btn.selected {
-  border-color: var(--gold);
-  background: rgba(255, 215, 0, 0.15);
-  color: var(--gold);
+  border-color: var(--amber);
+  background: rgba(255, 179, 73, 0.15);
+  color: var(--amber);
 }
 
 .primary-btn {
@@ -169,15 +195,16 @@ canvas {
   padding: 14px;
   border-radius: 10px;
   border: none;
-  background: var(--gold);
-  color: #1b1f26;
+  background: var(--amber);
+  color: var(--charcoal);
   font-family: var(--font-display);
   font-size: clamp(18px, 3vw, 24px);
   letter-spacing: 1px;
   cursor: pointer;
-  transition: transform 0.1s;
+  transition: transform 0.1s, background 0.2s;
 }
 
+.primary-btn:hover { background: var(--orange); }
 .primary-btn:active { transform: scale(0.96); }
 
 /* Score screen */
@@ -190,7 +217,7 @@ canvas {
 
 .score-section h3 {
   font-size: 14px;
-  opacity: 0.7;
+  color: var(--blue-gray);
   margin-bottom: 6px;
 }
 
@@ -201,11 +228,11 @@ canvas {
   font-size: 14px;
 }
 
-.score-item span { color: var(--gold); }
+.score-item span { color: var(--amber); }
 
 .score-total {
   font-family: var(--font-display);
   font-size: clamp(20px, 4vw, 32px);
-  color: var(--gold);
+  color: var(--amber);
   margin: 16px 0;
 }
