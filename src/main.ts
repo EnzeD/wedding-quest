@@ -75,7 +75,7 @@ async function init(): Promise<void> {
   colliders = map.colliders;
   pond = map.pond;
 
-  player.loadModel();
+  player.loadModel(state.character);
   cameraCtrl.snapTo(player.mesh);
 
   // Wire up menu buttons now that everything is ready
@@ -88,6 +88,7 @@ async function init(): Promise<void> {
       charBtns.forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");
       state.character = btn.dataset.char as "sarah" | "nicolas";
+      player.loadModel(state.character);
     });
   });
 
@@ -105,6 +106,7 @@ function setMode(mode: "menu" | "playing" | "score"): void {
 
 function startGame(): void {
   resetForNewGame(state);
+  player.loadModel(state.character);
   player.mesh.position.set(0, 0, 5);
   cameraCtrl.snapTo(player.mesh);
   items.spawn(state.character);

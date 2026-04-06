@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { cloneAsset, normalizeToHeight, getManifest, getAnimations } from "./assets.ts";
+import type { Character } from "./types.ts";
 
 const WEAPON_NODES = [
   "AK", "GrenadeLauncher", "Knife_1", "Knife_2", "Pistol",
@@ -51,13 +52,18 @@ export class Player {
     this.mesh.add(underwear);
   }
 
-  loadModel(): void {
+  loadModel(character: Character): void {
     const m = getManifest();
-    const path = m.characters.player;
+    const path = m.characters[character] ?? m.characters.player;
     if (!path) return;
 
     const model = cloneAsset(path);
     if (model.children.length === 0) return;
+
+    this.mixer?.stopAllAction();
+    this.mixer = null;
+    this.actions.clear();
+    this.currentAnim = "idle";
 
     // Hide weapon nodes (hides the node and all its mesh children)
     model.traverse((child) => {

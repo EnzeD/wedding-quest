@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "kit": "Kenney Mini Characters",
+    "license": "CC0",
+    "basePath": "assets/kenney-mini-characters/",
+    "texture": "assets/kenney-mini-characters/Textures/colormap.png"
+  },
+  "playerDefaults": {
+    "nicolas": "character-male-a.glb",
+    "sarah": "character-female-a.glb"
+  },
+  "characters": {
+    "male": [
+      "character-male-a.glb",
+      "character-male-b.glb",
+      "character-male-c.glb",
+      "character-male-d.glb",
+      "character-male-e.glb",
+      "character-male-f.glb"
+    ],
+    "female": [
+      "character-female-a.glb",
+      "character-female-b.glb",
+      "character-female-c.glb",
+      "character-female-d.glb",
+      "character-female-e.glb",
+      "character-female-f.glb"
+    ]
+  },
+  "accessories": [
+    "aid-cane.glb",
+    "aid-cane-blind.glb",
+    "aid-cane-low-vision.glb",
+    "aid-crutch.glb",
+    "aid-defibrillator-green.glb",
+    "aid-defibrillator-red.glb",
+    "aid-glasses.glb",
+    "aid_hearing.glb",
+    "aid-mask.glb",
+    "aid-sunglasses.glb"
+  ],
+  "mobility": [
+    "wheelchair.glb",
+    "wheelchair-deluxe.glb",
+    "wheelchair-power.glb",
+    "wheelchair-power-deluxe.glb"
+  ]
+}

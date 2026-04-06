@@ -1,6 +1,8 @@
 {
   "characters": {
-    "player": "assets/toonshooter/Characters/glTF/Character_Hazmat.gltf"
+    "player": "assets/kenney-mini-characters/character-male-a.glb",
+    "nicolas": "assets/kenney-mini-characters/character-male-a.glb",
+    "sarah": "assets/kenney-mini-characters/character-female-a.glb"
   },
   "buildings": {},
   "vegetation": {},

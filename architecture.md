@@ -28,4 +28,8 @@
 | `public/kenney-catalog.json` | Catalogue des 167 pieces Kenney Fantasy Town Kit 2.0 (categories, dimensions, snap rules) |
 | `public/assets/kenney/*.glb` | Modeles GLB modulaires Kenney (murs, toits, escaliers, routes, vegetation, decorations) |
 | `public/assets/kenney/colormap.png` | Texture partagee par tous les modeles Kenney |
+| `public/kenney-mini-characters.json` | Catalogue rapide du kit Kenney Mini Characters (variantes, defaults joueur, accessoires) |
+| `public/assets/kenney-mini-characters/*.glb` | Modeles GLB Kenney Mini Characters pour joueurs, PNJ, accessoires et fauteuils |
+| `public/assets/kenney-mini-characters/Textures/colormap.png` | Texture partagee du kit Kenney Mini Characters |
+| `public/assets/kenney-mini-characters/License.txt` | Licence CC0 du kit Kenney Mini Characters copiee dans le projet |
 | `AGENTS.md` | Instructions projet canoniques et source unique pour les agents/outils |

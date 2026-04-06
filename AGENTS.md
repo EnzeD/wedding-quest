@@ -36,6 +36,15 @@ Course contre la montre en vue 3eme personne. Le joueur incarne Sarah ou Nicolas
 - Les murs se tournent par increments de 90 degres pour couvrir les 4 cotes.
 - Toujours consulter `kenney-catalog.json` avant d'assembler des batiments pour verifier les dimensions et les regles de snap.
 
+## Assets Kenney Mini Characters
+
+- Modeles GLB dans `public/assets/kenney-mini-characters/`, texture partagee dans `public/assets/kenney-mini-characters/Textures/colormap.png`, licence CC0 (`License.txt` copie dans le meme dossier).
+- Catalogue rapide dans `public/kenney-mini-characters.json` : defaults joueur, variantes male/female, accessoires et fauteuils.
+- Les chemins runtime du joueur vivent dans `public/assets.json` sous `characters.nicolas` et `characters.sarah`. Garder `characters.player` comme fallback.
+- Par defaut, Nicolas utilise `character-male-a.glb` et Sarah `character-female-a.glb`. Pour changer de variante, modifier d'abord `public/assets.json`, puis verifier le rendu in-game.
+- Utiliser de preference les `.glb` de ce pack pour le joueur, les PNJ et les variantes low-poly humaines. Les accessoires (`aid-*`) et fauteuils (`wheelchair*`) peuvent servir d'objets decoratifs ou pickups.
+- Si tu ajoutes de nouveaux usages de ce kit, mettre a jour `public/kenney-mini-characters.json` et `architecture.md`.
+
 ## Structure du projet
 
 Voir `architecture.md` pour le detail fichier par fichier.
