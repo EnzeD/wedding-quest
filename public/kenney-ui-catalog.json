@@ -1,0 +1,61 @@
+{
+  "name": "Kenney UI Pack",
+  "license": "CC0 1.0",
+  "basePath": "assets/kenney-ui",
+  "resolution": "2x",
+  "fonts": {
+    "display": "fonts/kenney-future.ttf",
+    "body": "fonts/kenney-future-narrow.ttf"
+  },
+  "sounds": {
+    "click": ["sounds/click-a.ogg", "sounds/click-b.ogg"],
+    "switch": ["sounds/switch-a.ogg", "sounds/switch-b.ogg"],
+    "tap": ["sounds/tap-a.ogg", "sounds/tap-b.ogg"]
+  },
+  "colors": ["blue", "green", "grey", "red", "yellow"],
+  "components": {
+    "buttons": {
+      "shapes": ["rectangle", "square", "round"],
+      "styles": ["flat", "depth_flat", "border", "depth_border", "gloss", "depth_gloss", "gradient", "depth_gradient"],
+      "pattern": "{color}/button_{shape}_{style}.png",
+      "notes": "Rectangle: 384x128 @ 2x. Square: 128x128 @ 2x. Round: 128x128 @ 2x. depth_ variants have bottom shadow for pressed effect."
+    },
+    "stars": {
+      "variants": ["star", "star_outline", "star_outline_depth"],
+      "pattern": "{color}/{variant}.png",
+      "size": "128x120 @ 2x"
+    },
+    "icons": {
+      "variants": ["icon_cross", "icon_checkmark", "icon_circle", "icon_square", "icon_outline_cross", "icon_outline_checkmark"],
+      "pattern": "{color}/{variant}.png"
+    },
+    "checkboxes": {
+      "variants": ["check_square_color", "check_square_color_checkmark", "check_square_grey"],
+      "pattern": "{color}/{variant}.png"
+    },
+    "inputs": {
+      "variants": ["input_rectangle", "input_outline_rectangle", "input_square", "input_outline_square"],
+      "pattern": "extra/{variant}.png",
+      "notes": "White fill with grey border, color-neutral"
+    },
+    "dividers": {
+      "variants": ["divider", "divider_edges"],
+      "pattern": "extra/{variant}.png"
+    },
+    "extraIcons": {
+      "variants": ["icon_play_light", "icon_play_dark", "icon_play_outline", "icon_repeat_light", "icon_repeat_dark", "icon_repeat_outline", "icon_arrow_down_light", "icon_arrow_down_dark", "icon_arrow_down_outline", "icon_arrow_up_light", "icon_arrow_up_dark", "icon_arrow_up_outline"],
+      "pattern": "extra/{variant}.png"
+    }
+  },
+  "usage": {
+    "panels": "Use blue/button_rectangle_flat.png as border-image for panels",
+    "primaryButton": "Use green/button_rectangle_depth_flat.png for CTA buttons",
+    "secondaryButton": "Use grey/button_rectangle_depth_flat.png for secondary buttons",
+    "selectedButton": "Use blue/button_rectangle_depth_flat.png for selected/active state",
+    "dangerButton": "Use red/button_rectangle_depth_flat.png for danger/critical actions",
+    "hudPanel": "Use blue/button_rectangle_flat.png for in-game HUD overlays",
+    "input": "Use extra/input_rectangle.png for text inputs",
+    "scoreStars": "Use yellow/star.png and yellow/star_outline.png for ratings",
+    "borderImageSlice": "For 2x images: use 32 fill for flat buttons, 32 32 48 32 fill for depth buttons"
+  }
+}

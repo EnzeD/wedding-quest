@@ -32,5 +32,11 @@
 | `public/assets/kenney-mini-characters/*.glb` | Modeles GLB Kenney Mini Characters pour joueurs, PNJ, accessoires et fauteuils |
 | `public/assets/kenney-mini-characters/Textures/colormap.png` | Texture partagee du kit Kenney Mini Characters |
 | `public/assets/kenney-mini-characters/License.txt` | Licence CC0 du kit Kenney Mini Characters copiee dans le projet |
+| `public/kenney-ui-catalog.json` | Catalogue du Kenney UI Pack (composants, patterns, valeurs border-image) |
+| `public/assets/kenney-ui/{blue,green,grey,red,yellow}/*.png` | PNGs 2x Kenney UI Pack par couleur (boutons, etoiles, icones, checkboxes) |
+| `public/assets/kenney-ui/extra/*.png` | PNGs 2x Kenney UI Pack neutres (inputs, dividers, icones fleches/play/repeat) |
+| `public/assets/kenney-ui/fonts/*.ttf` | Polices Kenney Future et Kenney Future Narrow |
+| `public/assets/kenney-ui/sounds/*.ogg` | Sons UI Kenney (click, switch, tap) |
+| `public/assets/kenney-ui/License.txt` | Licence CC0 du Kenney UI Pack |
 | `.codex/skills/threejs-*/SKILL.md` | Copies locales des skills Three.js vendorises pour ce projet |
 | `AGENTS.md` | Instructions projet canoniques et source unique pour les agents/outils |
