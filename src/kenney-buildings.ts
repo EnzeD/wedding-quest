@@ -9,6 +9,7 @@ interface Piece {
   y: number;
   z: number;
   rotY?: number;
+  scale?: number;
 }
 
 interface FloorDef {
@@ -22,6 +23,7 @@ interface RectDef {
   floors: FloorDef[];
   roof: "gable-z" | "flat";
   chimney?: boolean;
+  chimneyAt?: { x: number; z: number };
 }
 
 export interface PrefabDefinition {
@@ -30,61 +32,111 @@ export interface PrefabDefinition {
   defaultScale: number;
 }
 
+interface PrefabBlueprint {
+  pieces: Piece[];
+  wx: number;
+  dz: number;
+}
+
 const R90 = Math.PI / 2;
 const R180 = Math.PI;
 const R270 = Math.PI * 1.5;
 
-function buildRect(def: RectDef): Piece[] {
-  const p: Piece[] = [];
-  const { wx, dz, floors, roof, chimney } = def;
+function shifted(blueprint: PrefabBlueprint, dx: number, dz: number): Piece[] {
+  return blueprint.pieces.map((piece) => ({ ...piece, x: piece.x + dx, z: piece.z + dz }));
+}
+
+function buildRoof(wx: number, dz: number, y: number, type: "gable-z" | "flat"): Piece[] {
+  const pieces: Piece[] = [];
+  if (type === "flat") {
+    for (let x = 0; x < wx; x++) {
+      for (let z = 0; z < dz; z++) pieces.push({ piece: "roof-high-flat", x, y, z });
+    }
+    return pieces;
+  }
+
+  for (let z = 0; z < dz; z++) {
+    for (let x = 0; x < wx; x++) {
+      const west = x === 0;
+      const east = x === wx - 1;
+      if (west) pieces.push({ piece: "roof-high-left", x, y, z });
+      else if (east) pieces.push({ piece: "roof-high-right", x, y, z, rotY: R180 });
+      else pieces.push({ piece: "roof-high", x, y, z });
+    }
+  }
+
+  return pieces;
+}
+
+function buildRect(def: RectDef): PrefabBlueprint {
+  const pieces: Piece[] = [];
+  const { wx, dz, floors, roof, chimney, chimneyAt } = def;
 
   for (let f = 0; f < floors.length; f++) {
     const { style, door } = floors[f];
-    const w = style === "wood" ? "wall-wood" : "wall";
-    const win = `${w}-window-shutters`;
-    const dr = `${w}-door`;
-    const y = f;
+    const wall = style === "wood" ? "wall-wood" : "wall";
+    const window = `${wall}-window-shutters`;
+    const doorPiece = `${wall}-door`;
 
-    // Floor planks
-    for (let x = 0; x < wx; x++)
-      for (let z = 0; z < dz; z++) p.push({ piece: "planks", x, y, z });
-
-    // East (+X) and west (-X) walls
-    for (let z = 0; z < dz; z++) {
-      const eD = door?.side === "e" && door.pos === z;
-      const wD = door?.side === "w" && door.pos === z;
-      const mid = z > 0 && z < dz - 1;
-      p.push({ piece: eD ? dr : mid ? win : w, x: wx - 1, y, z });
-      p.push({ piece: wD ? dr : mid ? win : w, x: 0, y, z, rotY: R180 });
-    }
-
-    // North (+Z) and south (-Z) walls
     for (let x = 0; x < wx; x++) {
-      const nD = door?.side === "n" && door.pos === x;
-      const sD = door?.side === "s" && door.pos === x;
+      for (let z = 0; z < dz; z++) pieces.push({ piece: "planks", x, y: f, z });
+    }
+
+    for (let z = 0; z < dz; z++) {
+      const eastDoor = door?.side === "e" && door.pos === z;
+      const westDoor = door?.side === "w" && door.pos === z;
+      const mid = z > 0 && z < dz - 1;
+      pieces.push({ piece: eastDoor ? doorPiece : mid ? window : wall, x: wx - 1, y: f, z });
+      pieces.push({ piece: westDoor ? doorPiece : mid ? window : wall, x: 0, y: f, z, rotY: R180 });
+    }
+
+    for (let x = 0; x < wx; x++) {
+      const northDoor = door?.side === "n" && door.pos === x;
+      const southDoor = door?.side === "s" && door.pos === x;
       const mid = x > 0 && x < wx - 1;
-      p.push({ piece: nD ? dr : mid ? win : w, x, y, z: dz - 1, rotY: R90 });
-      p.push({ piece: sD ? dr : mid ? win : w, x, y, z: 0, rotY: R270 });
+      pieces.push({ piece: northDoor ? doorPiece : mid ? window : wall, x, y: f, z: dz - 1, rotY: R90 });
+      pieces.push({ piece: southDoor ? doorPiece : mid ? window : wall, x, y: f, z: 0, rotY: R270 });
     }
   }
 
-  // Roof
-  const ry = floors.length;
-  const half = Math.floor(wx / 2);
-  if (roof === "gable-z") {
-    for (let x = 0; x < wx; x++)
-      for (let z = 0; z < dz; z++)
-        p.push({ piece: "roof", x, y: ry, z, rotY: x < half ? undefined : R180 });
-  } else {
-    for (let x = 0; x < wx; x++)
-      for (let z = 0; z < dz; z++) p.push({ piece: "roof-flat", x, y: ry, z });
+  pieces.push(...buildRoof(wx, dz, floors.length, roof));
+  if (chimney) {
+    const spot = chimneyAt ?? { x: Math.max(0, wx - 2), z: Math.min(Math.max(1, Math.floor(dz / 2)), dz - 1) };
+    pieces.push({ piece: "chimney", x: spot.x, y: floors.length, z: spot.z });
   }
-
-  if (chimney) p.push({ piece: "chimney", x: wx - 1, y: ry, z: 0 });
-  return p;
+  return { pieces, wx, dz };
 }
 
-const BLUEPRINTS: Record<string, Piece[]> = {
+function buildMill(): PrefabBlueprint {
+  const annex = buildRect({
+    wx: 2,
+    dz: 2,
+    floors: [{ style: "wood", door: { side: "s", pos: 0 } }],
+    roof: "flat",
+  });
+  const tower = buildRect({
+    wx: 2,
+    dz: 3,
+    floors: [{ style: "stone", door: { side: "s", pos: 0 } }, { style: "wood" }],
+    roof: "gable-z",
+    chimney: true,
+    chimneyAt: { x: 0, z: 1 },
+  });
+  return {
+    pieces: [
+      ...shifted(annex, 0, 1),
+      ...shifted(tower, 2, 0),
+      { piece: "watermill-wide", x: 3.5, y: 0.9, z: 1.45, rotY: R90, scale: 1.1 },
+      { piece: "banner-red", x: 2.75, y: 1.1, z: -0.1, rotY: R90 },
+      { piece: "banner-red", x: 4.25, y: 1.1, z: 3.1, rotY: R270 },
+      { piece: "rock-wide", x: 1.9, y: 0, z: 3.2, scale: 0.9 },
+    ],
+    wx: 5,
+    dz: 4,
+  };
+}
+
+const BLUEPRINTS: Record<string, PrefabBlueprint> = {
   manoir: buildRect({
     wx: 4,
     dz: 4,
@@ -94,6 +146,7 @@ const BLUEPRINTS: Record<string, Piece[]> = {
     ],
     roof: "gable-z",
     chimney: true,
+    chimneyAt: { x: 2, z: 1 },
   }),
   grange: buildRect({
     wx: 2,
@@ -107,6 +160,7 @@ const BLUEPRINTS: Record<string, Piece[]> = {
     floors: [{ style: "stone", door: { side: "w", pos: 1 } }],
     roof: "gable-z",
     chimney: true,
+    chimneyAt: { x: 0, z: 1 },
   }),
   annexe: buildRect({
     wx: 2,
@@ -114,6 +168,7 @@ const BLUEPRINTS: Record<string, Piece[]> = {
     floors: [{ style: "stone", door: { side: "s", pos: 0 } }],
     roof: "flat",
   }),
+  moulin: buildMill(),
 };
 
 export const TREE_PIECES = ["tree", "tree-high", "tree-crooked", "tree-high-round"];
@@ -133,13 +188,15 @@ export const PREFAB_DEFINITIONS: PrefabDefinition[] = [
   { id: "grange", label: "Grange", defaultScale: 3 },
   { id: "cottage", label: "Cottage", defaultScale: 4 },
   { id: "annexe", label: "Annexe", defaultScale: 3 },
+  { id: "moulin", label: "Moulin", defaultScale: 3.5 },
 ];
 
 function allPieceNames(): string[] {
   const set = new Set<string>();
-  for (const pieces of Object.values(BLUEPRINTS))
-    for (const p of pieces) set.add(p.piece);
-  for (const n of [...TREE_PIECES, ...DECO_PIECES]) set.add(n);
+  for (const blueprint of Object.values(BLUEPRINTS)) {
+    for (const piece of blueprint.pieces) set.add(piece.piece);
+  }
+  for (const name of [...TREE_PIECES, ...DECO_PIECES]) set.add(name);
   return [...set];
 }
 
@@ -148,23 +205,24 @@ export function kenneyPath(name: string): string {
 }
 
 export async function preloadKenneyPieces(): Promise<void> {
-  await Promise.all(allPieceNames().map((n) => preloadAsset(kenneyPath(n))));
+  await Promise.all(allPieceNames().map((name) => preloadAsset(kenneyPath(name))));
 }
 
 export async function preloadKenneyPrefab(type: string): Promise<void> {
-  const pieces = BLUEPRINTS[type];
-  if (!pieces) throw new Error(`Unknown prefab: ${type}`);
-  const unique = [...new Set(pieces.map((piece) => piece.piece))];
+  const blueprint = BLUEPRINTS[type];
+  if (!blueprint) throw new Error(`Unknown prefab: ${type}`);
+  const unique = [...new Set(blueprint.pieces.map((piece) => piece.piece))];
   await Promise.all(unique.map((name) => preloadAsset(kenneyPath(name))));
 }
 
 function assemblePieces(pieces: Piece[]): THREE.Group {
   const group = new THREE.Group();
-  for (const p of pieces) {
-    const piece = cloneAsset(kenneyPath(p.piece));
-    piece.position.set(p.x, p.y, p.z);
-    piece.rotation.y = p.rotY ?? 0;
-    group.add(piece);
+  for (const piece of pieces) {
+    const object = cloneAsset(kenneyPath(piece.piece));
+    object.position.set(piece.x, piece.y, piece.z);
+    object.rotation.y = piece.rotY ?? 0;
+    if (piece.scale) object.scale.setScalar(piece.scale);
+    group.add(object);
   }
   return group;
 }
@@ -176,24 +234,15 @@ export interface KenneyBuilding {
 }
 
 export function buildKenney(type: string, scale: number): KenneyBuilding {
-  const pieces = BLUEPRINTS[type];
-  if (!pieces) throw new Error(`Unknown building: ${type}`);
+  const blueprint = BLUEPRINTS[type];
+  if (!blueprint) throw new Error(`Unknown building: ${type}`);
 
-  const inner = assemblePieces(pieces);
-
-  let maxX = 0;
-  let maxZ = 0;
-  for (const p of pieces) {
-    if (p.x > maxX) maxX = p.x;
-    if (p.z > maxZ) maxZ = p.z;
-  }
-  const wx = maxX + 1;
-  const dz = maxZ + 1;
-  inner.position.set(-wx / 2, 0, -dz / 2);
+  const inner = assemblePieces(blueprint.pieces);
+  inner.position.set(-(blueprint.wx - 1) / 2, 0, -(blueprint.dz - 1) / 2);
 
   const group = new THREE.Group();
   group.add(inner);
   group.scale.setScalar(scale);
 
-  return { group, hw: (wx / 2) * scale, hd: (dz / 2) * scale };
+  return { group, hw: (blueprint.wx / 2) * scale, hd: (blueprint.dz / 2) * scale };
 }
