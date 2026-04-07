@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { cloneAsset, preloadAsset } from "./assets.ts";
+import { buildPrefabRoof, type PrefabRoofSpec } from "./prefab-roofs.ts";
 
 const BASE = "assets/kenney/";
 
@@ -34,6 +35,7 @@ export interface PrefabDefinition {
 
 interface PrefabBlueprint {
   pieces: Piece[];
+  roofs: PrefabRoofSpec[];
   wx: number;
   dz: number;
 }
@@ -42,30 +44,13 @@ const R90 = Math.PI / 2;
 const R180 = Math.PI;
 const R270 = Math.PI * 1.5;
 
-function shifted(blueprint: PrefabBlueprint, dx: number, dz: number): Piece[] {
-  return blueprint.pieces.map((piece) => ({ ...piece, x: piece.x + dx, z: piece.z + dz }));
-}
-
-function buildRoof(wx: number, dz: number, y: number, type: "gable-z" | "flat"): Piece[] {
-  const pieces: Piece[] = [];
-  if (type === "flat") {
-    for (let x = 0; x < wx; x++) {
-      for (let z = 0; z < dz; z++) pieces.push({ piece: "roof-high-flat", x, y, z });
-    }
-    return pieces;
-  }
-
-  for (let z = 0; z < dz; z++) {
-    for (let x = 0; x < wx; x++) {
-      const west = x === 0;
-      const east = x === wx - 1;
-      if (west) pieces.push({ piece: "roof-high-left", x, y, z });
-      else if (east) pieces.push({ piece: "roof-high-right", x, y, z, rotY: R180 });
-      else pieces.push({ piece: "roof-high", x, y, z });
-    }
-  }
-
-  return pieces;
+function shifted(blueprint: PrefabBlueprint, dx: number, dz: number): PrefabBlueprint {
+  return {
+    pieces: blueprint.pieces.map((piece) => ({ ...piece, x: piece.x + dx, z: piece.z + dz })),
+    roofs: blueprint.roofs.map((roof) => ({ ...roof, x: roof.x + dx, z: roof.z + dz })),
+    wx: blueprint.wx,
+    dz: blueprint.dz,
+  };
 }
 
 function buildRect(def: RectDef): PrefabBlueprint {
@@ -99,12 +84,12 @@ function buildRect(def: RectDef): PrefabBlueprint {
     }
   }
 
-  pieces.push(...buildRoof(wx, dz, floors.length, roof));
+  const roofs: PrefabRoofSpec[] = [{ kind: roof, x: 0, y: floors.length, z: 0, wx, dz }];
   if (chimney) {
     const spot = chimneyAt ?? { x: Math.max(0, wx - 2), z: Math.min(Math.max(1, Math.floor(dz / 2)), dz - 1) };
     pieces.push({ piece: "chimney", x: spot.x, y: floors.length, z: spot.z });
   }
-  return { pieces, wx, dz };
+  return { pieces, roofs, wx, dz };
 }
 
 function buildMill(): PrefabBlueprint {
@@ -122,15 +107,18 @@ function buildMill(): PrefabBlueprint {
     chimney: true,
     chimneyAt: { x: 0, z: 1 },
   });
+  const annexShifted = shifted(annex, 0, 1);
+  const towerShifted = shifted(tower, 2, 0);
   return {
     pieces: [
-      ...shifted(annex, 0, 1),
-      ...shifted(tower, 2, 0),
+      ...annexShifted.pieces,
+      ...towerShifted.pieces,
       { piece: "watermill-wide", x: 3.5, y: 0.9, z: 1.45, rotY: R90, scale: 1.1 },
       { piece: "banner-red", x: 2.75, y: 1.1, z: -0.1, rotY: R90 },
       { piece: "banner-red", x: 4.25, y: 1.1, z: 3.1, rotY: R270 },
       { piece: "rock-wide", x: 1.9, y: 0, z: 3.2, scale: 0.9 },
     ],
+    roofs: [...annexShifted.roofs, ...towerShifted.roofs],
     wx: 5,
     dz: 4,
   };
@@ -237,7 +225,9 @@ export function buildKenney(type: string, scale: number): KenneyBuilding {
   const blueprint = BLUEPRINTS[type];
   if (!blueprint) throw new Error(`Unknown building: ${type}`);
 
-  const inner = assemblePieces(blueprint.pieces);
+  const inner = new THREE.Group();
+  inner.add(assemblePieces(blueprint.pieces));
+  for (const roof of blueprint.roofs) inner.add(buildPrefabRoof(roof));
   inner.position.set(-(blueprint.wx - 1) / 2, 0, -(blueprint.dz - 1) / 2);
 
   const group = new THREE.Group();

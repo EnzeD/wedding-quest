@@ -54,3 +54,4 @@
 | `public/assets/kenney-ui/License.txt` | Licence CC0 du Kenney UI Pack |
 | `.codex/skills/threejs-*/SKILL.md` | Copies locales des skills Three.js vendorises pour ce projet |
 | `AGENTS.md` | Instructions projet canoniques et source unique pour les agents/outils |
+| `src/prefab-roofs.ts` | Toits continus proceduraux des prefabs Kenney (gable et plat), pour eviter les assemblages de tuiles incoherents |
