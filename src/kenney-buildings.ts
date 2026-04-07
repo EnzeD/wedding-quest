@@ -94,8 +94,8 @@ function buildRect(def: RectDef): PrefabBlueprint {
       const northDoor = door?.side === "n" && door.pos === x;
       const southDoor = door?.side === "s" && door.pos === x;
       const mid = x > 0 && x < wx - 1;
-      pieces.push({ piece: northDoor ? doorPiece : mid ? window : wall, x, y: f, z: dz - 1, rotY: R90 });
-      pieces.push({ piece: southDoor ? doorPiece : mid ? window : wall, x, y: f, z: 0, rotY: R270 });
+      pieces.push({ piece: northDoor ? doorPiece : mid ? window : wall, x, y: f, z: dz - 1, rotY: R270 });
+      pieces.push({ piece: southDoor ? doorPiece : mid ? window : wall, x, y: f, z: 0, rotY: R90 });
     }
   }
 
