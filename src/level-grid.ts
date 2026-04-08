@@ -1,4 +1,5 @@
 import { normalizeColorGrading, normalizeGrassColor } from "./color-grading.ts";
+import { ensurePickupEntities } from "./item-definitions.ts";
 import { normalizeMenuSettings } from "./menu-settings.ts";
 import { normalizeSurfaceSettings } from "./surface-settings.ts";
 import type { LevelData, LevelSurfaceLayer } from "./types.ts";
@@ -24,7 +25,7 @@ export function normalizeLevel(level: LevelData): LevelData {
   const size = level.metadata.size;
   return {
     metadata: { ...level.metadata },
-    entities: cloneLevel(level.entities),
+    entities: ensurePickupEntities(cloneLevel(level.entities)),
     surfaceLayers: {
       path: ensureLayerShape(level.surfaceLayers.path, size),
       water: ensureLayerShape(level.surfaceLayers.water, size),

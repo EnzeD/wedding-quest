@@ -57,6 +57,23 @@
   flex-wrap: wrap;
 }
 
+.editor-pickup-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.editor-filter-label {
+  font-size: 12px;
+  color: var(--light-blue);
+}
+
+.editor-filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .editor-btn,
 .editor-tab,
 .editor-palette-item {

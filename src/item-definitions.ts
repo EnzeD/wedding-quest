@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { bilingual, localize, type BilingualText } from "./i18n.ts";
-import type { Character } from "./types.ts";
+import type { Character, LevelEntity, PickupEditorFilter } from "./types.ts";
 
 export interface PickupDefinition {
   id: string;
@@ -69,6 +69,14 @@ export function getPickupDefinition(id: string): PickupDefinition | null {
   return PICKUP_BY_ID.get(id) ?? null;
 }
 
+export function getPickupCharacter(id: string): Character | null {
+  return getPickupDefinition(id)?.character ?? null;
+}
+
+export function matchesPickupFilter(id: string, filter: PickupEditorFilter): boolean {
+  return filter === "all" || getPickupCharacter(id) === filter;
+}
+
 export function getPickupDefinitions(character?: Character): PickupDefinition[] {
   if (!character) return [...PICKUP_DEFINITIONS];
   return PICKUP_DEFINITIONS.filter((item) => item.character === character);
@@ -86,4 +94,30 @@ export function createFallbackPickupDefs(character: Character) {
       rotationY: 0,
     };
   });
+}
+
+export function createDefaultPickupEntities(character?: Character): LevelEntity[] {
+  return getPickupDefinitions(character).map((item, index) => {
+    const [x, z] = DEFAULT_PICKUP_POSITIONS[index % DEFAULT_PICKUP_POSITIONS.length];
+    return {
+      id: `pickup-${item.id}`,
+      kind: "pickup",
+      assetId: item.id,
+      position: { x, y: 0, z },
+      rotationY: 0,
+      scale: 0.8,
+      snap: "free",
+      name: item.editorLabel,
+    };
+  });
+}
+
+export function ensurePickupEntities(entities: LevelEntity[]): LevelEntity[] {
+  const present = new Set(
+    entities
+      .filter((entity) => entity.kind === "pickup")
+      .map((entity) => entity.assetId),
+  );
+  const missing = createDefaultPickupEntities().filter((entity) => !present.has(entity.assetId));
+  return missing.length > 0 ? [...entities, ...missing] : entities;
 }

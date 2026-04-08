@@ -98,6 +98,12 @@ export const editorText = {
     selection: bilingual("Selection", "Selection"),
     look: bilingual("Rendu", "Look"),
   },
+  filters: {
+    all: bilingual("Tous", "All"),
+    sarah: bilingual("Sarah", "Sarah"),
+    nicolas: bilingual("Nicolas", "Nicolas"),
+    pickups: bilingual("Afficher pickups", "Show pickups"),
+  },
   help: bilingual(
     "Apercu en direct. Sauver enregistre le toggle FX et le color grading dans le JSON du niveau.",
     "Live preview. Save writes the FX toggle and color grading values to the level JSON.",

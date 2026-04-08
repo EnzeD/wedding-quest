@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createEntityFromPaletteItem, setEntityField, snapPoint } from "./editor-entity.ts";
+import { matchesPickupFilter } from "./item-definitions.ts";
 import { mountStartAngleButton } from "./editor-menu-angle.ts";
 import { EditorPlacementPreview } from "./editor-placement-preview.ts";
 import { EditorPreviewStore } from "./editor-preview.ts";
@@ -13,12 +14,9 @@ import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
 import { editorText, localize } from "./i18n.ts";
 import { captureMenuCameraFrame } from "./menu-settings.ts";
 import { normalizeSurfaceSettings } from "./surface-settings.ts";
-import type { ColorGradingSettings, LevelData, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
+import type { ColorGradingSettings, LevelData, LevelSurfaceSettings, PickupEditorFilter, SurfaceSettingField } from "./types.ts";
 
-interface LevelEditorOptions {
-  setColorGrading: (value: Partial<ColorGradingSettings>) => ColorGradingSettings;
-  setPostProcessingEnabled: (enabled: boolean) => boolean;
-}
+interface LevelEditorOptions { setColorGrading: (value: Partial<ColorGradingSettings>) => ColorGradingSettings; setPostProcessingEnabled: (enabled: boolean) => boolean; }
 export class LevelEditor {
   private mapScene: MapScene;
   private camera: THREE.Camera;
@@ -30,7 +28,6 @@ export class LevelEditor {
   private placementPreview: EditorPlacementPreview;
   private selectionBox = new THREE.BoxHelper(undefined, 0xffb349);
   private previews = new EditorPreviewStore();
-
   private level: LevelData;
   private activeItem: EditorPaletteItem | null = null;
   private selectedEntityId: string | null = null;
@@ -38,6 +35,7 @@ export class LevelEditor {
   private painting = false;
   private eraseMode = false;
   private lastPaintKey: string | null = null;
+  private pickupFilter: PickupEditorFilter = "all";
   private setColorGrading: LevelEditorOptions["setColorGrading"];
   private setPostProcessingEnabled: LevelEditorOptions["setPostProcessingEnabled"];
   private constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData, options: LevelEditorOptions) {
@@ -67,15 +65,8 @@ export class LevelEditor {
     const editor = new LevelEditor(renderer, camera, mapScene, level, options);
     const catalog = await loadEditorCatalog();
     editor.ui = new EditorUI(catalog, {
-      onPick: (item) => {
-        editor.activeItem = item;
-        editor.selectEntity(null);
-        editor.placementPreview.setItem(item);
-      },
-      onTab: () => {
-        editor.activeItem = null;
-        editor.placementPreview.setItem(null);
-      },
+      onPick: (item) => { editor.activeItem = item; editor.selectEntity(null); editor.placementPreview.setItem(item); },
+      onTab: () => { editor.activeItem = null; editor.placementPreview.setItem(null); },
       onSave: () => void editor.save(),
       onReload: () => void editor.reload(),
       onPropChange: (field, value) => void editor.updateSelected(field, value),
@@ -88,6 +79,7 @@ export class LevelEditor {
       onColorGradingChange: (field, value) => { editor.level.colorGrading = editor.setColorGrading({ ...editor.level.colorGrading, [field]: value }); },
       onColorGradingReset: () => { editor.level.colorGrading = editor.setColorGrading(DEFAULT_COLOR_GRADING); editor.ui?.renderColorGrading(editor.level.colorGrading); },
       onEraseToggle: (enabled) => { editor.eraseMode = enabled; },
+      onPickupFilterChange: (filter) => { editor.pickupFilter = filter; editor.syncPickupFilter(); },
       getPreview: (item) => editor.previews.get(item),
       onPreviewNeeded: (item) => { void editor.previews.ensure(item).then((preview) => preview && editor.ui?.updatePreview(item.id, preview)); },
     });
@@ -99,6 +91,7 @@ export class LevelEditor {
     editor.ui.renderLookSettings(editor.level.grassColor, editor.level.surfaceSettings);
     editor.level.colorGrading = editor.setColorGrading(editor.level.colorGrading);
     editor.ui.renderColorGrading(editor.level.colorGrading);
+    editor.syncPickupFilter();
     editor.ui.setStatus(localize(editorText.status.active));
     return editor;
   }
@@ -124,6 +117,7 @@ export class LevelEditor {
       this.placementPreview.setItem(this.activeItem);
       this.selectEntity(null);
       this.ui.setPostProcessingEnabled(this.level.postProcessingEnabled);
+      this.syncPickupFilter();
       this.ui.renderLookSettings(this.level.grassColor, this.level.surfaceSettings);
       this.ui.renderColorGrading(this.level.colorGrading);
       this.ui.setStatus(status);
@@ -189,7 +183,6 @@ export class LevelEditor {
       if (event.code === "Escape") { this.activeItem = null; this.placementPreview.setItem(null); }
       return;
     }
-
     if (event.code === "Delete" || event.code === "Backspace") {
       event.preventDefault();
       this.level.entities = this.level.entities.filter((entity) => entity.id !== this.selectedEntityId);
@@ -197,12 +190,10 @@ export class LevelEditor {
       this.selectEntity(null);
       return;
     }
-
     if (event.code === "Escape") {
       this.selectEntity(null);
       return;
     }
-
     if (event.code === "KeyR") {
       const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
       if (!entity) return;
@@ -269,6 +260,19 @@ export class LevelEditor {
     if (object) this.selectionBox.setFromObject(object);
   }
   private updateHover(point: THREE.Vector3 | null): void { this.placementPreview.update(point); }
+  private syncPickupFilter(): void {
+    if (this.activeItem?.kind === "pickup" && !matchesPickupFilter(this.activeItem.id, this.pickupFilter)) {
+      this.activeItem = null;
+      this.placementPreview.setItem(null);
+      this.ui?.setActiveItem(null);
+    }
+    for (const entity of this.level.entities.filter((item) => item.kind === "pickup")) {
+      const object = this.mapScene.getEntityObject(entity.id);
+      if (object) object.visible = matchesPickupFilter(entity.assetId, this.pickupFilter);
+    }
+    const selected = this.selectedEntityId ? this.level.entities.find((item) => item.id === this.selectedEntityId) : null;
+    if (selected?.kind === "pickup" && !matchesPickupFilter(selected.assetId, this.pickupFilter)) this.selectEntity(null);
+  }
   private raycastGround(event: PointerEvent): THREE.Vector3 | null {
     this.updateMouse(event);
     this.raycaster.setFromCamera(this.mouse, this.camera);

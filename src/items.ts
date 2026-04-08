@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { cloneAsset, normalizeToHeight } from "./assets.ts";
-import { createFallbackPickupDefs, getPickupDefinition } from "./item-definitions.ts";
+import { getPickupDefinition } from "./item-definitions.ts";
 import { pickupAssetPath } from "./level-assets.ts";
 import { addOutline } from "./shaders/outline.ts";
 import { applyFresnelPulse } from "./shaders/fresnel-pulse.ts";
@@ -46,8 +46,7 @@ export class ItemManager {
 
   spawn(character: Character, level: LevelData): ItemDef[] {
     this.clear();
-    const placedDefs = getPlacedItemDefs(level, character);
-    const defs = placedDefs.length > 0 ? placedDefs : createFallbackPickupDefs(character);
+    const defs = getPlacedItemDefs(level, character);
 
     const allDefs: ItemDef[] = [];
 

@@ -10,6 +10,7 @@ export interface Collider {
 
 export type GameMode = "menu" | "playing" | "score";
 export type Character = "sarah" | "nicolas";
+export type PickupEditorFilter = "all" | Character;
 export type LevelEntityKind = "prefab" | "kenney-piece" | "decoration" | "vegetation" | "npc" | "pickup" | "menu-anchor";
 export type LevelSnapMode = "grid" | "free";
 

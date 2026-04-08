@@ -18,12 +18,12 @@
 | `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu et palette du ciel |
 | `src/types.ts` | Interfaces partagees : collisions, etat, assets et schema du niveau data-driven |
 | `src/state.ts` | Gestion de l'etat du jeu : creation, reset, score, items collectes |
-| `src/item-definitions.ts` | Catalogue des objets a trouver par personnage (ids, labels editeur, points) + fallback de positions tant que le niveau n'en place pas |
+| `src/item-definitions.ts` | Catalogue des objets a trouver par personnage (ids, labels editeur, points) + generation/normalisation des pickups par defaut comme vraies entites du niveau |
 | `src/assets.ts` | Chargement GLTF : manifeste, cache, clone, normalisation de taille |
 | `src/level-data.ts` | Chargement et sauvegarde du niveau JSON principal |
 | `src/color-grading.ts` | Reglages par defaut et normalisation du color grading et de la couleur d'herbe sauvegardes dans le niveau |
 | `src/surface-settings.ts` | Reglages par defaut et normalisation des parametres de surfaces, dont le relief d'eau (profondeur, pente, irregularite des berges, variation du fond) |
-| `src/level-grid.ts` | Utilitaires de grille pour surfaces path/water et conversion monde/cellule |
+| `src/level-grid.ts` | Utilitaires de grille pour surfaces path/water, conversion monde/cellule et normalisation du niveau (dont injection des pickups manquants) |
 | `src/level-assets.ts` | Resolution et preload des assets utilises par les entites du niveau |
 | `src/level-catalog.ts` | Construction du catalogue de palette de l'editeur depuis les catalogues Kenney |
 | `src/terrain-ground.ts` | Sol de base deforme par le masque d'eau pour creuser les zones humides et lisser les berges |

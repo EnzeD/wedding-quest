@@ -1276,6 +1276,286 @@
       "rotationY": 0,
       "scale": 0.7,
       "snap": "grid"
+    },
+    {
+      "id": "pickup-nicolas-boutonniere",
+      "kind": "pickup",
+      "assetId": "nicolas-boutonniere",
+      "position": {
+        "x": -5,
+        "y": 0,
+        "z": 5
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Boutonniere"
+    },
+    {
+      "id": "pickup-nicolas-boutons-manchettes",
+      "kind": "pickup",
+      "assetId": "nicolas-boutons-manchettes",
+      "position": {
+        "x": 10,
+        "y": 0,
+        "z": 8
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Boutons de manchettes"
+    },
+    {
+      "id": "pickup-nicolas-cravate",
+      "kind": "pickup",
+      "assetId": "nicolas-cravate",
+      "position": {
+        "x": 5,
+        "y": 0,
+        "z": 20
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Cravate"
+    },
+    {
+      "id": "pickup-nicolas-montre",
+      "kind": "pickup",
+      "assetId": "nicolas-montre",
+      "position": {
+        "x": -8.066797452163616,
+        "y": 0,
+        "z": -3.0850663904520985
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Montre"
+    },
+    {
+      "id": "pickup-nicolas-chaussures",
+      "kind": "pickup",
+      "assetId": "nicolas-chaussures",
+      "position": {
+        "x": 20,
+        "y": 0,
+        "z": 5
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Chaussures"
+    },
+    {
+      "id": "pickup-nicolas-voeux",
+      "kind": "pickup",
+      "assetId": "nicolas-voeux",
+      "position": {
+        "x": -15,
+        "y": 0,
+        "z": 18
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Les voeux"
+    },
+    {
+      "id": "pickup-nicolas-pantalon",
+      "kind": "pickup",
+      "assetId": "nicolas-pantalon",
+      "position": {
+        "x": 25,
+        "y": 0,
+        "z": -15
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Pantalon"
+    },
+    {
+      "id": "pickup-nicolas-chemise",
+      "kind": "pickup",
+      "assetId": "nicolas-chemise",
+      "position": {
+        "x": -20,
+        "y": 0,
+        "z": -10
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Chemise"
+    },
+    {
+      "id": "pickup-nicolas-veste",
+      "kind": "pickup",
+      "assetId": "nicolas-veste",
+      "position": {
+        "x": 14,
+        "y": 0,
+        "z": -5
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Veste"
+    },
+    {
+      "id": "pickup-nicolas-alliances",
+      "kind": "pickup",
+      "assetId": "nicolas-alliances",
+      "position": {
+        "x": 13.905619855369654,
+        "y": 0,
+        "z": -31.55648344154362
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Nicolas - Les alliances"
+    },
+    {
+      "id": "pickup-sarah-bracelet",
+      "kind": "pickup",
+      "assetId": "sarah-bracelet",
+      "position": {
+        "x": -5,
+        "y": 0,
+        "z": 5
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Bracelet"
+    },
+    {
+      "id": "pickup-sarah-lentilles",
+      "kind": "pickup",
+      "assetId": "sarah-lentilles",
+      "position": {
+        "x": 10,
+        "y": 0,
+        "z": 8
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Lentilles"
+    },
+    {
+      "id": "pickup-sarah-boucles-oreilles",
+      "kind": "pickup",
+      "assetId": "sarah-boucles-oreilles",
+      "position": {
+        "x": 5,
+        "y": 0,
+        "z": 20
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Boucles d'oreilles"
+    },
+    {
+      "id": "pickup-sarah-maquillage",
+      "kind": "pickup",
+      "assetId": "sarah-maquillage",
+      "position": {
+        "x": -8,
+        "y": 0,
+        "z": -3
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Trousse de maquillage"
+    },
+    {
+      "id": "pickup-sarah-voile",
+      "kind": "pickup",
+      "assetId": "sarah-voile",
+      "position": {
+        "x": 20,
+        "y": 0,
+        "z": 5
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Voile"
+    },
+    {
+      "id": "pickup-sarah-voeux",
+      "kind": "pickup",
+      "assetId": "sarah-voeux",
+      "position": {
+        "x": -15,
+        "y": 0,
+        "z": 18
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Les voeux"
+    },
+    {
+      "id": "pickup-sarah-chaussures",
+      "kind": "pickup",
+      "assetId": "sarah-chaussures",
+      "position": {
+        "x": 25,
+        "y": 0,
+        "z": -15
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Chaussures"
+    },
+    {
+      "id": "pickup-sarah-bouquet",
+      "kind": "pickup",
+      "assetId": "sarah-bouquet",
+      "position": {
+        "x": -20,
+        "y": 0,
+        "z": -10
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Bouquet"
+    },
+    {
+      "id": "pickup-sarah-robe",
+      "kind": "pickup",
+      "assetId": "sarah-robe",
+      "position": {
+        "x": 14,
+        "y": 0,
+        "z": -5
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Robe"
+    },
+    {
+      "id": "pickup-sarah-alliances",
+      "kind": "pickup",
+      "assetId": "sarah-alliances",
+      "position": {
+        "x": 13.106406790712791,
+        "y": 0,
+        "z": -28.732947634437092
+      },
+      "rotationY": 0,
+      "scale": 0.8,
+      "snap": "free",
+      "name": "Sarah - Les alliances"
     }
   ],
   "surfaceLayers": {

@@ -1,6 +1,7 @@
 import type { EditorPaletteItem, EditorTab } from "./level-catalog.ts";
+import { matchesPickupFilter } from "./item-definitions.ts";
 import { editorText, localize } from "./i18n.ts";
-import type { ColorGradingSettings, LevelEntity, LevelEntityKind, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
+import type { ColorGradingSettings, LevelEntity, LevelEntityKind, LevelSurfaceSettings, PickupEditorFilter, SurfaceSettingField } from "./types.ts";
 
 interface EditorUiHandlers {
   onPick: (item: EditorPaletteItem) => void;
@@ -14,6 +15,7 @@ interface EditorUiHandlers {
   onColorGradingChange: (field: keyof ColorGradingSettings, value: number) => void;
   onColorGradingReset: () => void;
   onEraseToggle: (enabled: boolean) => void;
+  onPickupFilterChange: (filter: PickupEditorFilter) => void;
   getPreview: (item: EditorPaletteItem) => string | null;
   onPreviewNeeded: (item: EditorPaletteItem) => void;
 }
@@ -21,6 +23,8 @@ interface EditorUiHandlers {
 const TAB_LABELS: Record<EditorTab, string> = Object.fromEntries(
   Object.entries(editorText.tabs).map(([tab, label]) => [tab, localize(label)]),
 ) as Record<EditorTab, string>;
+const PICKUP_FILTER_LABELS: Record<PickupEditorFilter, string> = { all: localize(editorText.filters.all), sarah: localize(editorText.filters.sarah), nicolas: localize(editorText.filters.nicolas) };
+const PICKUP_FILTERS: PickupEditorFilter[] = ["all", "sarah", "nicolas"];
 
 const COLOR_GRADING_FIELDS: Array<{
   field: keyof ColorGradingSettings;
@@ -61,6 +65,7 @@ export class EditorUI {
   private root: HTMLDivElement;
   private tabsEl: HTMLDivElement;
   private paletteEl: HTMLDivElement;
+  private pickupFiltersEl: HTMLDivElement;
   private propsEl: HTMLDivElement;
   private lookEl: HTMLDivElement;
   private gradingEl: HTMLDivElement;
@@ -71,6 +76,7 @@ export class EditorUI {
   private previewObserver: IntersectionObserver | null = null;
   activeTab: EditorTab = "prefabs";
   activeItemId: string | null = null;
+  pickupFilter: PickupEditorFilter = "all";
   constructor(items: EditorPaletteItem[], handlers: EditorUiHandlers) {
     this.items = items;
     this.handlers = handlers;
@@ -84,6 +90,7 @@ export class EditorUI {
           <button id="editor-erase" class="editor-btn">${localize(editorText.buttons.erase)}</button>
         </div>
         <div class="editor-tabs"></div>
+        <div class="editor-pickup-filters"></div>
         <div class="editor-palette"></div>
       </div>
       <div class="editor-properties kenney-panel">
@@ -110,6 +117,7 @@ export class EditorUI {
 
     this.tabsEl = this.root.querySelector(".editor-tabs") as HTMLDivElement;
     this.paletteEl = this.root.querySelector(".editor-palette") as HTMLDivElement;
+    this.pickupFiltersEl = this.root.querySelector(".editor-pickup-filters") as HTMLDivElement;
     this.propsEl = this.root.querySelector(".editor-props") as HTMLDivElement;
     this.lookEl = this.root.querySelector(".editor-look") as HTMLDivElement;
     this.gradingEl = this.root.querySelector(".editor-grading") as HTMLDivElement;
@@ -125,6 +133,13 @@ export class EditorUI {
       this.eraseBtn.classList.toggle("selected");
       handlers.onEraseToggle(this.eraseBtn.classList.contains("selected"));
     });
+    this.pickupFiltersEl.addEventListener("click", (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-pickup-filter]");
+      const filter = button?.dataset.pickupFilter as PickupEditorFilter | undefined;
+      if (!filter || filter === this.pickupFilter) return;
+      this.setPickupFilter(filter);
+      handlers.onPickupFilterChange(filter);
+    });
     this.propsEl.addEventListener("change", (event) => this.onPropEvent(event));
     this.propsEl.addEventListener("input", (event) => this.onPropEvent(event));
     this.lookEl.addEventListener("change", (event) => this.onLookEvent(event));
@@ -133,24 +148,14 @@ export class EditorUI {
     this.gradingEl.addEventListener("input", (event) => this.onColorGradingEvent(event));
 
     this.renderTabs();
+    this.renderPickupFilters();
     this.renderPalette();
     this.renderSelection(null);
   }
-  setPostProcessingEnabled(enabled: boolean): void {
-    this.fxBtn.textContent = enabled ? localize(editorText.buttons.fxOn) : localize(editorText.buttons.fxOff);
-    this.fxBtn.classList.toggle("selected", enabled);
-  }
-  setStatus(text: string, isError = false): void {
-    this.statusEl.textContent = text;
-    this.statusEl.classList.toggle("error", isError);
-  }
-  setActiveTab(tab: EditorTab): void {
-    if (tab === this.activeTab) return;
-    this.activeTab = tab;
-    this.activeItemId = null;
-    this.renderTabs();
-    this.renderPalette();
-  }
+  setPostProcessingEnabled(enabled: boolean): void { this.fxBtn.textContent = enabled ? localize(editorText.buttons.fxOn) : localize(editorText.buttons.fxOff); this.fxBtn.classList.toggle("selected", enabled); }
+  setStatus(text: string, isError = false): void { this.statusEl.textContent = text; this.statusEl.classList.toggle("error", isError); }
+  setActiveTab(tab: EditorTab): void { if (tab !== this.activeTab) { this.activeTab = tab; this.activeItemId = null; this.renderTabs(); this.renderPickupFilters(); this.renderPalette(); } }
+  setPickupFilter(filter: PickupEditorFilter): void { if (filter !== this.pickupFilter) { this.pickupFilter = filter; this.renderPickupFilters(); this.renderPalette(); } }
   setActiveItem(id: string | null): void {
     if (this.activeItemId && this.paletteButtons.has(this.activeItemId)) this.paletteButtons.get(this.activeItemId)?.classList.remove("selected");
     this.activeItemId = id;
@@ -159,9 +164,7 @@ export class EditorUI {
   updatePreview(itemId: string, preview: string): void {
     const button = this.paletteButtons.get(itemId);
     if (!button) return;
-    const thumb = button.querySelector(".editor-palette-thumb");
-    if (!thumb) return;
-    thumb.innerHTML = `<img src="${preview}" alt="${button.dataset.label ?? itemId}" />`;
+    const thumb = button.querySelector(".editor-palette-thumb"); if (thumb) thumb.innerHTML = `<img src="${preview}" alt="${button.dataset.label ?? itemId}" />`;
   }
   renderSelection(entity: LevelEntity | null): void {
     if (!entity) {
@@ -195,8 +198,7 @@ export class EditorUI {
       const value = settings[field];
       const input = this.gradingEl.querySelector(`[data-grade-field="${field}"]`) as HTMLInputElement | null;
       const output = this.gradingEl.querySelector(`[data-grade-output="${field}"]`) as HTMLOutputElement | null;
-      if (input) input.value = String(value);
-      if (output) output.textContent = value.toFixed(digits);
+      if (input) input.value = String(value); if (output) output.textContent = value.toFixed(digits);
     }
   }
   renderLookSettings(color: string, surfaceSettings: LevelSurfaceSettings): void {
@@ -213,8 +215,7 @@ export class EditorUI {
       const value = surfaceSettings[surface][field];
       const slider = this.lookEl.querySelector(`[data-surface-kind="${surface}"][data-surface-field="${field}"]`) as HTMLInputElement | null;
       const output = this.lookEl.querySelector(`[data-surface-output="${surface}.${field}"]`) as HTMLOutputElement | null;
-      if (slider) slider.value = String(value);
-      if (output) output.textContent = value.toFixed(digits);
+      if (slider) slider.value = String(value); if (output) output.textContent = value.toFixed(digits);
     }
   }
   private renderTabs(): void {
@@ -227,8 +228,17 @@ export class EditorUI {
       this.tabsEl.appendChild(btn);
     });
   }
+  private renderPickupFilters(): void {
+    this.pickupFiltersEl.hidden = this.activeTab !== "items";
+    this.pickupFiltersEl.innerHTML = `
+      <div class="editor-filter-label">${localize(editorText.filters.pickups)}</div>
+      <div class="editor-filter-row">${PICKUP_FILTERS.map((filter) => `
+        <button class="editor-btn editor-btn-secondary ${filter === this.pickupFilter ? "selected" : ""}" data-pickup-filter="${filter}">${PICKUP_FILTER_LABELS[filter]}</button>
+      `).join("")}</div>
+    `;
+  }
   private renderPalette(): void {
-    const items = this.items.filter((item) => item.tab === this.activeTab);
+    const items = this.items.filter((item) => item.tab === this.activeTab && (item.kind !== "pickup" || matchesPickupFilter(item.id, this.pickupFilter)));
     this.previewObserver?.disconnect();
     this.paletteButtons.clear();
     this.paletteEl.innerHTML = "";
@@ -258,8 +268,7 @@ export class EditorUI {
           if (button.dataset.previewRequested === "1") continue;
           const item = byId.get(button.dataset.itemId ?? "");
           if (!item || this.handlers.getPreview(item)) continue;
-          button.dataset.previewRequested = "1";
-          this.handlers.onPreviewNeeded(item);
+          button.dataset.previewRequested = "1"; this.handlers.onPreviewNeeded(item);
         }
       },
       { root: this.paletteEl, rootMargin: "120px 0px" },
@@ -269,23 +278,18 @@ export class EditorUI {
   private onPropEvent(event: Event): void {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
     const field = target.dataset.field;
-    if (!field) return;
-    this.handlers.onPropChange(field, target.value);
+    if (field) this.handlers.onPropChange(field, target.value);
   }
   private onLookEvent(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (target.dataset.lookField === "grassColor") {
-      this.handlers.onGrassColorChange(target.value);
-      return;
-    }
+    if (target.dataset.lookField === "grassColor") return void this.handlers.onGrassColorChange(target.value);
     const surface = target.dataset.surfaceKind as "path" | "water" | undefined;
     const field = target.dataset.surfaceField as SurfaceSettingField | undefined;
     const value = Number(target.value);
     const config = SURFACE_FIELDS.find((item) => item.surface === surface && item.field === field);
     if (!surface || !field || !config || !Number.isFinite(value)) return;
     const output = this.lookEl.querySelector(`[data-surface-output="${surface}.${field}"]`) as HTMLOutputElement | null;
-    if (output) output.textContent = value.toFixed(config.digits);
-    this.handlers.onSurfaceSettingChange(surface, field, value);
+    if (output) output.textContent = value.toFixed(config.digits); this.handlers.onSurfaceSettingChange(surface, field, value);
   }
   private onColorGradingEvent(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -294,7 +298,6 @@ export class EditorUI {
     const config = COLOR_GRADING_FIELDS.find((item) => item.field === field);
     if (!field || !config || !Number.isFinite(value)) return;
     const output = this.gradingEl.querySelector(`[data-grade-output="${field}"]`) as HTMLOutputElement | null;
-    if (output) output.textContent = value.toFixed(config.digits);
-    this.handlers.onColorGradingChange(field, value);
+    if (output) output.textContent = value.toFixed(config.digits); this.handlers.onColorGradingChange(field, value);
   }
 }
