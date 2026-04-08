@@ -110,7 +110,7 @@ async function init(): Promise<void> {
   const level = await loadLevel();
   post.setEnabled(level.postProcessingEnabled);
   post.setColorGrading(level.colorGrading);
-  await mapScene.load(level, { includePickups: editorMode });
+  await mapScene.load(level, { includePickups: editorMode, includeHelpers: editorMode });
   mapScene.updateGrassInteractor(player.mesh.position);
 
   document.getElementById("replay-btn")!.addEventListener("click", startGame);
@@ -129,6 +129,8 @@ async function init(): Promise<void> {
     menu = new CinematicMenu({
       camera,
       scene,
+      menuAnchor: level.entities.find((entity) => entity.kind === "menu-anchor") ?? null,
+      menuSettings: level.menu,
       onPlay: ({ character, playerName }) => {
         state.character = character;
         state.playerName = playerName;

@@ -1,6 +1,7 @@
 import { DEFAULT_COLOR_GRADING, DEFAULT_GRASS_COLOR } from "./color-grading.ts";
 import { formatLevelLoadError, formatLevelSaveError } from "./i18n.ts";
 import { createEmptyLayer, normalizeLevel } from "./level-grid.ts";
+import { normalizeMenuSettings } from "./menu-settings.ts";
 import { DEFAULT_SURFACE_SETTINGS } from "./surface-settings.ts";
 import type { LevelData } from "./types.ts";
 
@@ -44,5 +45,6 @@ export function createEmptyLevel(size: number): LevelData {
     postProcessingEnabled: true,
     grassColor: DEFAULT_GRASS_COLOR,
     colorGrading: { ...DEFAULT_COLOR_GRADING },
+    menu: normalizeMenuSettings(),
   };
 }

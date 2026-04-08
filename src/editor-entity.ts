@@ -35,6 +35,6 @@ export function createEntityFromPaletteItem(
     rotationY: 0,
     scale: item.defaultScale ?? 1,
     snap: item.defaultSnap ?? "free",
-    name: item.tab === "npc" || item.tab === "items" ? item.label : undefined,
+    name: item.tab === "npc" || item.tab === "items" || item.kind === "menu-anchor" ? item.label : undefined,
   };
 }

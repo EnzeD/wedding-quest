@@ -3,6 +3,7 @@ import { cloneAsset, normalizeToHeight, preloadAsset } from "./assets.ts";
 import type { EditorPaletteItem } from "./level-catalog.ts";
 import { buildKenney, kenneyPath, preloadKenneyPrefab } from "./kenney-buildings.ts";
 import { npcAssetPath, pickupAssetPath } from "./level-assets.ts";
+import { createMenuAnchorHelper } from "./menu-anchor-helper.ts";
 
 function createSurfacePreview(item: EditorPaletteItem): THREE.Object3D {
   const color = item.id === "water" ? 0x5f74ca : 0xf0c59d;
@@ -13,6 +14,7 @@ function createSurfacePreview(item: EditorPaletteItem): THREE.Object3D {
 
 async function createPreviewObject(item: EditorPaletteItem): Promise<THREE.Object3D> {
   if (item.surfaceTool) return createSurfacePreview(item);
+  if (item.kind === "menu-anchor") return createMenuAnchorHelper();
 
   if (item.kind === "prefab") {
     await preloadKenneyPrefab(item.id);

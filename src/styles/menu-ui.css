@@ -46,7 +46,10 @@
 .menu-stage--title {
   align-self: start;
   justify-self: center;
-  padding-top: max(44px, env(safe-area-inset-top, 0px) + 24px);
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: max(18px, env(safe-area-inset-top, 0px) + 8px);
   text-align: center;
 }
 
@@ -60,6 +63,14 @@
 .menu-shell[data-step="character"] .menu-stage--character {
   display: block;
   animation: menu-rise 280ms ease-out;
+}
+
+.menu-shell[data-step="title"] .menu-stage--title {
+  display: flex;
+}
+
+.menu-shell[data-step="character"] .menu-stage--title {
+  display: none;
 }
 
 .menu-kicker {
@@ -195,7 +206,7 @@
 
 .menu-cta {
   width: min(100%, 360px);
-  margin: 20px auto 0;
+  margin: 26px auto 0;
   border: 0;
   background: none;
   border-image-source: url("/assets/kenney-ui/green/button_rectangle_depth_flat.png");
@@ -273,7 +284,7 @@
   }
 
   .menu-stage--title {
-    padding-top: max(22px, env(safe-area-inset-top, 0px) + 12px);
+    padding-top: max(8px, env(safe-area-inset-top, 0px) + 4px);
   }
 
   .menu-tagline {

@@ -1,4 +1,5 @@
 import { normalizeColorGrading, normalizeGrassColor } from "./color-grading.ts";
+import { normalizeMenuSettings } from "./menu-settings.ts";
 import { normalizeSurfaceSettings } from "./surface-settings.ts";
 import type { LevelData, LevelSurfaceLayer } from "./types.ts";
 
@@ -32,6 +33,7 @@ export function normalizeLevel(level: LevelData): LevelData {
     postProcessingEnabled: level.postProcessingEnabled !== false,
     grassColor: normalizeGrassColor(level.grassColor),
     colorGrading: normalizeColorGrading(level.colorGrading),
+    menu: normalizeMenuSettings(level.menu),
   };
 }
 

@@ -83,11 +83,13 @@ export const editorText = {
     items: bilingual("Objets", "Items"),
     npc: bilingual("PNJ", "NPCs"),
     surfaces: bilingual("Surfaces", "Surfaces"),
+    menu: bilingual("Menu", "Menu"),
   } satisfies Record<EditorTab, BilingualText>,
   buttons: {
     save: bilingual("Sauver", "Save"),
     reload: bilingual("Recharger", "Reload"),
     erase: bilingual("Effacer", "Erase"),
+    startAngle: bilingual("Set start angle", "Set start angle"),
     reset: bilingual("Reset", "Reset"),
     fxOn: bilingual("FX ON", "FX ON"),
     fxOff: bilingual("FX OFF", "FX OFF"),
@@ -105,6 +107,7 @@ export const editorText = {
     name: bilingual("Nom", "Name"),
     rotationY: bilingual("Rotation Y", "Y Rotation"),
     scale: bilingual("Echelle", "Scale"),
+    characterHeight: bilingual("Hauteur persos", "Character height"),
     snap: bilingual("Snap", "Snap"),
     grassColor: bilingual("Brins d'herbe", "Grass blades"),
     waterTerrain: bilingual("Terrain de l'eau", "Water terrain"),
@@ -132,6 +135,7 @@ export const editorText = {
     active: bilingual("Mode editeur actif", "Editor mode active"),
     saveOk: bilingual("Sauvegarde OK", "Save OK"),
     reloaded: bilingual("Niveau recharge", "Level reloaded"),
+    startAngleSet: bilingual("Angle de depart menu capture", "Menu start angle captured"),
   },
 };
 

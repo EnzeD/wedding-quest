@@ -3,7 +3,7 @@ import { bilingual, localize } from "./i18n.ts";
 import { getPickupDefinitions } from "./item-definitions.ts";
 import type { LevelEntityKind, LevelSnapMode } from "./types.ts";
 
-export type EditorTab = "prefabs" | "kenney" | "decor" | "items" | "npc" | "surfaces";
+export type EditorTab = "prefabs" | "kenney" | "decor" | "items" | "npc" | "surfaces" | "menu";
 export type SurfaceTool = "path" | "water";
 
 export interface EditorPaletteItem {
@@ -38,6 +38,7 @@ const PREFAB_LABELS = {
 const SURFACE_LABELS = {
   path: bilingual("Chemin", "Path"),
   water: bilingual("Eau", "Water"),
+  menu: bilingual("Menu", "Menu"),
 } as const;
 
 function labelize(name: string): string {
@@ -110,5 +111,9 @@ export async function loadEditorCatalog(): Promise<EditorPaletteItem[]> {
     { id: "water", label: localize(SURFACE_LABELS.water), tab: "surfaces", surfaceTool: "water" },
   ];
 
-  return [...prefabItems, ...kenneyItems, ...decorItems, ...pickupItems, ...npcItems, ...surfaceItems];
+  const menuItems: EditorPaletteItem[] = [
+    { id: "menu-anchor", label: localize(SURFACE_LABELS.menu), tab: "menu", kind: "menu-anchor", defaultScale: 0.52, defaultSnap: "free" },
+  ];
+
+  return [...prefabItems, ...kenneyItems, ...decorItems, ...pickupItems, ...npcItems, ...surfaceItems, ...menuItems];
 }

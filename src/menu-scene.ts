@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { cloneAsset, getAnimations, getManifest, normalizeToHeight } from "./assets.ts";
 import { CONFIG } from "./config.ts";
-import type { Character } from "./types.ts";
+import type { Character, LevelEntity } from "./types.ts";
 
 const WEAPON_NODES = [
   "AK", "GrenadeLauncher", "Knife_1", "Knife_2", "Pistol",
@@ -10,10 +10,11 @@ const WEAPON_NODES = [
 ];
 
 const IDLE_NAMES = ["idle", "Idle", "static"];
-const STAGE_CENTER = new THREE.Vector3(-23, 0, 10.5);
+const STAGE_CENTER = new THREE.Vector3(-11.6, 0, 8.8);
+const DEFAULT_CHARACTER_HEIGHT = 0.52;
 const CHARACTER_OFFSETS: Record<Character, THREE.Vector3> = {
-  sarah: new THREE.Vector3(-3.5, 0, 1.1),
-  nicolas: new THREE.Vector3(3.5, 0, -0.4),
+  sarah: new THREE.Vector3(-3.3, 0.1, 0.8),
+  nicolas: new THREE.Vector3(3.3, 0, -0.3),
 };
 
 class MenuCharacter {
@@ -26,18 +27,21 @@ class MenuCharacter {
   private mixer: THREE.AnimationMixer | null = null;
   private selectedMix = 0;
   private targetMix = 0;
+  private characterHeight: number;
   private basePosition: THREE.Vector3;
 
   constructor(
     private character: Character,
     position: THREE.Vector3,
+    characterHeight: number,
     private accentColor: number,
     private side: -1 | 1,
   ) {
+    this.characterHeight = characterHeight;
     this.basePosition = position.clone();
     this.group.position.copy(position);
     this.group.add(this.createPedestal(), this.visualRoot);
-    this.focus.position.set(0, 1.55, 0);
+    this.focus.position.set(0, 1.9, 0);
     this.group.add(this.focus);
   }
 
@@ -52,7 +56,7 @@ class MenuCharacter {
     });
 
     const normalized = normalizeToHeight(model, CONFIG.player.height * 1.12, true);
-    normalized.position.y = 0.36;
+    normalized.position.y = this.characterHeight;
     normalized.rotation.y = Math.PI;
     this.visualRoot.add(normalized);
 
@@ -146,15 +150,21 @@ export class MenuScene {
   private stageFocus = new THREE.Object3D();
   private characters: Record<Character, MenuCharacter>;
 
-  constructor(scene: THREE.Scene) {
-    this.root.position.copy(STAGE_CENTER);
+  constructor(scene: THREE.Scene, anchor: LevelEntity | null) {
+    const stageCenter = anchor
+      ? new THREE.Vector3(anchor.position.x, anchor.position.y, anchor.position.z)
+      : STAGE_CENTER.clone();
+    const characterHeight = anchor?.scale ?? DEFAULT_CHARACTER_HEIGHT;
+
+    this.root.position.copy(stageCenter);
+    this.root.rotation.y = anchor?.rotationY ?? 0;
     this.root.add(this.createStage());
     this.stageFocus.position.set(0, 1.7, 0.2);
     this.root.add(this.stageFocus);
 
     this.characters = {
-      sarah: new MenuCharacter("sarah", CHARACTER_OFFSETS.sarah, 0xffb349, -1),
-      nicolas: new MenuCharacter("nicolas", CHARACTER_OFFSETS.nicolas, 0x78d4ff, 1),
+      sarah: new MenuCharacter("sarah", CHARACTER_OFFSETS.sarah, characterHeight, 0xffb349, -1),
+      nicolas: new MenuCharacter("nicolas", CHARACTER_OFFSETS.nicolas, characterHeight, 0x78d4ff, 1),
     };
 
     this.root.add(this.characters.sarah.group, this.characters.nicolas.group);
@@ -195,23 +205,8 @@ export class MenuScene {
     return this.characters[character].group.getWorldPosition(target);
   }
 
-  getTitleFrame(): { position: THREE.Vector3; lookAt: THREE.Vector3 } {
-    return {
-      position: new THREE.Vector3(-15.2, 11.6, 22.8),
-      lookAt: new THREE.Vector3(-28.8, 2.4, 10.1),
-    };
-  }
-
   private createStage(): THREE.Group {
     const stage = new THREE.Group();
-
-    const disc = new THREE.Mesh(
-      new THREE.CircleGeometry(8.25, 48),
-      new THREE.MeshStandardMaterial({ color: 0x173248, transparent: true, opacity: 0.82 }),
-    );
-    disc.rotation.x = -Math.PI / 2;
-    disc.position.y = 0.02;
-    stage.add(disc);
 
     const trim = new THREE.Mesh(
       new THREE.TorusGeometry(6.3, 0.16, 10, 48),

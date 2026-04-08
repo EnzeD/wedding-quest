@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createEntityFromPaletteItem, setEntityField, snapPoint } from "./editor-entity.ts";
+import { mountStartAngleButton } from "./editor-menu-angle.ts";
 import { EditorPlacementPreview } from "./editor-placement-preview.ts";
 import { EditorPreviewStore } from "./editor-preview.ts";
 import { EditorUI } from "./editor-ui.ts";
@@ -10,6 +11,7 @@ import { cellKey, cloneLevel, getCell, setCell, worldToCell } from "./level-grid
 import { MapScene } from "./map.ts";
 import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
 import { editorText, localize } from "./i18n.ts";
+import { captureMenuCameraFrame } from "./menu-settings.ts";
 import { normalizeSurfaceSettings } from "./surface-settings.ts";
 import type { ColorGradingSettings, LevelData, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
 
@@ -45,7 +47,6 @@ export class LevelEditor {
     this.level = cloneLevel(level);
     this.setColorGrading = options.setColorGrading;
     this.setPostProcessingEnabled = options.setPostProcessingEnabled;
-
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.target.set(0, 0, 0);
@@ -53,7 +54,6 @@ export class LevelEditor {
     this.controls.minDistance = 15;
     this.controls.maxDistance = 120;
     this.camera.position.set(0, 42, 20);
-
     this.placementPreview = new EditorPlacementPreview(this.level.metadata.size, (object) => this.mapScene.addOverlay(object));
     this.mapScene.addOverlay(this.selectionBox);
     this.selectionBox.visible = false;
@@ -91,6 +91,7 @@ export class LevelEditor {
       getPreview: (item) => editor.previews.get(item),
       onPreviewNeeded: (item) => { void editor.previews.ensure(item).then((preview) => preview && editor.ui?.updatePreview(item.id, preview)); },
     });
+    mountStartAngleButton(localize(editorText.buttons.startAngle), () => editor.captureStartAngle());
     editor.level.postProcessingEnabled = editor.setPostProcessingEnabled(editor.level.postProcessingEnabled);
     editor.ui.setPostProcessingEnabled(editor.level.postProcessingEnabled);
     editor.mapScene.updateGrassColor(editor.level.grassColor);
@@ -136,7 +137,6 @@ export class LevelEditor {
 
     const point = this.raycastGround(event);
     const entity = this.raycastEntity(event);
-
     if (this.activeItem?.surfaceTool && point) {
       this.painting = true;
       this.controls.enabled = false;
@@ -170,7 +170,6 @@ export class LevelEditor {
     if (!this.dragging || !point || !this.selectedEntityId) return;
     const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
     if (!entity) return;
-
     const snapped = entity.snap === "grid" ? snapPoint(point, this.level.metadata.size) : point;
     entity.position.x = snapped.x;
     entity.position.z = snapped.z;
@@ -215,6 +214,16 @@ export class LevelEditor {
   }
   private async placeEntity(point: THREE.Vector3): Promise<void> {
     if (!this.activeItem || !this.ui) return;
+    if (this.activeItem.kind === "menu-anchor") {
+      const existing = this.level.entities.find((entity) => entity.kind === "menu-anchor");
+      if (existing) {
+        existing.position.x = point.x;
+        existing.position.z = point.z;
+        await this.mapScene.upsertEntity(existing, false);
+        this.selectEntity(existing.id);
+        return;
+      }
+    }
     const next = createEntityFromPaletteItem(this.activeItem, point, this.level.metadata.size);
     this.level.entities.push(next);
     await this.mapScene.addEntity(next);
@@ -280,8 +289,11 @@ export class LevelEditor {
     this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   }
   private async commitDraggedEntity(): Promise<void> {
-    if (!this.selectedEntityId) return;
-    const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
+    if (!this.selectedEntityId) return; const entity = this.level.entities.find((item) => item.id === this.selectedEntityId);
     if (entity) await this.mapScene.upsertEntity(entity, false);
+  }
+  private captureStartAngle(): void {
+    this.level.menu.startCamera = captureMenuCameraFrame(this.camera, this.controls.target);
+    this.ui?.setStatus(localize(editorText.status.startAngleSet));
   }
 }

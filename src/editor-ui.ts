@@ -48,8 +48,7 @@ const SURFACE_FIELDS = [
 ] as const;
 
 function labelEntityKind(kind: LevelEntityKind): string {
-  if (kind === "pickup") return TAB_LABELS.items;
-  if (kind === "npc") return TAB_LABELS.npc;
+  if (kind === "pickup") return TAB_LABELS.items; if (kind === "npc") return TAB_LABELS.npc; if (kind === "menu-anchor") return TAB_LABELS.menu;
   if (kind === "vegetation" || kind === "decoration") return TAB_LABELS.decor;
   return kind === "kenney-piece" ? TAB_LABELS.kenney : TAB_LABELS.prefabs;
 }
@@ -167,14 +166,14 @@ export class EditorUI {
       this.propsEl.innerHTML = `<p class="editor-empty">${localize(editorText.selectionEmpty)}</p>`;
       return;
     }
-
+    const scaleLabel = entity.kind === "menu-anchor" ? localize(editorText.fields.characterHeight) : localize(editorText.fields.scale);
     this.propsEl.innerHTML = `
       <label>${localize(editorText.fields.name)}<input data-field="name" value="${entity.name ?? ""}" /></label>
       <label>X<input data-field="position.x" type="number" step="0.5" value="${entity.position.x}" /></label>
       <label>Y<input data-field="position.y" type="number" step="0.5" value="${entity.position.y}" /></label>
       <label>Z<input data-field="position.z" type="number" step="0.5" value="${entity.position.z}" /></label>
       <label>${localize(editorText.fields.rotationY)}<input data-field="rotationY" type="number" step="0.1963495408" value="${entity.rotationY}" /></label>
-      <label>${localize(editorText.fields.scale)}<input data-field="scale" type="number" step="0.1" min="0.1" value="${entity.scale}" /></label>
+      <label>${scaleLabel}<input data-field="scale" type="number" step="0.1" min="0.1" value="${entity.scale}" /></label>
       <label>${localize(editorText.fields.snap)}
         <select data-field="snap">
           <option value="grid" ${entity.snap === "grid" ? "selected" : ""}>${localize(editorText.fields.grid)}</option>

@@ -6,6 +6,7 @@ import { CONFIG } from "./config.ts";
 import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./level-grid.ts";
 import { entityAssetPath, preloadEntityAsset, preloadLevelAssets } from "./level-assets.ts";
 import { buildKenney } from "./kenney-buildings.ts";
+import { createMenuAnchorHelper } from "./menu-anchor-helper.ts";
 import { PastureGrass } from "./grass.ts";
 import { NpcAnimationController } from "./npc-animations.ts";
 import { DEFAULT_SURFACE_SETTINGS, normalizeSurfaceSettings } from "./surface-settings.ts";
@@ -17,6 +18,7 @@ import type { Collider, LevelData, LevelEntity, LevelSurfaceSettings } from "./t
 
 interface MapLoadOptions {
   includePickups?: boolean;
+  includeHelpers?: boolean;
 }
 
 const COL = {
@@ -50,9 +52,8 @@ function createBoundary(size: number): THREE.Group {
 }
 
 function buildEntityObject(entity: LevelEntity): THREE.Group {
-  if (entity.kind === "prefab") {
-    const built = buildKenney(entity.assetId, entity.scale).group; applyToonMaterials(built); return built;
-  }
+  if (entity.kind === "prefab") { const built = buildKenney(entity.assetId, entity.scale).group; applyToonMaterials(built); return built; }
+  if (entity.kind === "menu-anchor") return createMenuAnchorHelper();
   const path = entityAssetPath(entity);
   if (!path) return new THREE.Group();
   const model = cloneAsset(path);
@@ -63,7 +64,7 @@ function applyEntityTransform(object: THREE.Object3D, entity: LevelEntity): void
   object.rotation.y = entity.rotationY;
 }
 function buildCollider(entity: LevelEntity, object: THREE.Object3D): Collider | null {
-  if (entity.kind === "npc" || entity.kind === "pickup") return null;
+  if (entity.kind === "npc" || entity.kind === "pickup" || entity.kind === "menu-anchor") return null;
   if (entity.collider) {
     return {
       x: entity.position.x,
@@ -73,7 +74,6 @@ function buildCollider(entity: LevelEntity, object: THREE.Object3D): Collider | 
       name: entity.name ?? entity.assetId,
     };
   }
-
   const box = new THREE.Box3().setFromObject(object);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -108,6 +108,7 @@ export class MapScene {
     customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92, sunDirection: CONFIG.sky.sunDirection }),
   });
   private includePickups = true;
+  private includeHelpers = false;
   private waterViewDir = new THREE.Vector3();
   mapSize = 90;
   level: LevelData | null = null;
@@ -117,10 +118,10 @@ export class MapScene {
   async load(level: LevelData, options: MapLoadOptions = {}): Promise<void> {
     this.level = normalizeLevel(level);
     this.includePickups = options.includePickups ?? true;
+    this.includeHelpers = options.includeHelpers ?? false;
     this.mapSize = this.level.metadata.size;
-    await preloadLevelAssets(this.level, this.includePickups);
+    await preloadLevelAssets(this.level, this.includePickups, this.includeHelpers);
     this.clear();
-
     this.root.add(this.surfaceRoot, this.entityRoot);
     this.root.add(this.ground.object);
     this.root.add(createBoundary(this.mapSize));
@@ -128,10 +129,10 @@ export class MapScene {
     this.updateSurfaceSettings(this.level.surfaceSettings);
     this.pathSurface.attachTo(this.surfaceRoot);
     this.waterSurface.attachTo(this.surfaceRoot);
-
     this.rebuildSurfaces();
     for (const entity of this.level.entities) {
       if (!this.includePickups && entity.kind === "pickup") continue;
+      if (!this.includeHelpers && entity.kind === "menu-anchor") continue;
       await this.addEntity(entity, false);
     }
     this.rebuildPastureGrass();
@@ -141,9 +142,7 @@ export class MapScene {
   getGround(): THREE.Mesh {
     return this.ground.object;
   }
-  addOverlay(object: THREE.Object3D): void {
-    this.scene.add(object);
-  }
+  addOverlay(object: THREE.Object3D): void { this.scene.add(object); }
   update(dt: number): void {
     this.ambientEffects.update(dt);
     this.npcAnimations.update(dt);
@@ -166,9 +165,7 @@ export class MapScene {
   getEntityObjects(): THREE.Group[] {
     return [...this.entityObjects.values()];
   }
-  getEntityObject(id: string): THREE.Group | null {
-    return this.entityObjects.get(id) ?? null;
-  }
+  getEntityObject(id: string): THREE.Group | null { return this.entityObjects.get(id) ?? null; }
   async addEntity(entity: LevelEntity, syncGrass = true): Promise<void> {
     await preloadEntityAsset(entity);
     const object = buildEntityObject(entity);
@@ -178,7 +175,6 @@ export class MapScene {
     this.entityObjects.set(entity.id, object);
     this.ambientEffects.registerEntity(entity, object);
     this.npcAnimations.register(entity, object);
-
     const collider = buildCollider(entity, object);
     if (collider) this.entityColliders.set(entity.id, collider);
     if (syncGrass) this.rebuildPastureGrass();
@@ -190,7 +186,6 @@ export class MapScene {
       await this.addEntity(entity);
       return;
     }
-
     applyEntityTransform(object, entity);
     const collider = buildCollider(entity, object);
     if (collider) this.entityColliders.set(entity.id, collider);
@@ -264,8 +259,7 @@ export class MapScene {
     this.npcAnimations = new NpcAnimationController();
     this.grass.dispose();
     this.grass = new PastureGrass();
-    this.ground = new TerrainGround(COL.ground);
-    this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: DEFAULT_SURFACE_SETTINGS.path.bleed, radius: DEFAULT_SURFACE_SETTINGS.path.radius, y: 0.02 });
+    this.ground = new TerrainGround(COL.ground); this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: DEFAULT_SURFACE_SETTINGS.path.bleed, radius: DEFAULT_SURFACE_SETTINGS.path.radius, y: 0.02 });
     this.waterSurface = new SurfaceLayerRenderer({
       color: COL.water,
       opacity: 0.85,
@@ -277,10 +271,7 @@ export class MapScene {
   }
   private redrawSurface(type: "path" | "water"): void {
     if (!this.level) return;
-    if (type === "path") {
-      this.pathSurface.render(this.mapSize, this.level.surfaceLayers.path);
-      return;
-    }
+    if (type === "path") { this.pathSurface.render(this.mapSize, this.level.surfaceLayers.path); return; }
     this.waterSurface.render(this.mapSize, this.level.surfaceLayers.water);
     this.ground.render(this.mapSize, this.level.surfaceLayers.water, this.level.surfaceSettings.water);
     this.rebuildWaterColliders();
@@ -299,8 +290,7 @@ export class MapScene {
     }
   }
   private rebuildPastureGrass(): void {
-    if (!this.level) return;
-    this.grass.rebuild(this.level, [...this.entityColliders.values()]);
+    if (this.level) this.grass.rebuild(this.level, [...this.entityColliders.values()]);
   }
   private applyGrassColor(color: string): void {
     this.grass.setColor(color);

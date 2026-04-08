@@ -2,8 +2,9 @@ import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { MenuCameraController, type MenuCameraPose } from "./menu-camera.ts";
 import { MenuScene } from "./menu-scene.ts";
+import { levelPositionToVector3 } from "./menu-settings.ts";
 import { MenuUI } from "./menu-ui.ts";
-import type { Character } from "./types.ts";
+import type { Character, LevelEntity, LevelMenuSettings } from "./types.ts";
 
 interface MenuSelection {
   character: Character;
@@ -13,6 +14,8 @@ interface MenuSelection {
 interface CinematicMenuOptions {
   camera: THREE.PerspectiveCamera;
   scene: THREE.Scene;
+  menuAnchor: LevelEntity | null;
+  menuSettings: LevelMenuSettings;
   onPlay: (selection: MenuSelection) => void;
 }
 
@@ -22,12 +25,12 @@ export class CinematicMenu {
   private camera: MenuCameraController;
 
   constructor(private options: CinematicMenuOptions) {
-    this.scene = new MenuScene(options.scene);
-    const titleFrame = this.scene.getTitleFrame();
+    this.scene = new MenuScene(options.scene, options.menuAnchor);
+    const titleFrame = options.menuSettings.startCamera;
     this.camera = new MenuCameraController(options.camera, {
-      position: titleFrame.position,
-      lookAt: titleFrame.lookAt,
-      fov: 46,
+      position: levelPositionToVector3(titleFrame.position),
+      lookAt: levelPositionToVector3(titleFrame.lookAt),
+      fov: titleFrame.fov,
       drift: 0.55,
     });
     this.ui = new MenuUI({
@@ -81,20 +84,20 @@ export class CinematicMenu {
   }
 
   private getTitlePose(): MenuCameraPose {
-    const titleFrame = this.scene.getTitleFrame();
+    const titleFrame = this.options.menuSettings.startCamera;
     return {
-      position: titleFrame.position,
-      lookAt: titleFrame.lookAt,
-      fov: 46,
+      position: levelPositionToVector3(titleFrame.position),
+      lookAt: levelPositionToVector3(titleFrame.lookAt),
+      fov: titleFrame.fov,
       drift: 0.55,
     };
   }
 
   private getWidePose(): MenuCameraPose {
     return {
-      position: new THREE.Vector3(-18.2, 4.45, 21.2),
-      lookAt: this.scene.getStageFocus(),
-      fov: 40,
+      position: new THREE.Vector3(-11.8, 7.6, 24.8),
+      lookAt: this.scene.getStageFocus().add(new THREE.Vector3(0, 1.35, 0)),
+      fov: 34,
       drift: 0.28,
     };
   }
@@ -103,10 +106,11 @@ export class CinematicMenu {
     const lookAt = this.scene.getCharacterFocus(character);
     const anchor = this.scene.getCharacterPosition(character);
     const side = character === "sarah" ? -1 : 1;
+    lookAt.y += 0.48;
     return {
-      position: new THREE.Vector3(anchor.x + side * 1.9, 3.4, anchor.z + 8.2),
+      position: new THREE.Vector3(anchor.x + side * 1.3, 4.9, anchor.z + 10.1),
       lookAt,
-      fov: 35,
+      fov: 31,
       drift: 0.14,
     };
   }
