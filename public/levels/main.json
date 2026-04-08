@@ -524,9 +524,9 @@
       "kind": "npc",
       "assetId": "character-male-a",
       "position": {
-        "x": -2,
+        "x": -1.0920213531772347,
         "y": 0,
-        "z": -8
+        "z": -9.1595894972559
       },
       "rotationY": 0,
       "scale": 1.8,
@@ -552,28 +552,14 @@
       "kind": "npc",
       "assetId": "character-male-c",
       "position": {
-        "x": -2.400447715721917,
+        "x": -7.714982432848775,
         "y": 0,
-        "z": 0.6722818216326019
+        "z": 12.587595563070497
       },
-      "rotationY": 0,
+      "rotationY": -2.5525440304,
       "scale": 1.8,
       "snap": "free",
       "name": "Character Male C"
-    },
-    {
-      "id": "cd5ea8dd-3365-4561-b97a-3f53b67f95d7",
-      "kind": "npc",
-      "assetId": "character-female-d",
-      "position": {
-        "x": 1.9959025028221955,
-        "y": 0,
-        "z": 2.304628262438527
-      },
-      "rotationY": 0,
-      "scale": 1.8,
-      "snap": "free",
-      "name": "Character Female D"
     },
     {
       "id": "9216a53a-71fa-4af3-a5e2-5642d91977ef",
@@ -905,9 +891,9 @@
       "kind": "vegetation",
       "assetId": "tree-high-round",
       "position": {
-        "x": -6.22131965080033,
+        "x": -6.584671145494007,
         "y": 0,
-        "z": -7.530516982119753
+        "z": -7.953430993676296
       },
       "rotationY": 0,
       "scale": 3,
@@ -1276,6 +1262,76 @@
       "rotationY": 0,
       "scale": 0.7,
       "snap": "grid"
+    },
+    {
+      "id": "cac62ff5-bd41-4aa8-ad23-0709c9a42f88",
+      "kind": "npc",
+      "assetId": "character-male-b",
+      "position": {
+        "x": -22.404686095540185,
+        "y": 0,
+        "z": -25.067732759550893
+      },
+      "rotationY": 0,
+      "scale": 1.8,
+      "snap": "free",
+      "name": "Character Male B"
+    },
+    {
+      "id": "8ae1e19b-ec99-47f6-969d-d9caa7454972",
+      "kind": "npc",
+      "assetId": "character-female-c",
+      "position": {
+        "x": 9.247962307897856,
+        "y": 0,
+        "z": -11.568105175030059
+      },
+      "rotationY": -0.7853981632,
+      "scale": 1.8,
+      "snap": "free",
+      "name": "Character Female C"
+    },
+    {
+      "id": "06f891f6-e491-4349-9cc2-7872ae294385",
+      "kind": "npc",
+      "assetId": "character-male-f",
+      "position": {
+        "x": 13.754894804795645,
+        "y": 0,
+        "z": -5.539569753967577
+      },
+      "rotationY": 0,
+      "scale": 1.8,
+      "snap": "free",
+      "name": "Character Male F"
+    },
+    {
+      "id": "fa02a4f0-cab2-422f-a546-e4820f568482",
+      "kind": "npc",
+      "assetId": "character-female-b",
+      "position": {
+        "x": -14.963440649675341,
+        "y": 0,
+        "z": 9.304940573752807
+      },
+      "rotationY": 0,
+      "scale": 1.8,
+      "snap": "free",
+      "name": "Character Female B"
+    },
+    {
+      "id": "46664753-c5e5-4377-89f0-1792f355cfbd",
+      "kind": "npc",
+      "assetId": "character-female-f",
+      "position": {
+        "x": 16.573296637608298,
+        "y": 0,
+        "z": 12.091954308176888
+      },
+      "rotationY": -1.963495408,
+      "scale": 1.8,
+      "snap": "free",
+      "name": "Character Female F"
     }
   ],
   "surfaceLayers": {
