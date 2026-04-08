@@ -79,7 +79,7 @@ function sampleAlpha(data: Uint8ClampedArray, width: number, height: number, x: 
 
 export class TerrainGround {
   private canvas = document.createElement("canvas");
-  private ctx = this.canvas.getContext("2d");
+  private ctx = this.canvas.getContext("2d", { willReadFrequently: true });
   private mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
   private size = 1;
   private pxPerCell = BASE_PX_PER_CELL;
