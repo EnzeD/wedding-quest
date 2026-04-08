@@ -12,24 +12,54 @@
     <!-- HUD overlay (visible during gameplay) -->
     <div id="hud" style="display: none"></div>
 
-    <!-- Menu screen -->
-    <div id="menu-screen" class="overlay-screen">
-      <div class="menu-panel">
-        <h1>Wedding Quest</h1>
-        <p class="subtitle">Sarah & Nicolas</p>
-        <input type="text" id="player-name" placeholder="Ton prenom" maxlength="20" data-i18n-placeholder="menu.placeholder" />
-        <div class="character-select">
-          <button class="char-btn selected" data-char="nicolas">Nicolas</button>
-          <button class="char-btn" data-char="sarah">Sarah</button>
+    <!-- Cinematic menu -->
+    <div id="menu-screen" class="menu-shell" style="display: none" data-step="title">
+      <div class="menu-shell__wash" aria-hidden="true"></div>
+
+      <section class="menu-stage menu-stage--title">
+        <p id="menu-kicker" class="menu-kicker">Sarah + Nicolas present</p>
+        <h1 id="menu-title" class="menu-title">The Wedding Quest!</h1>
+        <p id="menu-tagline" class="menu-tagline">The ceremony is looming. Panic with style.</p>
+        <button id="menu-start-btn" class="menu-cta" type="button">
+          <span id="menu-start-label" class="menu-cta__label">Start the panic!</span>
+          <span class="menu-cta__icon" aria-hidden="true"></span>
+        </button>
+      </section>
+
+      <section class="menu-stage menu-stage--character">
+        <div class="menu-select-header">
+          <p id="menu-select-kicker" class="menu-kicker">One ceremony. Two disasters.</p>
+          <h2 id="menu-select-title" class="menu-select-title">Choose your player</h2>
+          <p id="menu-select-copy" class="menu-select-copy">Pick a chaos icon, enter your name, then make it official.</p>
         </div>
-        <button id="play-btn" class="primary-btn" data-i18n="menu.play">Jouer</button>
-      </div>
+
+        <div class="menu-character-grid" role="group" aria-label="Character selection">
+          <button class="menu-character-card" type="button" data-character="sarah">
+            <span class="menu-character-card__name">Sarah</span>
+            <span id="menu-sarah-role" class="menu-character-card__role">The bride</span>
+          </button>
+          <button class="menu-character-card" type="button" data-character="nicolas">
+            <span class="menu-character-card__name">Nicolas</span>
+            <span id="menu-nicolas-role" class="menu-character-card__role">The groom</span>
+          </button>
+        </div>
+
+        <label class="menu-name-field" for="player-name">
+          <span id="menu-name-label" class="menu-name-field__label">Your name</span>
+          <input type="text" id="player-name" maxlength="20" autocomplete="given-name" />
+        </label>
+
+        <button id="menu-confirm-btn" class="menu-cta menu-cta--confirm" type="button" disabled>
+          <span id="menu-confirm-label" class="menu-cta__label">Let's get wed!</span>
+        </button>
+      </section>
     </div>
 
     <!-- Score screen -->
     <div id="score-screen" class="overlay-screen" style="display: none">
-      <div class="menu-panel">
+      <div class="menu-panel score-panel">
         <h2 data-i18n="score.title">C'est l'heure !</h2>
+        <p id="score-summary" class="score-summary"></p>
         <div id="score-detail"></div>
         <button id="replay-btn" class="primary-btn" data-i18n="score.replay">Rejouer</button>
       </div>

@@ -239,3 +239,11 @@
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
   margin: 16px 0;
 }
+
+.score-summary {
+  margin: 4px 0 12px;
+  font-size: 14px;
+  color: rgba(248, 214, 174, 0.9);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

@@ -45,6 +45,28 @@ export const controlsText = {
   jump: bilingual("Sauter", "Jump"),
 };
 
+export const characterText = {
+  sarah: bilingual("Sarah", "Sarah"),
+  nicolas: bilingual("Nicolas", "Nicolas"),
+  bride: bilingual("La mariee", "The bride"),
+  groom: bilingual("Le marie", "The groom"),
+};
+
+export const menuText = {
+  kicker: bilingual("Sarah + Nicolas presentent", "Sarah + Nicolas present"),
+  title: bilingual("The Wedding Quest!", "The Wedding Quest!"),
+  tagline: bilingual("La ceremonie approche. Panique avec style.", "The ceremony is looming. Panic with style."),
+  start: bilingual("Declencher la panique !", "Start the panic!"),
+  selectKicker: bilingual("Une ceremonie. Deux catastrophes.", "One ceremony. Two disasters."),
+  selectTitle: bilingual("Choisis ton joueur", "Choose your player"),
+  selectCopy: bilingual(
+    "Choisis ton icone du chaos, entre ton prenom, puis rends ca officiel.",
+    "Pick a chaos icon, enter your name, then make it official.",
+  ),
+  nameLabel: bilingual("Ton prenom", "Your name"),
+  confirm: bilingual("On va se marier !", "Let's get wed!"),
+};
+
 export const hudText = {
   fps: bilingual("-- FPS", "-- FPS"),
   items: bilingual("Objets", "Items"),

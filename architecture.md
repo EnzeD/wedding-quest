@@ -2,7 +2,7 @@
 
 | Fichier | Description |
 |---|---|
-| `index.html` | Page HTML avec canvas, HUD overlay, ecrans menu et score |
+| `index.html` | Page HTML avec canvas, HUD overlay, menu cinematique multi-etapes et ecran de score |
 | `vite.config.ts` | Configuration Vite (host expose pour test mobile) + route dev-only de sauvegarde du niveau |
 | `tsconfig.json` | Configuration TypeScript (strict, ESNext modules) |
 | `package.json` | Dependances (three, vite, typescript, @types/three) et scripts (dev, build, preview) |
@@ -11,7 +11,8 @@
 | `public/assets/toonshooter/` | Assets GLTF placeholder (Quaternius low-poly) : Characters, Environment, Guns, Texture |
 | `src/style.css` | Point d'entree CSS qui importe les feuilles base, HUD, controles mobiles et editeur |
 | `src/styles/base.css` | Variables globales, fonts et styles de base du document |
-| `src/styles/game-ui.css` | Styles du HUD et des overlays menu/score |
+| `src/styles/game-ui.css` | Styles du HUD, de l'overlay score et des panneaux UI communs |
+| `src/styles/menu-ui.css` | Styles du menu cinematique mobile-first : hero title, selection Sarah/Nicolas, input et CTA |
 | `src/styles/mobile-controls.css` | Styles des boutons d'action tactiles mobile et de leurs icones sprint/saut |
 | `src/styles/editor.css` | Styles desktop-first de l'editeur de niveau integre |
 | `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu et palette du ciel |
@@ -37,13 +38,17 @@
 | `src/player-dust.ts` | Particules legeres attachees au mouvement du joueur, plus denses en sprint pour ajouter du delight |
 | `src/npc-animations.ts` | Controleur d'animations des PNJ : idle en boucle + emotes ponctuelles (`emote-yes` / `emote-no`) des personnages Kenney |
 | `src/camera.ts` | Classe TopDownCamera : vue du dessus qui suit le joueur avec look-ahead |
+| `src/menu-camera.ts` | Camera du menu : poses cine, drift doux et transitions scriptes entre titre, selection et lancement |
 | `src/controls.ts` | Classe VirtualJoystick : joystick tactile + clavier WASD/Shift/Space, plus boutons mobile pour sprint et saut |
 | `src/i18n.ts` | Localisation FR/EN : detection de `?english=1`, textes UI partages et application des traductions statiques du DOM |
+| `src/menu-scene.ts` | Mise en scene 3D du menu pres du moulin : podiums, personnages idle et accents de selection |
+| `src/menu-ui.ts` | Overlay DOM du menu cinematique : titre hero, cartes Sarah/Nicolas, champ prenom et CTA |
+| `src/menu.ts` | Orchestrateur du menu : machine d'etat titre/selection, camera, UI et transition vers le gameplay |
 | `src/map.ts` | Scene de niveau data-driven : rendu du JSON, surfaces, entites et colliders |
 | `src/ambient-effects.ts` | Effets ambiants attaches aux entites : roue du moulin animee et fumee procedurale sur les cheminees |
 | `src/collision.ts` | Resolution des collisions : limites de map et AABB des entites/eau |
 | `src/items.ts` | ItemManager : spawn des objets collectables, animation, detection de ramassage |
-| `src/hud.ts` | HUD : timer, compteur d'objets, notifications, ecrans menu/score |
+| `src/hud.ts` | HUD : timer, compteur d'objets, notifications et ecran de score |
 | `src/grass.ts` | Systeme de grass instancie sur les cellules de pature : generation des brins, exclusions path/eau/colliders, rebuild et interaction avec le joueur |
 | `game-design-document.md` | Game design document complet (concept, objets, scoring, flow, PNJ, planning) |
 | `implementation-plan.md` | Plan d'implementation en 10 etapes avec checklist |
