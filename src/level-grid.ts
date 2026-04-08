@@ -27,6 +27,7 @@ export function normalizeLevel(level: LevelData): LevelData {
       path: ensureLayerShape(level.surfaceLayers.path, size),
       water: ensureLayerShape(level.surfaceLayers.water, size),
     },
+    postProcessingEnabled: level.postProcessingEnabled !== false,
     colorGrading: normalizeColorGrading(level.colorGrading),
   };
 }

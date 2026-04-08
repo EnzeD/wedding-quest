@@ -791,6 +791,7 @@
       ]
     }
   },
+  "postProcessingEnabled": true,
   "colorGrading": {
     "contrast": 1.08,
     "saturation": 0.73,

@@ -35,6 +35,7 @@ export function createEmptyLevel(size: number): LevelData {
       path: createEmptyLayer(size),
       water: createEmptyLayer(size),
     },
+    postProcessingEnabled: true,
     colorGrading: { ...DEFAULT_COLOR_GRADING },
   };
 }

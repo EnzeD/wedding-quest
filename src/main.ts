@@ -78,6 +78,7 @@ async function init(): Promise<void> {
   await loadAllAssets();
 
   const level = await loadLevel();
+  post.setEnabled(level.postProcessingEnabled);
   post.setColorGrading(level.colorGrading);
   await mapScene.load(level);
   mapScene.updateGrassInteractor(player.mesh.position);
@@ -102,7 +103,10 @@ async function init(): Promise<void> {
     showHUD(false);
     showMenu(false);
     showScore(false);
-    editor = await LevelEditor.create(renderer, camera, mapScene, level, { setColorGrading: post.setColorGrading });
+    editor = await LevelEditor.create(renderer, camera, mapScene, level, {
+      setColorGrading: post.setColorGrading,
+      setPostProcessingEnabled: post.setEnabled,
+    });
   } else {
     player.loadModel(state.character);
     cameraCtrl.snapTo(player.mesh);
@@ -178,7 +182,7 @@ function animate(): void {
     cameraCtrl.update(player.mesh, player.velocity, dt);
   }
 
-  post.composer.render();
+  post.render();
 }
 
 init();

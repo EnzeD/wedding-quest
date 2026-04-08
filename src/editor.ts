@@ -11,8 +11,10 @@ import { MapScene } from "./map.ts";
 import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
 import type { ColorGradingSettings, LevelData } from "./types.ts";
 
-interface LevelEditorOptions { setColorGrading: (value: Partial<ColorGradingSettings>) => ColorGradingSettings; }
-
+interface LevelEditorOptions {
+  setColorGrading: (value: Partial<ColorGradingSettings>) => ColorGradingSettings;
+  setPostProcessingEnabled: (enabled: boolean) => boolean;
+}
 export class LevelEditor {
   private mapScene: MapScene;
   private camera: THREE.Camera;
@@ -33,6 +35,7 @@ export class LevelEditor {
   private eraseMode = false;
   private lastPaintKey: string | null = null;
   private setColorGrading: LevelEditorOptions["setColorGrading"];
+  private setPostProcessingEnabled: LevelEditorOptions["setPostProcessingEnabled"];
 
   private constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData, options: LevelEditorOptions) {
     this.renderer = renderer;
@@ -40,6 +43,7 @@ export class LevelEditor {
     this.mapScene = mapScene;
     this.level = cloneLevel(level);
     this.setColorGrading = options.setColorGrading;
+    this.setPostProcessingEnabled = options.setPostProcessingEnabled;
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
@@ -75,6 +79,10 @@ export class LevelEditor {
       onSave: () => void editor.save(),
       onReload: () => void editor.reload(),
       onPropChange: (field, value) => void editor.updateSelected(field, value),
+      onPostProcessingToggle: (enabled) => {
+        editor.level.postProcessingEnabled = editor.setPostProcessingEnabled(enabled);
+        editor.ui?.setPostProcessingEnabled(editor.level.postProcessingEnabled);
+      },
       onColorGradingChange: (field, value) => { editor.level.colorGrading = editor.setColorGrading({ ...editor.level.colorGrading, [field]: value }); },
       onColorGradingReset: () => {
         editor.level.colorGrading = editor.setColorGrading(DEFAULT_COLOR_GRADING);
@@ -84,6 +92,8 @@ export class LevelEditor {
       getPreview: (item) => editor.previews.get(item),
       onPreviewNeeded: (item) => { void editor.previews.ensure(item).then((preview) => preview && editor.ui?.updatePreview(item.id, preview)); },
     });
+    editor.level.postProcessingEnabled = editor.setPostProcessingEnabled(editor.level.postProcessingEnabled);
+    editor.ui.setPostProcessingEnabled(editor.level.postProcessingEnabled);
     editor.level.colorGrading = editor.setColorGrading(editor.level.colorGrading);
     editor.ui.renderColorGrading(editor.level.colorGrading);
     editor.ui.setStatus("Editor mode actif");
@@ -107,9 +117,11 @@ export class LevelEditor {
     try {
       this.level = await loadLevel();
       await this.mapScene.load(this.level);
+      this.level.postProcessingEnabled = this.setPostProcessingEnabled(this.level.postProcessingEnabled);
       this.level.colorGrading = this.setColorGrading(this.level.colorGrading);
       this.placementPreview.setItem(this.activeItem);
       this.selectEntity(null);
+      this.ui.setPostProcessingEnabled(this.level.postProcessingEnabled);
       this.ui.renderColorGrading(this.level.colorGrading);
       this.ui.setStatus(status);
     } catch (error) {

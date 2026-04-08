@@ -7,7 +7,7 @@
 | `tsconfig.json` | Configuration TypeScript (strict, ESNext modules) |
 | `package.json` | Dependances (three, vite, typescript, @types/three) et scripts (dev, build, preview) |
 | `public/assets.json` | Manifeste des assets GLTF (chemins vers modeles par categorie) |
-| `public/levels/main.json` | Source de verite du niveau jouable et editable (entites, surfaces, color grading) |
+| `public/levels/main.json` | Source de verite du niveau jouable et editable (entites, surfaces, toggle post-process, color grading) |
 | `public/assets/toonshooter/` | Assets GLTF placeholder (Quaternius low-poly) : Characters, Environment, Guns, Texture |
 | `src/style.css` | Point d'entree CSS qui importe les feuilles base, jeu et editeur |
 | `src/styles/base.css` | Variables globales, fonts et styles de base du document |
@@ -25,8 +25,8 @@
 | `src/editor-entity.ts` | Helpers d'entites pour l'editeur (creation depuis palette, update de proprietes, snap) |
 | `src/editor-placement-preview.ts` | Ghost transparent de placement dans l'editeur pour visualiser l'objet avant pose |
 | `src/editor-preview.ts` | Generation lazy de previews 3D pour chaque item de palette de l'editeur |
-| `src/editor-ui.ts` | Overlay DOM de l.editeur : palette, onglets, proprietes, color grading et status |
-| `src/editor.ts` | Controleur de l.editeur : raycast, selection, drag, pinceau, color grading, save/reload |
+| `src/editor-ui.ts` | Overlay DOM de l'editeur : palette, onglets, proprietes, toggle FX, color grading et status |
+| `src/editor.ts` | Controleur de l'editeur : raycast, selection, drag, pinceau, toggle FX, color grading, save/reload |
 | `src/surface-layer-renderer.ts` | Rendu lisse des couches path/water a partir de la grille du niveau, sans tuiles carrees visibles |
 | `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, mode jeu et mode editeur |
 | `src/player.ts` | Classe Player : mesh placeholder ou GLTF, deplacement direct (top-down) |

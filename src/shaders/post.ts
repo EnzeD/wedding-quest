@@ -50,6 +50,9 @@ const ColorGradeShader = {
 
 export interface PostComposerController {
   composer: EffectComposer;
+  render: () => void;
+  getEnabled: () => boolean;
+  setEnabled: (enabled: boolean) => boolean;
   getColorGrading: () => ColorGradingSettings;
   setColorGrading: (value: Partial<ColorGradingSettings>) => ColorGradingSettings;
 }
@@ -61,6 +64,7 @@ export function createPostComposer(
 ): PostComposerController {
   const composer = new EffectComposer(renderer);
   const colorGradePass = new ShaderPass(ColorGradeShader);
+  let enabled = true;
   composer.setSize(window.innerWidth, window.innerHeight);
   composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   composer.addPass(new RenderPass(scene, camera));
@@ -79,6 +83,15 @@ export function createPostComposer(
 
   return {
     composer,
+    render: () => {
+      if (enabled) composer.render();
+      else renderer.render(scene, camera);
+    },
+    getEnabled: () => enabled,
+    setEnabled: (value) => {
+      enabled = value;
+      return enabled;
+    },
     getColorGrading: () => normalizeColorGrading({
       contrast: colorGradePass.uniforms.uContrast.value as number,
       saturation: colorGradePass.uniforms.uSaturation.value as number,

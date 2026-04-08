@@ -86,5 +86,6 @@ export interface LevelData {
     path: LevelSurfaceLayer;
     water: LevelSurfaceLayer;
   };
+  postProcessingEnabled: boolean;
   colorGrading: ColorGradingSettings;
 }

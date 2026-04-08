@@ -7,6 +7,7 @@ interface EditorUiHandlers {
   onSave: () => void;
   onReload: () => void;
   onPropChange: (field: string, value: string) => void;
+  onPostProcessingToggle: (enabled: boolean) => void;
   onColorGradingChange: (field: keyof ColorGradingSettings, value: number) => void;
   onColorGradingReset: () => void;
   onEraseToggle: (enabled: boolean) => void;
@@ -47,6 +48,7 @@ export class EditorUI {
   private gradingEl: HTMLDivElement;
   private statusEl: HTMLDivElement;
   private eraseBtn: HTMLButtonElement;
+  private fxBtn: HTMLButtonElement;
   private paletteButtons = new Map<string, HTMLButtonElement>();
   private previewObserver: IntersectionObserver | null = null;
 
@@ -76,9 +78,12 @@ export class EditorUI {
         <section class="editor-section">
           <div class="editor-section-head">
             <h3>Look</h3>
-            <button id="editor-grade-reset" class="editor-btn editor-btn-secondary">Reset</button>
+            <div class="editor-actions">
+              <button id="editor-fx-toggle" class="editor-btn editor-btn-secondary">FX On</button>
+              <button id="editor-grade-reset" class="editor-btn editor-btn-secondary">Reset</button>
+            </div>
           </div>
-          <p class="editor-help">Preview live. Save writes these values to the level JSON.</p>
+          <p class="editor-help">Preview live. Save writes the toggle and grading values to the level JSON.</p>
           <div class="editor-grading"></div>
         </section>
         <div class="editor-status"></div>
@@ -92,10 +97,12 @@ export class EditorUI {
     this.gradingEl = this.root.querySelector(".editor-grading") as HTMLDivElement;
     this.statusEl = this.root.querySelector(".editor-status") as HTMLDivElement;
     this.eraseBtn = this.root.querySelector("#editor-erase") as HTMLButtonElement;
+    this.fxBtn = this.root.querySelector("#editor-fx-toggle") as HTMLButtonElement;
 
     (this.root.querySelector("#editor-save") as HTMLButtonElement).addEventListener("click", () => handlers.onSave());
     (this.root.querySelector("#editor-reload") as HTMLButtonElement).addEventListener("click", () => handlers.onReload());
     (this.root.querySelector("#editor-grade-reset") as HTMLButtonElement).addEventListener("click", () => handlers.onColorGradingReset());
+    this.fxBtn.addEventListener("click", () => handlers.onPostProcessingToggle(!this.fxBtn.classList.contains("selected")));
     this.eraseBtn.addEventListener("click", () => {
       this.eraseBtn.classList.toggle("selected");
       handlers.onEraseToggle(this.eraseBtn.classList.contains("selected"));
@@ -108,6 +115,11 @@ export class EditorUI {
     this.renderTabs();
     this.renderPalette();
     this.renderSelection(null);
+  }
+
+  setPostProcessingEnabled(enabled: boolean): void {
+    this.fxBtn.textContent = enabled ? "FX On" : "FX Off";
+    this.fxBtn.classList.toggle("selected", enabled);
   }
 
   setStatus(text: string, isError = false): void {
