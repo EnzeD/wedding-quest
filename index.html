@@ -33,25 +33,27 @@
           <p id="menu-select-copy" class="menu-select-copy">Pick a chaos icon, enter your name, then make it official.</p>
         </div>
 
-        <div class="menu-character-grid" role="group" aria-label="Character selection">
-          <button class="menu-character-card" type="button" data-character="sarah">
-            <span class="menu-character-card__name">Sarah</span>
-            <span id="menu-sarah-role" class="menu-character-card__role">The bride</span>
-          </button>
-          <button class="menu-character-card" type="button" data-character="nicolas">
-            <span class="menu-character-card__name">Nicolas</span>
-            <span id="menu-nicolas-role" class="menu-character-card__role">The groom</span>
+        <div class="menu-select-actions">
+          <div class="menu-character-grid" role="group" aria-label="Character selection">
+            <button class="menu-character-card" type="button" data-character="sarah">
+              <span class="menu-character-card__name">Sarah</span>
+              <span id="menu-sarah-role" class="menu-character-card__role">The bride</span>
+            </button>
+            <button class="menu-character-card" type="button" data-character="nicolas">
+              <span class="menu-character-card__name">Nicolas</span>
+              <span id="menu-nicolas-role" class="menu-character-card__role">The groom</span>
+            </button>
+          </div>
+
+          <label class="menu-name-field" for="player-name">
+            <span id="menu-name-label" class="menu-name-field__label">Your name</span>
+            <input type="text" id="player-name" maxlength="20" autocomplete="given-name" />
+          </label>
+
+          <button id="menu-confirm-btn" class="menu-cta menu-cta--confirm" type="button" disabled>
+            <span id="menu-confirm-label" class="menu-cta__label">To the ceremony!</span>
           </button>
         </div>
-
-        <label class="menu-name-field" for="player-name">
-          <span id="menu-name-label" class="menu-name-field__label">Your name</span>
-          <input type="text" id="player-name" maxlength="20" autocomplete="given-name" />
-        </label>
-
-        <button id="menu-confirm-btn" class="menu-cta menu-cta--confirm" type="button" disabled>
-          <span id="menu-confirm-label" class="menu-cta__label">Let's get wed!</span>
-        </button>
       </section>
     </div>
 

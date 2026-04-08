@@ -64,7 +64,7 @@ export const menuText = {
     "Pick a chaos icon, enter your name, then make it official.",
   ),
   nameLabel: bilingual("Ton prenom", "Your name"),
-  confirm: bilingual("On va se marier !", "Let's get wed!"),
+  confirm: bilingual("A la ceremonie !", "To the ceremony!"),
 };
 
 export const hudText = {
