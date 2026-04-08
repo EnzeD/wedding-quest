@@ -48,7 +48,9 @@ const SURFACE_FIELDS = [
 ] as const;
 
 function labelEntityKind(kind: LevelEntityKind): string {
-  if (kind === "pickup") return TAB_LABELS.items; if (kind === "npc") return TAB_LABELS.npc; if (kind === "menu-anchor") return TAB_LABELS.menu;
+  if (kind === "pickup") return TAB_LABELS.items;
+  if (kind === "npc") return TAB_LABELS.npc;
+  if (kind === "menu-anchor") return TAB_LABELS.menu;
   if (kind === "vegetation" || kind === "decoration") return TAB_LABELS.decor;
   return kind === "kenney-piece" ? TAB_LABELS.kenney : TAB_LABELS.prefabs;
 }
