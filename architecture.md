@@ -7,7 +7,7 @@
 | `tsconfig.json` | Configuration TypeScript (strict, ESNext modules) |
 | `package.json` | Dependances (three, vite, typescript, @types/three) et scripts (dev, build, preview) |
 | `public/assets.json` | Manifeste des assets GLTF (chemins vers modeles par categorie) |
-| `public/levels/main.json` | Source de verite du niveau jouable et editable (entites, surfaces, reglages bleed/radius, toggle post-process, couleur d'herbe, color grading) |
+| `public/levels/main.json` | Source de verite du niveau jouable et editable (entites, surfaces, reglages path/water dont relief d'eau et pente de berge, toggle post-process, couleur d'herbe, color grading) |
 | `public/assets/toonshooter/` | Assets GLTF placeholder (Quaternius low-poly) : Characters, Environment, Guns, Texture |
 | `src/style.css` | Point d'entree CSS qui importe les feuilles base, jeu et editeur |
 | `src/styles/base.css` | Variables globales, fonts et styles de base du document |
@@ -16,10 +16,11 @@
 | `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu et palette du ciel |
 | `src/types.ts` | Interfaces partagees : collisions, etat, assets et schema du niveau data-driven |
 | `src/state.ts` | Gestion de l'etat du jeu : creation, reset, score, items collectes |
+| `src/item-definitions.ts` | Catalogue des objets a trouver par personnage (ids, labels editeur, points) + fallback de positions tant que le niveau n'en place pas |
 | `src/assets.ts` | Chargement GLTF : manifeste, cache, clone, normalisation de taille |
 | `src/level-data.ts` | Chargement et sauvegarde du niveau JSON principal |
 | `src/color-grading.ts` | Reglages par defaut et normalisation du color grading et de la couleur d'herbe sauvegardes dans le niveau |
-| `src/surface-settings.ts` | Reglages par defaut et normalisation des parametres visuels bleed/radius pour path et water |
+| `src/surface-settings.ts` | Reglages par defaut et normalisation des parametres de surfaces, dont le relief d'eau (profondeur, pente, irregularite des berges, variation du fond) |
 | `src/level-grid.ts` | Utilitaires de grille pour surfaces path/water et conversion monde/cellule |
 | `src/level-assets.ts` | Resolution et preload des assets utilises par les entites du niveau |
 | `src/level-catalog.ts` | Construction du catalogue de palette de l'editeur depuis les catalogues Kenney |
@@ -27,8 +28,8 @@
 | `src/editor-entity.ts` | Helpers d'entites pour l'editeur (creation depuis palette, update de proprietes, snap) |
 | `src/editor-placement-preview.ts` | Ghost transparent de placement dans l'editeur pour visualiser l'objet avant pose |
 | `src/editor-preview.ts` | Generation lazy de previews 3D pour chaque item de palette de l'editeur |
-| `src/editor-ui.ts` | Overlay DOM de l'editeur : palette, onglets, proprietes, toggle FX, couleur d'herbe, reglages bleed/radius, color grading et status |
-| `src/editor.ts` | Controleur de l'editeur : raycast, selection, drag, pinceau, toggle FX, couleur d'herbe, reglages bleed/radius, color grading, save/reload |
+| `src/editor-ui.ts` | Overlay DOM de l'editeur : palette, onglets, proprietes, toggle FX, couleur d'herbe, reglages path/water dont relief d'eau et pente de berge, color grading et status |
+| `src/editor.ts` | Controleur de l'editeur : raycast, selection, drag, pinceau, toggle FX, couleur d'herbe, reglages de surfaces path/water, color grading, save/reload |
 | `src/surface-layer-renderer.ts` | Rendu lisse des couches path/water a partir de la grille du niveau, sans tuiles carrees visibles |
 | `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, mode jeu et mode editeur |
 | `src/player.ts` | Classe Player : mesh placeholder ou GLTF, deplacement direct (top-down) |

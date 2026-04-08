@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { cloneAsset, normalizeToHeight, preloadAsset } from "./assets.ts";
 import type { EditorPaletteItem } from "./level-catalog.ts";
 import { buildKenney, kenneyPath, preloadKenneyPrefab } from "./kenney-buildings.ts";
-import { npcAssetPath } from "./level-assets.ts";
+import { npcAssetPath, pickupAssetPath } from "./level-assets.ts";
 
 function createSurfacePreview(item: EditorPaletteItem): THREE.Object3D {
   const color = item.id === "water" ? 0x5f74ca : 0xf0c59d;
@@ -19,10 +19,15 @@ async function createPreviewObject(item: EditorPaletteItem): Promise<THREE.Objec
     return buildKenney(item.id, Math.max(1, (item.defaultScale ?? 2) / 2)).group;
   }
 
-  const path = item.kind === "npc" ? npcAssetPath(item.id) : kenneyPath(item.id);
+  const path = item.kind === "npc"
+    ? npcAssetPath(item.id)
+    : item.kind === "pickup"
+      ? pickupAssetPath(item.id)
+      : kenneyPath(item.id);
+  if (!path) return new THREE.Group();
   await preloadAsset(path);
   const asset = cloneAsset(path);
-  const targetHeight = item.kind === "npc" ? 1.9 : 2.2;
+  const targetHeight = item.kind === "pickup" ? item.defaultScale ?? 0.8 : item.kind === "npc" ? 1.9 : 2.2;
   return normalizeToHeight(asset, targetHeight, item.kind === "npc");
 }
 

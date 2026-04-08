@@ -10,7 +10,7 @@ import { cellKey, cloneLevel, getCell, setCell, worldToCell } from "./level-grid
 import { MapScene } from "./map.ts";
 import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
 import { normalizeSurfaceSettings } from "./surface-settings.ts";
-import type { ColorGradingSettings, LevelData, LevelSurfaceSettings } from "./types.ts";
+import type { ColorGradingSettings, LevelData, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
 
 interface LevelEditorOptions {
   setColorGrading: (value: Partial<ColorGradingSettings>) => ColorGradingSettings;
@@ -230,10 +230,11 @@ export class LevelEditor {
     await this.mapScene.upsertEntity(entity, rebuild);
     this.ui?.renderSelection(entity);
   }
-  private updateSurfaceSetting(surface: "path" | "water", field: "bleed" | "radius", value: number): void {
+  private updateSurfaceSetting(surface: "path" | "water", field: SurfaceSettingField, value: number): void {
     const next: LevelSurfaceSettings = normalizeSurfaceSettings({ ...this.level.surfaceSettings, [surface]: { ...this.level.surfaceSettings[surface], [field]: value } });
     this.level.surfaceSettings = next;
     this.mapScene.updateSurfaceSettings(next);
+    this.ui?.renderLookSettings(this.level.grassColor, this.level.surfaceSettings);
   }
   private paintAt(point: THREE.Vector3, tool: SurfaceTool, erase: boolean): void {
     const cell = worldToCell(point.x, point.z, this.level.metadata.size);

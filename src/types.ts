@@ -10,7 +10,7 @@ export interface Collider {
 
 export type GameMode = "menu" | "playing" | "score";
 export type Character = "sarah" | "nicolas";
-export type LevelEntityKind = "prefab" | "kenney-piece" | "decoration" | "vegetation" | "npc";
+export type LevelEntityKind = "prefab" | "kenney-piece" | "decoration" | "vegetation" | "npc" | "pickup";
 export type LevelSnapMode = "grid" | "free";
 
 export interface ItemDef {
@@ -84,9 +84,19 @@ export interface LevelSurfacePaintSettings {
   radius: number;
 }
 
+export interface LevelWaterTerrainSettings {
+  depth: number;
+  shoreWarp: number;
+  bedVariation: number;
+  bankSlope: number;
+}
+
+export interface LevelWaterPaintSettings extends LevelSurfacePaintSettings, LevelWaterTerrainSettings {}
+export type SurfaceSettingField = keyof LevelSurfacePaintSettings | keyof LevelWaterTerrainSettings;
+
 export interface LevelSurfaceSettings {
   path: LevelSurfacePaintSettings;
-  water: LevelSurfacePaintSettings;
+  water: LevelWaterPaintSettings;
 }
 
 export interface LevelData {

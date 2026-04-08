@@ -1,42 +1,38 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
-import { cloneAsset, normalizeToHeight, getManifest } from "./assets.ts";
+import { cloneAsset, normalizeToHeight } from "./assets.ts";
+import { createFallbackPickupDefs, getPickupDefinition } from "./item-definitions.ts";
+import { pickupAssetPath } from "./level-assets.ts";
 import { addOutline } from "./shaders/outline.ts";
 import { applyFresnelPulse } from "./shaders/fresnel-pulse.ts";
 import { startDissolve } from "./shaders/dissolve.ts";
-import type { ItemDef, Character } from "./types.ts";
+import type { ItemDef, Character, LevelData } from "./types.ts";
 
-const NICOLAS_ITEMS: Omit<ItemDef, "position">[] = [
-  { id: "boutonniere", name: "Boutonniere", points: 50 },
-  { id: "boutons-manchettes", name: "Boutons de manchettes", points: 50 },
-  { id: "cravate", name: "Cravate", points: 100 },
-  { id: "montre", name: "Montre", points: 200 },
-  { id: "chaussures", name: "Chaussures", points: 300 },
-  { id: "voeux", name: "Les voeux", points: 300 },
-  { id: "pantalon", name: "Pantalon", points: 400 },
-  { id: "chemise", name: "Chemise", points: 400 },
-  { id: "veste", name: "Veste", points: 400 },
-  { id: "alliances", name: "Les alliances", points: 1000 },
-];
+interface SpawnableItemDef extends ItemDef {
+  scale: number;
+  rotationY: number;
+}
 
-const SARAH_ITEMS: Omit<ItemDef, "position">[] = [
-  { id: "bracelet", name: "Bracelet", points: 50 },
-  { id: "lentilles", name: "Lentilles", points: 50 },
-  { id: "boucles-oreilles", name: "Boucles d'oreilles", points: 100 },
-  { id: "maquillage", name: "Trousse de maquillage", points: 100 },
-  { id: "voile", name: "Voile", points: 200 },
-  { id: "voeux", name: "Les voeux", points: 300 },
-  { id: "chaussures", name: "Chaussures", points: 400 },
-  { id: "bouquet", name: "Bouquet", points: 400 },
-  { id: "robe", name: "Robe", points: 500 },
-  { id: "alliances", name: "Les alliances", points: 1000 },
-];
-
-// Spawn positions spread across the map
-const SPAWN_POSITIONS: [number, number][] = [
-  [-5, 5], [10, 8], [5, 20], [-8, -3], [20, 5],
-  [-15, 18], [25, -15], [-20, -10], [14, -5], [30, -20],
-];
+function getPlacedItemDefs(level: LevelData, character: Character): SpawnableItemDef[] {
+  return level.entities
+    .filter((entity) => entity.kind === "pickup")
+    .flatMap((entity) => {
+      const def = getPickupDefinition(entity.assetId);
+      if (!def || def.character !== character) return [];
+      return [{
+        id: def.id,
+        name: def.name,
+        points: def.points,
+        position: new THREE.Vector3(
+          entity.position.x,
+          entity.position.y,
+          entity.position.z,
+        ),
+        scale: entity.scale,
+        rotationY: entity.rotationY,
+      }];
+    });
+}
 
 export class ItemManager {
   private items: { def: ItemDef; mesh: THREE.Group }[] = [];
@@ -48,28 +44,23 @@ export class ItemManager {
     this.scene = scene;
   }
 
-  spawn(character: Character): ItemDef[] {
+  spawn(character: Character, level: LevelData): ItemDef[] {
     this.clear();
-    const defs = character === "sarah" ? SARAH_ITEMS : NICOLAS_ITEMS;
-    const m = getManifest();
-    const pickupPath = m.items.pickup;
+    const placedDefs = getPlacedItemDefs(level, character);
+    const defs = placedDefs.length > 0 ? placedDefs : createFallbackPickupDefs(character);
 
     const allDefs: ItemDef[] = [];
 
-    for (let i = 0; i < defs.length; i++) {
-      const [x, z] = SPAWN_POSITIONS[i % SPAWN_POSITIONS.length];
-      const position = new THREE.Vector3(x, CONFIG.items.floatHeight, z);
-      const def: ItemDef = { ...defs[i], position };
+    for (const source of defs) {
+      const position = new THREE.Vector3(
+        source.position.x,
+        source.position.y + CONFIG.items.floatHeight,
+        source.position.z,
+      );
+      const def: ItemDef = { id: source.id, name: source.name, points: source.points, position };
       allDefs.push(def);
 
-      let mesh: THREE.Group;
-      if (pickupPath) {
-        mesh = cloneAsset(pickupPath);
-        mesh = normalizeToHeight(mesh, 0.8);
-      } else {
-        mesh = this.createPlaceholderItem();
-      }
-
+      const mesh = this.createPickupMesh(source.id, source.scale);
       addOutline(mesh, 1.06, 0x101010);
       applyFresnelPulse(mesh, { color: CONFIG.items.glowColor, power: 2.4, speed: 3.2 });
 
@@ -89,11 +80,18 @@ export class ItemManager {
       mesh.add(ring);
 
       mesh.position.copy(position);
+      mesh.rotation.y = source.rotationY;
       this.scene.add(mesh);
       this.items.push({ def, mesh });
     }
 
     return allDefs;
+  }
+
+  private createPickupMesh(assetId: string, targetHeight: number): THREE.Group {
+    const pickupPath = pickupAssetPath(assetId);
+    if (pickupPath) return normalizeToHeight(cloneAsset(pickupPath), Math.max(0.2, targetHeight || 0.8));
+    return this.createPlaceholderItem();
   }
 
   private createPlaceholderItem(): THREE.Group {

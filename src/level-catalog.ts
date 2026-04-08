@@ -1,7 +1,8 @@
 import { DECO_PIECES, PREFAB_DEFINITIONS, TREE_PIECES } from "./kenney-buildings.ts";
+import { getPickupDefinitions } from "./item-definitions.ts";
 import type { LevelEntityKind, LevelSnapMode } from "./types.ts";
 
-export type EditorTab = "prefabs" | "kenney" | "decor" | "npc" | "surfaces";
+export type EditorTab = "prefabs" | "kenney" | "decor" | "items" | "npc" | "surfaces";
 export type SurfaceTool = "path" | "water";
 
 export interface EditorPaletteItem {
@@ -81,10 +82,19 @@ export async function loadEditorCatalog(): Promise<EditorPaletteItem[]> {
     };
   });
 
+  const pickupItems: EditorPaletteItem[] = getPickupDefinitions().map((item) => ({
+    id: item.id,
+    label: item.editorLabel,
+    tab: "items",
+    kind: "pickup",
+    defaultScale: 0.8,
+    defaultSnap: "free",
+  }));
+
   const surfaceItems: EditorPaletteItem[] = [
     { id: "path", label: "Chemin", tab: "surfaces", surfaceTool: "path" },
     { id: "water", label: "Eau", tab: "surfaces", surfaceTool: "water" },
   ];
 
-  return [...prefabItems, ...kenneyItems, ...decorItems, ...npcItems, ...surfaceItems];
+  return [...prefabItems, ...kenneyItems, ...decorItems, ...pickupItems, ...npcItems, ...surfaceItems];
 }

@@ -1,5 +1,5 @@
 import type { EditorPaletteItem, EditorTab } from "./level-catalog.ts";
-import type { ColorGradingSettings, LevelEntity, LevelSurfaceSettings } from "./types.ts";
+import type { ColorGradingSettings, LevelEntity, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
 
 interface EditorUiHandlers {
   onPick: (item: EditorPaletteItem) => void;
@@ -8,7 +8,7 @@ interface EditorUiHandlers {
   onReload: () => void;
   onPropChange: (field: string, value: string) => void;
   onGrassColorChange: (value: string) => void;
-  onSurfaceSettingChange: (surface: "path" | "water", field: "bleed" | "radius", value: number) => void;
+  onSurfaceSettingChange: (surface: "path" | "water", field: SurfaceSettingField, value: number) => void;
   onPostProcessingToggle: (enabled: boolean) => void;
   onColorGradingChange: (field: keyof ColorGradingSettings, value: number) => void;
   onColorGradingReset: () => void;
@@ -21,6 +21,7 @@ const TAB_LABELS: Record<EditorTab, string> = {
   prefabs: "Prefabs",
   kenney: "Kenney",
   decor: "Decor",
+  items: "Objets",
   npc: "PNJ",
   surfaces: "Surfaces",
 };
@@ -44,6 +45,10 @@ const SURFACE_FIELDS = [
   { surface: "path", field: "radius", label: "Path radius", min: 0, max: 0.6, step: 0.01, digits: 2 },
   { surface: "water", field: "bleed", label: "Water bleed", min: 0, max: 0.24, step: 0.01, digits: 2 },
   { surface: "water", field: "radius", label: "Water radius", min: 0, max: 0.6, step: 0.01, digits: 2 },
+  { surface: "water", field: "depth", label: "Water depth", min: 0, max: 1.6, step: 0.01, digits: 2 },
+  { surface: "water", field: "bankSlope", label: "Bank slope", min: 0.35, max: 2.5, step: 0.01, digits: 2 },
+  { surface: "water", field: "shoreWarp", label: "Shore naturalness", min: 0, max: 1.2, step: 0.01, digits: 2 },
+  { surface: "water", field: "bedVariation", label: "Bed variation", min: 0, max: 0.2, step: 0.005, digits: 3 },
 ] as const;
 
 export class EditorUI {
@@ -194,6 +199,7 @@ export class EditorUI {
     if (!this.lookEl.childElementCount) {
       this.lookEl.innerHTML = `
         <label class="editor-look-field"><span>Grass blades</span><input data-look-field="grassColor" type="color" /></label>
+        <div class="editor-meta">Water terrain</div>
         ${SURFACE_FIELDS.map(({ surface, field, label, min, max, step }) => `<label class="editor-grade-field"><span>${label}<output class="editor-grade-value" data-surface-output="${surface}.${field}"></output></span><input data-surface-kind="${surface}" data-surface-field="${field}" type="range" min="${min}" max="${max}" step="${step}" /></label>`).join("")}
       `;
     }
@@ -269,7 +275,7 @@ export class EditorUI {
       return;
     }
     const surface = target.dataset.surfaceKind as "path" | "water" | undefined;
-    const field = target.dataset.surfaceField as "bleed" | "radius" | undefined;
+    const field = target.dataset.surfaceField as SurfaceSettingField | undefined;
     const value = Number(target.value);
     const config = SURFACE_FIELDS.find((item) => item.surface === surface && item.field === field);
     if (!surface || !field || !config || !Number.isFinite(value)) return;

@@ -1,14 +1,16 @@
 import * as THREE from "three";
 import { getCell } from "./level-grid.ts";
-import type { LevelSurfaceLayer, LevelSurfacePaintSettings } from "./types.ts";
+import type { LevelSurfaceLayer, LevelWaterPaintSettings } from "./types.ts";
+import { DEFAULT_SURFACE_SETTINGS } from "./surface-settings.ts";
 
 const BASE_PX_PER_CELL = 22;
 const MAX_TEXTURE_SIZE = 4096;
 const SEGMENTS_PER_CELL = 3;
 const MAX_SEGMENTS = 240;
-const WATER_DEPTH = 0.22;
-const SHORE_WARP_PX = 18;
-const BED_VARIATION = 0.035;
+const SHORE_WARP_PX = 24;
+const SHORE_BANK_PX = 20;
+const MIN_BANK_PX = 8;
+const MAX_BANK_PX = 42;
 
 function drawRoundedRect(
   ctx: CanvasRenderingContext2D,
@@ -77,12 +79,30 @@ function sampleAlpha(data: Uint8ClampedArray, width: number, height: number, x: 
   return THREE.MathUtils.lerp(ax0, ax1, ty);
 }
 
+function sampleRingAlpha(data: Uint8ClampedArray, width: number, height: number, x: number, y: number, radius: number): number {
+  const offsets = [
+    [0, 0],
+    [-radius, 0],
+    [radius, 0],
+    [0, -radius],
+    [0, radius],
+    [-radius * 0.7, -radius * 0.7],
+    [radius * 0.7, -radius * 0.7],
+    [-radius * 0.7, radius * 0.7],
+    [radius * 0.7, radius * 0.7],
+  ] as const;
+  let total = 0;
+  for (const [dx, dy] of offsets) total += sampleAlpha(data, width, height, x + dx, y + dy);
+  return total / offsets.length;
+}
+
 export class TerrainGround {
   private canvas = document.createElement("canvas");
   private ctx = this.canvas.getContext("2d", { willReadFrequently: true });
   private mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
   private size = 1;
   private pxPerCell = BASE_PX_PER_CELL;
+  private waterSettings: LevelWaterPaintSettings = { ...DEFAULT_SURFACE_SETTINGS.water };
 
   constructor(color: THREE.ColorRepresentation) {
     if (!this.ctx) throw new Error("Canvas 2D unavailable");
@@ -99,8 +119,9 @@ export class TerrainGround {
     return this.mesh;
   }
 
-  render(size: number, waterLayer: LevelSurfaceLayer, waterSettings: LevelSurfacePaintSettings): void {
+  render(size: number, waterLayer: LevelSurfaceLayer, waterSettings: LevelWaterPaintSettings): void {
     if (size !== this.size) this.resize(size);
+    this.waterSettings = { ...waterSettings };
     this.drawMask(waterLayer, waterSettings);
     this.applyTerrainHeights();
   }
@@ -119,7 +140,7 @@ export class TerrainGround {
     this.mesh.geometry.rotateX(-Math.PI / 2);
   }
 
-  private drawMask(layer: LevelSurfaceLayer, waterSettings: LevelSurfacePaintSettings): void {
+  private drawMask(layer: LevelSurfaceLayer, waterSettings: LevelWaterPaintSettings): void {
     const ctx = this.ctx!;
     const cellPx = this.pxPerCell;
     const bleed = cellPx * waterSettings.bleed;
@@ -147,6 +168,7 @@ export class TerrainGround {
     const geometry = this.mesh.geometry;
     const positions = geometry.attributes.position as THREE.BufferAttribute;
     const data = this.ctx!.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
+    const waterSettings = this.waterSettings;
     const half = this.size * 0.5;
 
     for (let index = 0; index < positions.count; index++) {
@@ -155,7 +177,9 @@ export class TerrainGround {
       const px = ((x + half) / this.size) * (this.canvas.width - 1);
       const py = ((z + half) / this.size) * (this.canvas.height - 1);
       const baseAlpha = sampleAlpha(data, this.canvas.width, this.canvas.height, px, py);
-      if (baseAlpha <= 0.001) {
+      const bankRadiusPx = THREE.MathUtils.clamp(SHORE_BANK_PX / waterSettings.bankSlope, MIN_BANK_PX, MAX_BANK_PX);
+      const shoreField = sampleRingAlpha(data, this.canvas.width, this.canvas.height, px, py, bankRadiusPx);
+      if (baseAlpha <= 0.001 && shoreField <= 0.001) {
         positions.setY(index, 0);
         continue;
       }
@@ -167,14 +191,16 @@ export class TerrainGround {
         data,
         this.canvas.width,
         this.canvas.height,
-        px + warpX * SHORE_WARP_PX * shoreBand,
-        py + warpZ * SHORE_WARP_PX * shoreBand,
+        px + warpX * SHORE_WARP_PX * waterSettings.shoreWarp * shoreBand,
+        py + warpZ * SHORE_WARP_PX * waterSettings.shoreWarp * shoreBand,
       );
       const alpha = THREE.MathUtils.lerp(baseAlpha, warpedAlpha, 0.75);
-      const depth = THREE.MathUtils.smoothstep(alpha, 0.04, 0.96) * WATER_DEPTH;
+      const bankMask = THREE.MathUtils.smoothstep(shoreField, 0.02, 0.24) * (1 - THREE.MathUtils.smoothstep(baseAlpha, 0.06, 0.28));
+      const bankDepth = waterSettings.depth * (0.22 + waterSettings.bankSlope * 0.13) * bankMask;
+      const depth = THREE.MathUtils.smoothstep(alpha, 0.04, 0.96) * waterSettings.depth;
       const bedNoise = (layeredNoise(x * 0.66 + 24.5, z * 0.66 - 15.2) - 0.5) * 2;
-      const floorOffset = Math.max(0, bedNoise * BED_VARIATION * THREE.MathUtils.smoothstep(alpha, 0.12, 1));
-      positions.setY(index, -(depth + floorOffset));
+      const floorOffset = Math.max(0, bedNoise * waterSettings.bedVariation * THREE.MathUtils.smoothstep(alpha, 0.12, 1));
+      positions.setY(index, -(bankDepth + depth + floorOffset));
     }
 
     positions.needsUpdate = true;
