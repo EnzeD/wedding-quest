@@ -36,11 +36,13 @@
 | `src/collision.ts` | Resolution des collisions : limites de map et AABB des entites/eau |
 | `src/items.ts` | ItemManager : spawn des objets collectables, animation, detection de ramassage |
 | `src/hud.ts` | HUD : timer, compteur d'objets, notifications, ecrans menu/score |
+| `src/grass.ts` | Systeme de grass instancie sur les cellules de pature : generation des brins, exclusions path/eau/colliders, rebuild et interaction avec le joueur |
 | `game-design-document.md` | Game design document complet (concept, objets, scoring, flow, PNJ, planning) |
 | `implementation-plan.md` | Plan d'implementation en 10 etapes avec checklist |
 | `CLAUDE.md` | Fichier de compatibilite qui redirige vers `AGENTS.md` |
 | `src/shaders/post.ts` | EffectComposer avec ShaderPass de color grading pilotable en live (contrast, saturation, warmth, vignette, lift) |
 | `src/kenney-buildings.ts` | Assemblage de batiments modulaires Kenney (definitions de pieces, preloading, construction) |
+| `src/shaders/grass.ts` | ShaderMaterial du grass : vent GPU partage via `sharedTime`, eclairage simple, fog et courbure locale autour du joueur |
 | `public/kenney-catalog.json` | Catalogue des 167 pieces Kenney Fantasy Town Kit 2.0 (categories, dimensions, snap rules) |
 | `public/assets/kenney/*.glb` | Modeles GLB modulaires Kenney (murs, toits, escaliers, routes, vegetation, decorations) |
 | `public/assets/kenney/colormap.png` | Texture partagee par tous les modeles Kenney |

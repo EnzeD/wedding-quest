@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { cloneAsset, normalizeToHeight } from "./assets.ts";
 import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./level-grid.ts";
 import { entityAssetPath, preloadEntityAsset, preloadLevelAssets } from "./level-assets.ts";
+import { PastureGrass } from "./grass.ts";
 import { buildKenney } from "./kenney-buildings.ts";
 import { SurfaceLayerRenderer } from "./surface-layer-renderer.ts";
 import type { Collider, LevelData, LevelEntity } from "./types.ts";
@@ -92,6 +93,7 @@ export class MapScene {
   private entityObjects = new Map<string, THREE.Group>();
   private entityColliders = new Map<string, Collider>();
   private waterColliders = new Map<string, Collider>();
+  private grass = new PastureGrass();
   private groundMesh = createGround(1);
   private pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.1, blur: 0.3, y: 0.02 });
   private waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.82, bleed: 0.16, blur: 0.42, y: 0.05 });
@@ -113,13 +115,15 @@ export class MapScene {
     this.groundMesh = createGround(this.mapSize);
     this.root.add(this.groundMesh);
     this.root.add(createBoundary(this.mapSize));
+    this.grass.attachTo(this.root);
     this.pathSurface.attachTo(this.surfaceRoot);
     this.waterSurface.attachTo(this.surfaceRoot);
 
     this.rebuildSurfaces();
     for (const entity of this.level.entities) {
-      await this.addEntity(entity);
+      await this.addEntity(entity, false);
     }
+    this.rebuildPastureGrass();
 
     this.scene.add(this.root);
   }
@@ -144,7 +148,7 @@ export class MapScene {
     return this.entityObjects.get(id) ?? null;
   }
 
-  async addEntity(entity: LevelEntity): Promise<void> {
+  async addEntity(entity: LevelEntity, syncGrass = true): Promise<void> {
     await preloadEntityAsset(entity);
     const object = buildEntityObject(entity);
     object.userData.entityId = entity.id;
@@ -154,6 +158,7 @@ export class MapScene {
 
     const collider = buildCollider(entity, object);
     if (collider) this.entityColliders.set(entity.id, collider);
+    if (syncGrass) this.rebuildPastureGrass();
   }
 
   async upsertEntity(entity: LevelEntity, rebuild = false): Promise<void> {
@@ -168,6 +173,7 @@ export class MapScene {
     const collider = buildCollider(entity, object);
     if (collider) this.entityColliders.set(entity.id, collider);
     else this.entityColliders.delete(entity.id);
+    this.rebuildPastureGrass();
   }
 
   setEntityTransform(entity: LevelEntity): void {
@@ -183,12 +189,18 @@ export class MapScene {
       this.entityObjects.delete(id);
     }
     this.entityColliders.delete(id);
+    this.rebuildPastureGrass();
   }
 
   updateSurfaces(level: LevelData): void {
     this.level = normalizeLevel(level);
     this.mapSize = this.level.metadata.size;
     this.rebuildSurfaces();
+    this.rebuildPastureGrass();
+  }
+
+  updateGrassInteractor(position: THREE.Vector3): void {
+    this.grass.updateInteractor(position);
   }
 
   updateSurfaceCell(type: "path" | "water", cell: GridCell, filled: boolean): void {
@@ -198,6 +210,7 @@ export class MapScene {
     const row = layer.rows[cell.row] ?? "";
     layer.rows[cell.row] = `${row.slice(0, cell.col)}${filled ? "1" : "0"}${row.slice(cell.col + 1)}`;
     this.redrawSurface(type);
+    this.rebuildPastureGrass();
   }
 
   private rebuildSurfaces(): void {
@@ -214,6 +227,8 @@ export class MapScene {
     this.entityObjects.clear();
     this.entityColliders.clear();
     this.waterColliders.clear();
+    this.grass.dispose();
+    this.grass = new PastureGrass();
     this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.1, blur: 0.3, y: 0.02 });
     this.waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.82, bleed: 0.16, blur: 0.42, y: 0.05 });
   }
@@ -240,5 +255,10 @@ export class MapScene {
         this.waterColliders.set(cellKey(cell), { x: pos.x, z: pos.z, hw: 0.5, hd: 0.5, name: "water" });
       }
     }
+  }
+
+  private rebuildPastureGrass(): void {
+    if (!this.level) return;
+    this.grass.rebuild(this.level, [...this.entityColliders.values()]);
   }
 }

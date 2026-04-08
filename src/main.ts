@@ -80,6 +80,7 @@ async function init(): Promise<void> {
   const level = await loadLevel();
   post.setColorGrading(level.colorGrading);
   await mapScene.load(level);
+  mapScene.updateGrassInteractor(player.mesh.position);
 
   // Wire up menu buttons now that everything is ready
   document.getElementById("play-btn")!.addEventListener("click", startGame);
@@ -168,6 +169,8 @@ function animate(): void {
     dirLight.position.set(player.mesh.position.x + 12, 24, player.mesh.position.z + 8);
     dirLight.target = player.mesh;
   }
+
+  mapScene.updateGrassInteractor(player.mesh.position);
 
   if (editor) {
     editor.update();
