@@ -26,10 +26,23 @@
 .editor-properties {
   top: 12px;
   right: 12px;
-  width: 240px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editor-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .editor-toolbar,
@@ -61,6 +74,10 @@
 .editor-tab.selected,
 .editor-palette-item.selected {
   background: var(--blue);
+}
+
+.editor-btn-secondary {
+  padding: 8px 10px;
 }
 
 .editor-palette {
@@ -115,6 +132,7 @@
 .editor-properties h3 {
   font-family: var(--font-display);
   font-size: 20px;
+  margin: 0;
 }
 
 .editor-props {
@@ -131,7 +149,8 @@
 }
 
 .editor-props input,
-.editor-props select {
+.editor-props select,
+.editor-grading input {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(10, 12, 18, 0.5);
@@ -143,9 +162,40 @@
 
 .editor-meta,
 .editor-empty,
+.editor-help,
 .editor-status {
   font-size: 13px;
   color: var(--light-blue);
+}
+
+.editor-grading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-grade-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.editor-grade-field span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editor-grade-value {
+  min-width: 44px;
+  text-align: right;
+  color: var(--white);
+}
+
+.editor-grading input[type="range"] {
+  padding: 0;
 }
 
 .editor-status.error {

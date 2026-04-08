@@ -8,7 +8,10 @@ import { loadEditorCatalog, type EditorPaletteItem, type SurfaceTool } from "./l
 import { loadLevel, saveLevel } from "./level-data.ts";
 import { cellKey, cloneLevel, getCell, setCell, worldToCell } from "./level-grid.ts";
 import { MapScene } from "./map.ts";
-import type { LevelData } from "./types.ts";
+import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
+import type { ColorGradingSettings, LevelData } from "./types.ts";
+
+interface LevelEditorOptions { setColorGrading: (value: Partial<ColorGradingSettings>) => ColorGradingSettings; }
 
 export class LevelEditor {
   private mapScene: MapScene;
@@ -29,12 +32,14 @@ export class LevelEditor {
   private painting = false;
   private eraseMode = false;
   private lastPaintKey: string | null = null;
+  private setColorGrading: LevelEditorOptions["setColorGrading"];
 
-  private constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData) {
+  private constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData, options: LevelEditorOptions) {
     this.renderer = renderer;
     this.camera = camera;
     this.mapScene = mapScene;
     this.level = cloneLevel(level);
+    this.setColorGrading = options.setColorGrading;
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
@@ -54,8 +59,8 @@ export class LevelEditor {
     window.addEventListener("keydown", (event) => void this.onKeyDown(event));
   }
 
-  static async create(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData): Promise<LevelEditor> {
-    const editor = new LevelEditor(renderer, camera, mapScene, level);
+  static async create(renderer: THREE.WebGLRenderer, camera: THREE.Camera, mapScene: MapScene, level: LevelData, options: LevelEditorOptions): Promise<LevelEditor> {
+    const editor = new LevelEditor(renderer, camera, mapScene, level, options);
     const catalog = await loadEditorCatalog();
     editor.ui = new EditorUI(catalog, {
       onPick: (item) => {
@@ -70,24 +75,22 @@ export class LevelEditor {
       onSave: () => void editor.save(),
       onReload: () => void editor.reload(),
       onPropChange: (field, value) => void editor.updateSelected(field, value),
-      onEraseToggle: (enabled) => {
-        editor.eraseMode = enabled;
+      onColorGradingChange: (field, value) => { editor.level.colorGrading = editor.setColorGrading({ ...editor.level.colorGrading, [field]: value }); },
+      onColorGradingReset: () => {
+        editor.level.colorGrading = editor.setColorGrading(DEFAULT_COLOR_GRADING);
+        editor.ui?.renderColorGrading(editor.level.colorGrading);
       },
+      onEraseToggle: (enabled) => { editor.eraseMode = enabled; },
       getPreview: (item) => editor.previews.get(item),
-      onPreviewNeeded: (item) => {
-        void editor.previews.ensure(item).then((preview) => {
-          if (preview) editor.ui?.updatePreview(item.id, preview);
-        });
-      },
+      onPreviewNeeded: (item) => { void editor.previews.ensure(item).then((preview) => preview && editor.ui?.updatePreview(item.id, preview)); },
     });
+    editor.level.colorGrading = editor.setColorGrading(editor.level.colorGrading);
+    editor.ui.renderColorGrading(editor.level.colorGrading);
     editor.ui.setStatus("Editor mode actif");
     return editor;
   }
 
-  update(): void {
-    this.controls.update();
-    this.refreshSelectionBox();
-  }
+  update(): void { this.controls.update(); this.refreshSelectionBox(); }
 
   private async save(): Promise<void> {
     if (!this.ui) return;
@@ -104,8 +107,10 @@ export class LevelEditor {
     try {
       this.level = await loadLevel();
       await this.mapScene.load(this.level);
+      this.level.colorGrading = this.setColorGrading(this.level.colorGrading);
       this.placementPreview.setItem(this.activeItem);
       this.selectEntity(null);
+      this.ui.renderColorGrading(this.level.colorGrading);
       this.ui.setStatus(status);
     } catch (error) {
       this.ui.setStatus((error as Error).message, true);

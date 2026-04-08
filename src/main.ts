@@ -12,6 +12,7 @@ import { ItemManager } from "./items.ts";
 import { createHUD, updateHUD, showHUD, showNotification } from "./hud.ts";
 import { showMenu, showScore, updateScoreScreen, createMenuScreen, createScoreScreen } from "./hud.ts";
 import { createInitialState, resetForNewGame, addCollectedItem, computeFinalScore } from "./state.ts";
+import { createPostComposer } from "./shaders/post.ts";
 
 const state = createInitialState();
 const editorMode = new URLSearchParams(window.location.search).get("editor") === "1";
@@ -49,6 +50,9 @@ dirLight.shadow.camera.top = 50;
 dirLight.shadow.camera.bottom = -50;
 scene.add(ambient, hemi, dirLight);
 
+// Post-processing composer (color grade + vignette).
+const post = createPostComposer(renderer, scene, camera);
+
 // Player + controls
 const player = new Player(scene);
 player.mesh.position.set(0, 0, 5);
@@ -66,6 +70,7 @@ window.addEventListener("resize", resize);
 function resize(): void {
   renderer.setSize(window.innerWidth, window.innerHeight);
   cameraCtrl.resize();
+  post.composer.setSize(window.innerWidth, window.innerHeight);
 }
 
 async function init(): Promise<void> {
@@ -73,6 +78,7 @@ async function init(): Promise<void> {
   await loadAllAssets();
 
   const level = await loadLevel();
+  post.setColorGrading(level.colorGrading);
   await mapScene.load(level);
 
   // Wire up menu buttons now that everything is ready
@@ -95,7 +101,7 @@ async function init(): Promise<void> {
     showHUD(false);
     showMenu(false);
     showScore(false);
-    editor = await LevelEditor.create(renderer, camera, mapScene, level);
+    editor = await LevelEditor.create(renderer, camera, mapScene, level, { setColorGrading: post.setColorGrading });
   } else {
     player.loadModel(state.character);
     cameraCtrl.snapTo(player.mesh);
@@ -169,7 +175,7 @@ function animate(): void {
     cameraCtrl.update(player.mesh, player.velocity, dt);
   }
 
-  renderer.render(scene, camera);
+  post.composer.render();
 }
 
 init();

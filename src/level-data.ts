@@ -1,3 +1,4 @@
+import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
 import { createEmptyLayer, normalizeLevel } from "./level-grid.ts";
 import type { LevelData } from "./types.ts";
 
@@ -34,5 +35,6 @@ export function createEmptyLevel(size: number): LevelData {
       path: createEmptyLayer(size),
       water: createEmptyLayer(size),
     },
+    colorGrading: { ...DEFAULT_COLOR_GRADING },
   };
 }

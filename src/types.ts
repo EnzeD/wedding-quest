@@ -71,6 +71,14 @@ export interface LevelSurfaceLayer {
   rows: string[];
 }
 
+export interface ColorGradingSettings {
+  contrast: number;
+  saturation: number;
+  warmth: number;
+  vignette: number;
+  lift: number;
+}
+
 export interface LevelData {
   metadata: LevelMetadata;
   entities: LevelEntity[];
@@ -78,4 +86,5 @@ export interface LevelData {
     path: LevelSurfaceLayer;
     water: LevelSurfaceLayer;
   };
+  colorGrading: ColorGradingSettings;
 }

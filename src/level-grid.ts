@@ -1,3 +1,4 @@
+import { normalizeColorGrading } from "./color-grading.ts";
 import type { LevelData, LevelSurfaceLayer } from "./types.ts";
 
 export interface GridCell {
@@ -26,6 +27,7 @@ export function normalizeLevel(level: LevelData): LevelData {
       path: ensureLayerShape(level.surfaceLayers.path, size),
       water: ensureLayerShape(level.surfaceLayers.water, size),
     },
+    colorGrading: normalizeColorGrading(level.colorGrading),
   };
 }
 

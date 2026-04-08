@@ -1,5 +1,5 @@
 import type { EditorPaletteItem, EditorTab } from "./level-catalog.ts";
-import type { LevelEntity } from "./types.ts";
+import type { ColorGradingSettings, LevelEntity } from "./types.ts";
 
 interface EditorUiHandlers {
   onPick: (item: EditorPaletteItem) => void;
@@ -7,6 +7,8 @@ interface EditorUiHandlers {
   onSave: () => void;
   onReload: () => void;
   onPropChange: (field: string, value: string) => void;
+  onColorGradingChange: (field: keyof ColorGradingSettings, value: number) => void;
+  onColorGradingReset: () => void;
   onEraseToggle: (enabled: boolean) => void;
   getPreview: (item: EditorPaletteItem) => string | null;
   onPreviewNeeded: (item: EditorPaletteItem) => void;
@@ -20,6 +22,21 @@ const TAB_LABELS: Record<EditorTab, string> = {
   surfaces: "Surfaces",
 };
 
+const COLOR_GRADING_FIELDS: Array<{
+  field: keyof ColorGradingSettings;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  digits: number;
+}> = [
+  { field: "contrast", label: "Contrast", min: 0.5, max: 1.8, step: 0.01, digits: 2 },
+  { field: "saturation", label: "Saturation", min: 0, max: 2, step: 0.01, digits: 2 },
+  { field: "warmth", label: "Warmth", min: -0.3, max: 0.3, step: 0.01, digits: 2 },
+  { field: "vignette", label: "Vignette", min: 0, max: 1.5, step: 0.01, digits: 2 },
+  { field: "lift", label: "Lift", min: -0.2, max: 0.2, step: 0.005, digits: 3 },
+];
+
 export class EditorUI {
   private items: EditorPaletteItem[];
   private handlers: EditorUiHandlers;
@@ -27,6 +44,7 @@ export class EditorUI {
   private tabsEl: HTMLDivElement;
   private paletteEl: HTMLDivElement;
   private propsEl: HTMLDivElement;
+  private gradingEl: HTMLDivElement;
   private statusEl: HTMLDivElement;
   private eraseBtn: HTMLButtonElement;
   private paletteButtons = new Map<string, HTMLButtonElement>();
@@ -51,8 +69,18 @@ export class EditorUI {
         <div class="editor-palette"></div>
       </div>
       <div class="editor-properties kenney-panel">
-        <h3>Selection</h3>
-        <div class="editor-props"></div>
+        <section class="editor-section">
+          <h3>Selection</h3>
+          <div class="editor-props"></div>
+        </section>
+        <section class="editor-section">
+          <div class="editor-section-head">
+            <h3>Look</h3>
+            <button id="editor-grade-reset" class="editor-btn editor-btn-secondary">Reset</button>
+          </div>
+          <p class="editor-help">Preview live. Save writes these values to the level JSON.</p>
+          <div class="editor-grading"></div>
+        </section>
         <div class="editor-status"></div>
       </div>
     `;
@@ -61,17 +89,21 @@ export class EditorUI {
     this.tabsEl = this.root.querySelector(".editor-tabs") as HTMLDivElement;
     this.paletteEl = this.root.querySelector(".editor-palette") as HTMLDivElement;
     this.propsEl = this.root.querySelector(".editor-props") as HTMLDivElement;
+    this.gradingEl = this.root.querySelector(".editor-grading") as HTMLDivElement;
     this.statusEl = this.root.querySelector(".editor-status") as HTMLDivElement;
     this.eraseBtn = this.root.querySelector("#editor-erase") as HTMLButtonElement;
 
     (this.root.querySelector("#editor-save") as HTMLButtonElement).addEventListener("click", () => handlers.onSave());
     (this.root.querySelector("#editor-reload") as HTMLButtonElement).addEventListener("click", () => handlers.onReload());
+    (this.root.querySelector("#editor-grade-reset") as HTMLButtonElement).addEventListener("click", () => handlers.onColorGradingReset());
     this.eraseBtn.addEventListener("click", () => {
       this.eraseBtn.classList.toggle("selected");
       handlers.onEraseToggle(this.eraseBtn.classList.contains("selected"));
     });
     this.propsEl.addEventListener("change", (event) => this.onPropEvent(event));
     this.propsEl.addEventListener("input", (event) => this.onPropEvent(event));
+    this.gradingEl.addEventListener("change", (event) => this.onColorGradingEvent(event));
+    this.gradingEl.addEventListener("input", (event) => this.onColorGradingEvent(event));
 
     this.renderTabs();
     this.renderPalette();
@@ -130,6 +162,27 @@ export class EditorUI {
       </label>
       <div class="editor-meta">${entity.kind} / ${entity.assetId}</div>
     `;
+  }
+
+  renderColorGrading(settings: ColorGradingSettings): void {
+    if (!this.gradingEl.childElementCount) {
+      this.gradingEl.innerHTML = COLOR_GRADING_FIELDS.map(
+        ({ field, label, min, max, step }) => `
+          <label class="editor-grade-field">
+            <span>${label}<output class="editor-grade-value" data-grade-output="${field}"></output></span>
+            <input data-grade-field="${field}" type="range" min="${min}" max="${max}" step="${step}" />
+          </label>
+        `,
+      ).join("");
+    }
+
+    for (const { field, digits } of COLOR_GRADING_FIELDS) {
+      const value = settings[field];
+      const input = this.gradingEl.querySelector(`[data-grade-field="${field}"]`) as HTMLInputElement | null;
+      const output = this.gradingEl.querySelector(`[data-grade-output="${field}"]`) as HTMLOutputElement | null;
+      if (input) input.value = String(value);
+      if (output) output.textContent = value.toFixed(digits);
+    }
   }
 
   private renderTabs(): void {
@@ -195,5 +248,16 @@ export class EditorUI {
     const field = target.dataset.field;
     if (!field) return;
     this.handlers.onPropChange(field, target.value);
+  }
+
+  private onColorGradingEvent(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const field = target.dataset.gradeField as keyof ColorGradingSettings | undefined;
+    const value = Number(target.value);
+    const config = COLOR_GRADING_FIELDS.find((item) => item.field === field);
+    if (!field || !config || !Number.isFinite(value)) return;
+    const output = this.gradingEl.querySelector(`[data-grade-output="${field}"]`) as HTMLOutputElement | null;
+    if (output) output.textContent = value.toFixed(config.digits);
+    this.handlers.onColorGradingChange(field, value);
   }
 }
