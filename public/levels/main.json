@@ -7,6 +7,20 @@
   },
   "entities": [
     {
+      "id": "menu-anchor",
+      "kind": "menu-anchor",
+      "assetId": "menu-anchor",
+      "position": {
+        "x": -6.952010958437154,
+        "y": 0,
+        "z": -1.0963533463861204
+      },
+      "rotationY": 0,
+      "scale": 1.5,
+      "snap": "free",
+      "name": "Menu"
+    },
+    {
       "id": "prefab-manoir",
       "kind": "prefab",
       "assetId": "manoir",
@@ -1476,5 +1490,20 @@
     "warmth": -0.03,
     "vignette": 0.71,
     "lift": 0.01
+  },
+  "menu": {
+    "startCamera": {
+      "position": {
+        "x": -42.24812233945557,
+        "y": 17.74822695911122,
+        "z": 33.004365183210325
+      },
+      "lookAt": {
+        "x": -34.21804016280751,
+        "y": 8.592522112990597,
+        "z": 23.094732206292694
+      },
+      "fov": 50
+    }
   }
 }

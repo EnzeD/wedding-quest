@@ -4,10 +4,12 @@ import { createEntityFromPaletteItem, snapPoint } from "./editor-entity.ts";
 import type { EditorPaletteItem } from "./level-catalog.ts";
 import { entityAssetPath, preloadEntityAsset } from "./level-assets.ts";
 import { buildKenney } from "./kenney-buildings.ts";
+import { createMenuAnchorHelper } from "./menu-anchor-helper.ts";
 import type { LevelEntity } from "./types.ts";
 
 function buildEntityObject(entity: LevelEntity): THREE.Group {
   if (entity.kind === "prefab") return buildKenney(entity.assetId, entity.scale).group;
+  if (entity.kind === "menu-anchor") return createMenuAnchorHelper();
   const path = entityAssetPath(entity);
   if (!path) return new THREE.Group();
   return normalizeToHeight(cloneAsset(path), entity.scale, entity.kind === "npc");

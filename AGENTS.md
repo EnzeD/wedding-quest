@@ -12,6 +12,7 @@ Course contre la montre en vue 3eme personne. Le joueur incarne Sarah ou Nicolas
 - Keep `architecture.md` up to date when adding or removing files.
 - Before committing, verify all new/removed files are reflected in `architecture.md`.
 - Files must be < 300 lines — split into smaller modules if approaching this limit.
+- Toute nouvelle copie utilisateur, UI, message visible et doc de travail doit etre maintenue en francais et en anglais. Le francais reste par defaut et l'anglais est active via `?english=1`.
 - Lire `game-design-document.md` avant tout travail sur le gameplay, le scoring, les objets, ou le flow du jeu.
 - Mobile first : tout doit etre jouable au tactile, tester les joysticks et boutons sur mobile.
 - Performance : budget strict, smartphones moyens. Limiter les draw calls, utiliser des assets low-poly.

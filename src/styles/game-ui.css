@@ -89,92 +89,6 @@
 
 .hud-notification.visible { opacity: 1; }
 
-.action-buttons {
-  position: fixed;
-  right: 20px;
-  bottom: 56px;
-  display: none;
-  flex-direction: column;
-  gap: 14px;
-  z-index: 120;
-  pointer-events: auto;
-}
-
-.action-button {
-  width: 88px;
-  height: 88px;
-  border: 0;
-  background: none;
-  border-image-source: url("/assets/kenney-ui/blue/button_round_depth_flat.png");
-  border-image-slice: var(--kenney-depth-slice);
-  border-image-width: var(--kenney-depth-width);
-  border-image-repeat: stretch;
-  image-rendering: pixelated;
-  color: var(--white);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 10px 0 14px;
-  font-family: var(--font-display);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.action-button.pressed,
-.action-button:active {
-  transform: translateY(4px);
-}
-
-.action-button--sprint.pressed {
-  border-image-source: url("/assets/kenney-ui/green/button_round_depth_flat.png");
-}
-
-.action-button-icon {
-  width: 28px;
-  height: 28px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  image-rendering: pixelated;
-}
-
-.action-button--sprint .action-button-icon {
-  background-image: url("/assets/kenney-ui/extra/icon_repeat_outline.png");
-}
-
-.action-button--jump .action-button-icon {
-  background-image: url("/assets/kenney-ui/extra/icon_arrow_up_outline.png");
-}
-
-.action-button-label {
-  font-size: 12px;
-  letter-spacing: 1px;
-  line-height: 1;
-}
-
-.action-button:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.7);
-  outline-offset: 4px;
-}
-
-@media (max-width: 640px) {
-  .action-buttons {
-    right: 14px;
-    bottom: 48px;
-    gap: 12px;
-  }
-
-  .action-button {
-    width: 78px;
-    height: 78px;
-    padding-bottom: 12px;
-  }
-}
-
 .overlay-screen {
   position: fixed;
   inset: 0;
@@ -324,4 +238,12 @@
   color: var(--amber);
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
   margin: 16px 0;
+}
+
+.score-summary {
+  margin: 4px 0 12px;
+  font-size: 14px;
+  color: rgba(248, 214, 174, 0.9);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }

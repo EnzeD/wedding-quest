@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { loadManifest, loadAllAssets } from "./assets.ts";
 import { loadLevel } from "./level-data.ts";
+import { CinematicMenu } from "./menu.ts";
 import { LevelEditor } from "./editor.ts";
 import { Player } from "./player.ts";
 import { TopDownCamera } from "./camera.ts";
@@ -10,11 +11,12 @@ import { MapScene } from "./map.ts";
 import { resolveCollisions } from "./collision.ts";
 import { ItemManager } from "./items.ts";
 import { createFPSCounter, createHUD, updateFPSCounter, updateHUD, showHUD, showNotification } from "./hud.ts";
-import { showMenu, showScore, updateScoreScreen, createMenuScreen, createScoreScreen } from "./hud.ts";
+import { showScore, updateScoreScreen, createScoreScreen } from "./hud.ts";
 import { createInitialState, resetForNewGame, addCollectedItem, computeFinalScore } from "./state.ts";
 import { LowPolySky } from "./shaders/sky.ts";
 import { createPostComposer } from "./shaders/post.ts";
 import { tickShaders } from "./shaders/clock.ts";
+import { applyDocumentTranslations } from "./i18n.ts";
 
 const state = createInitialState();
 const searchParams = new URLSearchParams(window.location.search);
@@ -22,8 +24,11 @@ const editorMode = searchParams.get("editor") === "1";
 const fpsParam = searchParams.get("fps");
 const fpsCounterEnabled = fpsParam === "0" ? false : import.meta.env.DEV || editorMode || fpsParam === "1";
 let editor: LevelEditor | null = null;
+let menu: CinematicMenu | null = null;
 let fpsSampleElapsed = 0;
 let fpsSampleFrames = 0;
+
+applyDocumentTranslations();
 
 // Camera (create first so resize() can use it)
 const cameraCtrl = new TopDownCamera();
@@ -88,7 +93,6 @@ const clock = new THREE.Clock();
 // HUD
 createHUD();
 if (fpsCounterEnabled) createFPSCounter();
-createMenuScreen();
 createScoreScreen();
 
 window.addEventListener("resize", resize);
@@ -106,36 +110,34 @@ async function init(): Promise<void> {
   const level = await loadLevel();
   post.setEnabled(level.postProcessingEnabled);
   post.setColorGrading(level.colorGrading);
-  await mapScene.load(level, { includePickups: editorMode });
+  await mapScene.load(level, { includePickups: editorMode, includeHelpers: editorMode });
   mapScene.updateGrassInteractor(player.mesh.position);
 
-  // Wire up menu buttons now that everything is ready
-  document.getElementById("play-btn")!.addEventListener("click", startGame);
   document.getElementById("replay-btn")!.addEventListener("click", startGame);
-
-  const charBtns = document.querySelectorAll<HTMLButtonElement>(".char-btn");
-  charBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      charBtns.forEach((b) => b.classList.remove("selected"));
-      btn.classList.add("selected");
-      state.character = btn.dataset.char as "sarah" | "nicolas";
-      if (!editorMode) player.loadModel(state.character);
-    });
-  });
 
   if (editorMode) {
     player.mesh.visible = false;
     joystick.hide();
     showHUD(false);
-    showMenu(false);
     showScore(false);
     editor = await LevelEditor.create(renderer, camera, mapScene, level, {
       setColorGrading: post.setColorGrading,
       setPostProcessingEnabled: post.setEnabled,
     });
   } else {
-    player.loadModel(state.character);
-    cameraCtrl.snapTo(player.mesh);
+    player.mesh.visible = false;
+    menu = new CinematicMenu({
+      camera,
+      scene,
+      menuAnchor: level.entities.find((entity) => entity.kind === "menu-anchor") ?? null,
+      menuSettings: level.menu,
+      onPlay: ({ character, playerName }) => {
+        state.character = character;
+        state.playerName = playerName;
+        startGame();
+      },
+    });
+    await menu.prepare();
     setMode("menu");
   }
 
@@ -145,9 +147,10 @@ async function init(): Promise<void> {
 function setMode(mode: "menu" | "playing" | "score"): void {
   state.mode = mode;
   showHUD(mode === "playing");
-  showMenu(mode === "menu");
   showScore(mode === "score");
   joystick[mode === "playing" ? "show" : "hide"]();
+  if (mode === "menu") menu?.show();
+  else menu?.hide();
   if (mode !== "playing") freeLook?.reset();
 }
 
@@ -155,9 +158,11 @@ function startGame(): void {
   resetForNewGame(state);
   freeLook?.reset();
   player.loadModel(state.character);
+  player.mesh.visible = true;
   player.mesh.position.set(0, 0, 5);
   cameraCtrl.snapTo(player.mesh);
   state.totalItems = items.spawn(state.character, mapScene.level!).length;
+  updateHUD(state);
   setMode("playing");
   clock.getDelta(); // reset clock
 }
@@ -226,6 +231,8 @@ function animate(): void {
 
   if (editor) {
     editor.update();
+  } else if (state.mode === "menu") {
+    menu?.update(dt);
   } else {
     const lookDelta = freeLook?.consumeDelta(freeLookDelta);
     if (lookDelta) cameraCtrl.rotate(lookDelta.x, lookDelta.y);

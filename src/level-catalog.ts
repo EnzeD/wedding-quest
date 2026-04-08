@@ -1,8 +1,9 @@
 import { DECO_PIECES, PREFAB_DEFINITIONS, TREE_PIECES } from "./kenney-buildings.ts";
+import { bilingual, localize } from "./i18n.ts";
 import { getPickupDefinitions } from "./item-definitions.ts";
 import type { LevelEntityKind, LevelSnapMode } from "./types.ts";
 
-export type EditorTab = "prefabs" | "kenney" | "decor" | "items" | "npc" | "surfaces";
+export type EditorTab = "prefabs" | "kenney" | "decor" | "items" | "npc" | "surfaces" | "menu";
 export type SurfaceTool = "path" | "water";
 
 export interface EditorPaletteItem {
@@ -26,6 +27,20 @@ interface MiniCharacterCatalog {
   };
 }
 
+const PREFAB_LABELS = {
+  manoir: bilingual("Manoir", "Manor"),
+  grange: bilingual("Grange", "Barn"),
+  cottage: bilingual("Cottage", "Cottage"),
+  annexe: bilingual("Annexe", "Annex"),
+  moulin: bilingual("Moulin", "Mill"),
+} as const;
+
+const SURFACE_LABELS = {
+  path: bilingual("Chemin", "Path"),
+  water: bilingual("Eau", "Water"),
+  menu: bilingual("Menu", "Menu"),
+} as const;
+
 function labelize(name: string): string {
   return name
     .replace(/\.glb$/i, "")
@@ -42,7 +57,7 @@ export async function loadEditorCatalog(): Promise<EditorPaletteItem[]> {
 
   const prefabItems: EditorPaletteItem[] = PREFAB_DEFINITIONS.map((prefab) => ({
     id: prefab.id,
-    label: prefab.label,
+    label: localize(PREFAB_LABELS[prefab.id as keyof typeof PREFAB_LABELS] ?? bilingual(prefab.label, prefab.label)),
     tab: "prefabs",
     kind: "prefab",
     defaultScale: prefab.defaultScale,
@@ -92,9 +107,13 @@ export async function loadEditorCatalog(): Promise<EditorPaletteItem[]> {
   }));
 
   const surfaceItems: EditorPaletteItem[] = [
-    { id: "path", label: "Chemin", tab: "surfaces", surfaceTool: "path" },
-    { id: "water", label: "Eau", tab: "surfaces", surfaceTool: "water" },
+    { id: "path", label: localize(SURFACE_LABELS.path), tab: "surfaces", surfaceTool: "path" },
+    { id: "water", label: localize(SURFACE_LABELS.water), tab: "surfaces", surfaceTool: "water" },
   ];
 
-  return [...prefabItems, ...kenneyItems, ...decorItems, ...pickupItems, ...npcItems, ...surfaceItems];
+  const menuItems: EditorPaletteItem[] = [
+    { id: "menu-anchor", label: localize(SURFACE_LABELS.menu), tab: "menu", kind: "menu-anchor", defaultScale: 0.52, defaultSnap: "free" },
+  ];
+
+  return [...prefabItems, ...kenneyItems, ...decorItems, ...pickupItems, ...npcItems, ...surfaceItems, ...menuItems];
 }

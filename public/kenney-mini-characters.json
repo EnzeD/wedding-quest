@@ -6,8 +6,8 @@
     "texture": "assets/kenney-mini-characters/Textures/colormap.png"
   },
   "playerDefaults": {
-    "nicolas": "character-male-a.glb",
-    "sarah": "character-female-a.glb"
+    "nicolas": "character-male-d.glb",
+    "sarah": "character-female-d.glb"
   },
   "characters": {
     "male": [

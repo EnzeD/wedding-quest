@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { bilingual, localize, type BilingualText } from "./i18n.ts";
 import type { Character } from "./types.ts";
 
 export interface PickupDefinition {
@@ -11,7 +12,7 @@ export interface PickupDefinition {
 
 interface PickupSeed {
   slug: string;
-  name: string;
+  name: BilingualText;
   points: number;
 }
 
@@ -21,39 +22,39 @@ const DEFAULT_PICKUP_POSITIONS: [number, number][] = [
 ];
 
 const NICOLAS_ITEMS: PickupSeed[] = [
-  { slug: "boutonniere", name: "Boutonniere", points: 50 },
-  { slug: "boutons-manchettes", name: "Boutons de manchettes", points: 50 },
-  { slug: "cravate", name: "Cravate", points: 100 },
-  { slug: "montre", name: "Montre", points: 200 },
-  { slug: "chaussures", name: "Chaussures", points: 300 },
-  { slug: "voeux", name: "Les voeux", points: 300 },
-  { slug: "pantalon", name: "Pantalon", points: 400 },
-  { slug: "chemise", name: "Chemise", points: 400 },
-  { slug: "veste", name: "Veste", points: 400 },
-  { slug: "alliances", name: "Les alliances", points: 1000 },
+  { slug: "boutonniere", name: bilingual("Boutonniere", "Boutonniere"), points: 50 },
+  { slug: "boutons-manchettes", name: bilingual("Boutons de manchettes", "Cufflinks"), points: 50 },
+  { slug: "cravate", name: bilingual("Cravate", "Tie"), points: 100 },
+  { slug: "montre", name: bilingual("Montre", "Watch"), points: 200 },
+  { slug: "chaussures", name: bilingual("Chaussures", "Shoes"), points: 300 },
+  { slug: "voeux", name: bilingual("Les voeux", "Vows"), points: 300 },
+  { slug: "pantalon", name: bilingual("Pantalon", "Trousers"), points: 400 },
+  { slug: "chemise", name: bilingual("Chemise", "Shirt"), points: 400 },
+  { slug: "veste", name: bilingual("Veste", "Jacket"), points: 400 },
+  { slug: "alliances", name: bilingual("Les alliances", "Wedding rings"), points: 1000 },
 ];
 
 const SARAH_ITEMS: PickupSeed[] = [
-  { slug: "bracelet", name: "Bracelet", points: 50 },
-  { slug: "lentilles", name: "Lentilles", points: 50 },
-  { slug: "boucles-oreilles", name: "Boucles d'oreilles", points: 100 },
-  { slug: "maquillage", name: "Trousse de maquillage", points: 100 },
-  { slug: "voile", name: "Voile", points: 200 },
-  { slug: "voeux", name: "Les voeux", points: 300 },
-  { slug: "chaussures", name: "Chaussures", points: 400 },
-  { slug: "bouquet", name: "Bouquet", points: 400 },
-  { slug: "robe", name: "Robe", points: 500 },
-  { slug: "alliances", name: "Les alliances", points: 1000 },
+  { slug: "bracelet", name: bilingual("Bracelet", "Bracelet"), points: 50 },
+  { slug: "lentilles", name: bilingual("Lentilles", "Contact lenses"), points: 50 },
+  { slug: "boucles-oreilles", name: bilingual("Boucles d'oreilles", "Earrings"), points: 100 },
+  { slug: "maquillage", name: bilingual("Trousse de maquillage", "Makeup bag"), points: 100 },
+  { slug: "voile", name: bilingual("Voile", "Veil"), points: 200 },
+  { slug: "voeux", name: bilingual("Les voeux", "Vows"), points: 300 },
+  { slug: "chaussures", name: bilingual("Chaussures", "Shoes"), points: 400 },
+  { slug: "bouquet", name: bilingual("Bouquet", "Bouquet"), points: 400 },
+  { slug: "robe", name: bilingual("Robe", "Dress"), points: 500 },
+  { slug: "alliances", name: bilingual("Les alliances", "Wedding rings"), points: 1000 },
 ];
 
 function buildDefinitions(character: Character, seeds: PickupSeed[]): PickupDefinition[] {
   const characterLabel = character[0].toUpperCase() + character.slice(1);
   return seeds.map(({ slug, name, points }) => ({
     id: `${character}-${slug}`,
-    name,
+    name: localize(name),
     points,
     character,
-    editorLabel: `${characterLabel} - ${name}`,
+    editorLabel: `${characterLabel} - ${localize(name)}`,
   }));
 }
 

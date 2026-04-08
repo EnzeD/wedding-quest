@@ -19,6 +19,8 @@ export function entityAssetPath(entity: LevelEntity): string | null {
       return npcAssetPath(entity.assetId);
     case "pickup":
       return pickupAssetPath(entity.assetId);
+    case "menu-anchor":
+      return null;
     case "kenney-piece":
     case "decoration":
     case "vegetation":
@@ -39,7 +41,11 @@ export async function preloadEntityAsset(entity: LevelEntity): Promise<void> {
   await preloadAsset(path);
 }
 
-export async function preloadLevelAssets(level: LevelData, includePickups = true): Promise<void> {
-  const entities = includePickups ? level.entities : level.entities.filter((entity) => entity.kind !== "pickup");
+export async function preloadLevelAssets(level: LevelData, includePickups = true, includeHelpers = false): Promise<void> {
+  const entities = level.entities.filter((entity) => {
+    if (!includePickups && entity.kind === "pickup") return false;
+    if (!includeHelpers && entity.kind === "menu-anchor") return false;
+    return true;
+  });
   await Promise.all(entities.map((entity) => preloadEntityAsset(entity)));
 }

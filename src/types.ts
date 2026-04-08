@@ -10,7 +10,7 @@ export interface Collider {
 
 export type GameMode = "menu" | "playing" | "score";
 export type Character = "sarah" | "nicolas";
-export type LevelEntityKind = "prefab" | "kenney-piece" | "decoration" | "vegetation" | "npc" | "pickup";
+export type LevelEntityKind = "prefab" | "kenney-piece" | "decoration" | "vegetation" | "npc" | "pickup" | "menu-anchor";
 export type LevelSnapMode = "grid" | "free";
 
 export interface ItemDef {
@@ -38,6 +38,16 @@ export interface LevelPosition {
   x: number;
   y: number;
   z: number;
+}
+
+export interface LevelCameraFrame {
+  position: LevelPosition;
+  lookAt: LevelPosition;
+  fov: number;
+}
+
+export interface LevelMenuSettings {
+  startCamera: LevelCameraFrame;
 }
 
 export interface LevelEntity {
@@ -110,4 +120,5 @@ export interface LevelData {
   postProcessingEnabled: boolean;
   grassColor: string;
   colorGrading: ColorGradingSettings;
+  menu: LevelMenuSettings;
 }

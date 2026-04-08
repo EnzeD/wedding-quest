@@ -1,4 +1,5 @@
 import { CONFIG } from "./config.ts";
+import { characterText, hudText, localize } from "./i18n.ts";
 import type { GameState } from "./state.ts";
 
 let timerEl: HTMLElement;
@@ -6,8 +7,8 @@ let itemCountEl: HTMLElement;
 let notificationEl: HTMLElement;
 let fpsEl: HTMLElement | null = null;
 let notifTimeout: ReturnType<typeof setTimeout> | null = null;
-let menuEl: HTMLElement;
 let scoreEl: HTMLElement;
+let scoreSummaryEl: HTMLElement | null = null;
 
 export function createHUD(): void {
   const hud = document.getElementById("hud")!;
@@ -37,7 +38,7 @@ export function createFPSCounter(): void {
   fpsEl = document.createElement("div");
   fpsEl.id = "fps-counter";
   fpsEl.className = "hud-panel hud-fps";
-  fpsEl.textContent = "-- FPS";
+  fpsEl.textContent = localize(hudText.fps);
   document.body.appendChild(fpsEl);
 }
 
@@ -85,17 +86,9 @@ export function showHUD(visible: boolean): void {
   hud.style.display = visible ? "block" : "none";
 }
 
-export function createMenuScreen(): HTMLElement {
-  menuEl = document.getElementById("menu-screen")!;
-  return menuEl;
-}
-
-export function showMenu(visible: boolean): void {
-  menuEl.style.display = visible ? "flex" : "none";
-}
-
 export function createScoreScreen(): HTMLElement {
   scoreEl = document.getElementById("score-screen")!;
+  scoreSummaryEl = document.getElementById("score-summary");
   return scoreEl;
 }
 
@@ -105,6 +98,10 @@ export function showScore(visible: boolean): void {
 
 export function updateScoreScreen(state: GameState, finalScore: number): void {
   const detailEl = scoreEl.querySelector("#score-detail")!;
+  if (scoreSummaryEl) {
+    const characterLabel = localize(characterText[state.character]);
+    scoreSummaryEl.textContent = [state.playerName.trim(), characterLabel].filter(Boolean).join(" • ");
+  }
   const itemList = state.collectedItems
     .map((item) => `<div class="score-item">${item.name} <span>+${item.points}</span></div>`)
     .join("");
@@ -114,13 +111,13 @@ export function updateScoreScreen(state: GameState, finalScore: number): void {
 
   detailEl.innerHTML = `
     <div class="score-section">
-      <h3>Objets (${state.collectedItems.length}/${state.totalItems})</h3>
+      <h3>${localize(hudText.items)} (${state.collectedItems.length}/${state.totalItems})</h3>
       ${itemList}
     </div>
     <div class="score-section">
-      <div class="score-item">Bonus temps <span>+${timeBonus}</span></div>
-      ${completionBonus > 0 ? `<div class="score-item">Bonus completion <span>+${completionBonus}</span></div>` : ""}
+      <div class="score-item">${localize(hudText.timeBonus)} <span>+${timeBonus}</span></div>
+      ${completionBonus > 0 ? `<div class="score-item">${localize(hudText.completionBonus)} <span>+${completionBonus}</span></div>` : ""}
     </div>
-    <div class="score-total">Score total : ${finalScore}</div>
+    <div class="score-total">${localize(hudText.totalScore)} : ${finalScore}</div>
   `;
 }

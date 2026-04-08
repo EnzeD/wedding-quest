@@ -1,5 +1,6 @@
 import type { EditorPaletteItem, EditorTab } from "./level-catalog.ts";
-import type { ColorGradingSettings, LevelEntity, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
+import { editorText, localize } from "./i18n.ts";
+import type { ColorGradingSettings, LevelEntity, LevelEntityKind, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
 
 interface EditorUiHandlers {
   onPick: (item: EditorPaletteItem) => void;
@@ -17,14 +18,9 @@ interface EditorUiHandlers {
   onPreviewNeeded: (item: EditorPaletteItem) => void;
 }
 
-const TAB_LABELS: Record<EditorTab, string> = {
-  prefabs: "Prefabs",
-  kenney: "Kenney",
-  decor: "Decor",
-  items: "Objets",
-  npc: "PNJ",
-  surfaces: "Surfaces",
-};
+const TAB_LABELS: Record<EditorTab, string> = Object.fromEntries(
+  Object.entries(editorText.tabs).map(([tab, label]) => [tab, localize(label)]),
+) as Record<EditorTab, string>;
 
 const COLOR_GRADING_FIELDS: Array<{
   field: keyof ColorGradingSettings;
@@ -34,22 +30,28 @@ const COLOR_GRADING_FIELDS: Array<{
   step: number;
   digits: number;
 }> = [
-  { field: "contrast", label: "Contrast", min: 0.5, max: 1.8, step: 0.01, digits: 2 },
-  { field: "saturation", label: "Saturation", min: 0, max: 2, step: 0.01, digits: 2 },
-  { field: "warmth", label: "Warmth", min: -0.3, max: 0.3, step: 0.01, digits: 2 },
-  { field: "vignette", label: "Vignette", min: 0, max: 1.5, step: 0.01, digits: 2 },
-  { field: "lift", label: "Lift", min: -0.2, max: 0.2, step: 0.005, digits: 3 },
+  { field: "contrast", label: localize(editorText.grading.contrast), min: 0.5, max: 1.8, step: 0.01, digits: 2 },
+  { field: "saturation", label: localize(editorText.grading.saturation), min: 0, max: 2, step: 0.01, digits: 2 },
+  { field: "warmth", label: localize(editorText.grading.warmth), min: -0.3, max: 0.3, step: 0.01, digits: 2 },
+  { field: "vignette", label: localize(editorText.grading.vignette), min: 0, max: 1.5, step: 0.01, digits: 2 },
+  { field: "lift", label: localize(editorText.grading.lift), min: -0.2, max: 0.2, step: 0.005, digits: 3 },
 ];
 const SURFACE_FIELDS = [
-  { surface: "path", field: "bleed", label: "Path bleed", min: 0, max: 0.2, step: 0.01, digits: 2 },
-  { surface: "path", field: "radius", label: "Path radius", min: 0, max: 0.6, step: 0.01, digits: 2 },
-  { surface: "water", field: "bleed", label: "Water bleed", min: 0, max: 0.24, step: 0.01, digits: 2 },
-  { surface: "water", field: "radius", label: "Water radius", min: 0, max: 0.6, step: 0.01, digits: 2 },
-  { surface: "water", field: "depth", label: "Water depth", min: 0, max: 1.6, step: 0.01, digits: 2 },
-  { surface: "water", field: "bankSlope", label: "Bank slope", min: 0.35, max: 2.5, step: 0.01, digits: 2 },
-  { surface: "water", field: "shoreWarp", label: "Shore naturalness", min: 0, max: 1.2, step: 0.01, digits: 2 },
-  { surface: "water", field: "bedVariation", label: "Bed variation", min: 0, max: 0.2, step: 0.005, digits: 3 },
+  { surface: "path", field: "bleed", label: localize(editorText.surfaces.pathBleed), min: 0, max: 0.2, step: 0.01, digits: 2 },
+  { surface: "path", field: "radius", label: localize(editorText.surfaces.pathRadius), min: 0, max: 0.6, step: 0.01, digits: 2 },
+  { surface: "water", field: "bleed", label: localize(editorText.surfaces.waterBleed), min: 0, max: 0.24, step: 0.01, digits: 2 },
+  { surface: "water", field: "radius", label: localize(editorText.surfaces.waterRadius), min: 0, max: 0.6, step: 0.01, digits: 2 },
+  { surface: "water", field: "depth", label: localize(editorText.surfaces.waterDepth), min: 0, max: 1.6, step: 0.01, digits: 2 },
+  { surface: "water", field: "bankSlope", label: localize(editorText.surfaces.bankSlope), min: 0.35, max: 2.5, step: 0.01, digits: 2 },
+  { surface: "water", field: "shoreWarp", label: localize(editorText.surfaces.shoreWarp), min: 0, max: 1.2, step: 0.01, digits: 2 },
+  { surface: "water", field: "bedVariation", label: localize(editorText.surfaces.bedVariation), min: 0, max: 0.2, step: 0.005, digits: 3 },
 ] as const;
+
+function labelEntityKind(kind: LevelEntityKind): string {
+  if (kind === "pickup") return TAB_LABELS.items; if (kind === "npc") return TAB_LABELS.npc; if (kind === "menu-anchor") return TAB_LABELS.menu;
+  if (kind === "vegetation" || kind === "decoration") return TAB_LABELS.decor;
+  return kind === "kenney-piece" ? TAB_LABELS.kenney : TAB_LABELS.prefabs;
+}
 
 export class EditorUI {
   private items: EditorPaletteItem[];
@@ -75,27 +77,27 @@ export class EditorUI {
     this.root.innerHTML = `
       <div class="editor-sidebar kenney-panel">
         <div class="editor-toolbar">
-          <button id="editor-save" class="editor-btn">Save</button>
-          <button id="editor-reload" class="editor-btn">Reload</button>
-          <button id="editor-erase" class="editor-btn">Erase</button>
+          <button id="editor-save" class="editor-btn">${localize(editorText.buttons.save)}</button>
+          <button id="editor-reload" class="editor-btn">${localize(editorText.buttons.reload)}</button>
+          <button id="editor-erase" class="editor-btn">${localize(editorText.buttons.erase)}</button>
         </div>
         <div class="editor-tabs"></div>
         <div class="editor-palette"></div>
       </div>
       <div class="editor-properties kenney-panel">
         <section class="editor-section">
-          <h3>Selection</h3>
+          <h3>${localize(editorText.sections.selection)}</h3>
           <div class="editor-props"></div>
         </section>
         <section class="editor-section">
           <div class="editor-section-head">
-            <h3>Look</h3>
+            <h3>${localize(editorText.sections.look)}</h3>
             <div class="editor-actions">
-              <button id="editor-fx-toggle" class="editor-btn editor-btn-secondary">FX On</button>
-              <button id="editor-grade-reset" class="editor-btn editor-btn-secondary">Reset</button>
+              <button id="editor-fx-toggle" class="editor-btn editor-btn-secondary">${localize(editorText.buttons.fxOn)}</button>
+              <button id="editor-grade-reset" class="editor-btn editor-btn-secondary">${localize(editorText.buttons.reset)}</button>
             </div>
           </div>
-          <p class="editor-help">Preview live. Save writes the toggle and grading values to the level JSON.</p>
+          <p class="editor-help">${localize(editorText.help)}</p>
           <div class="editor-look"></div>
           <div class="editor-grading"></div>
         </section>
@@ -133,7 +135,7 @@ export class EditorUI {
     this.renderSelection(null);
   }
   setPostProcessingEnabled(enabled: boolean): void {
-    this.fxBtn.textContent = enabled ? "FX On" : "FX Off";
+    this.fxBtn.textContent = enabled ? localize(editorText.buttons.fxOn) : localize(editorText.buttons.fxOff);
     this.fxBtn.classList.toggle("selected", enabled);
   }
   setStatus(text: string, isError = false): void {
@@ -161,24 +163,24 @@ export class EditorUI {
   }
   renderSelection(entity: LevelEntity | null): void {
     if (!entity) {
-      this.propsEl.innerHTML = `<p class="editor-empty">Aucune selection.</p>`;
+      this.propsEl.innerHTML = `<p class="editor-empty">${localize(editorText.selectionEmpty)}</p>`;
       return;
     }
-
+    const scaleLabel = entity.kind === "menu-anchor" ? localize(editorText.fields.characterHeight) : localize(editorText.fields.scale);
     this.propsEl.innerHTML = `
-      <label>Nom<input data-field="name" value="${entity.name ?? ""}" /></label>
+      <label>${localize(editorText.fields.name)}<input data-field="name" value="${entity.name ?? ""}" /></label>
       <label>X<input data-field="position.x" type="number" step="0.5" value="${entity.position.x}" /></label>
       <label>Y<input data-field="position.y" type="number" step="0.5" value="${entity.position.y}" /></label>
       <label>Z<input data-field="position.z" type="number" step="0.5" value="${entity.position.z}" /></label>
-      <label>Rotation Y<input data-field="rotationY" type="number" step="0.1963495408" value="${entity.rotationY}" /></label>
-      <label>Scale<input data-field="scale" type="number" step="0.1" min="0.1" value="${entity.scale}" /></label>
-      <label>Snap
+      <label>${localize(editorText.fields.rotationY)}<input data-field="rotationY" type="number" step="0.1963495408" value="${entity.rotationY}" /></label>
+      <label>${scaleLabel}<input data-field="scale" type="number" step="0.1" min="0.1" value="${entity.scale}" /></label>
+      <label>${localize(editorText.fields.snap)}
         <select data-field="snap">
-          <option value="grid" ${entity.snap === "grid" ? "selected" : ""}>grid</option>
-          <option value="free" ${entity.snap === "free" ? "selected" : ""}>free</option>
+          <option value="grid" ${entity.snap === "grid" ? "selected" : ""}>${localize(editorText.fields.grid)}</option>
+          <option value="free" ${entity.snap === "free" ? "selected" : ""}>${localize(editorText.fields.free)}</option>
         </select>
       </label>
-      <div class="editor-meta">${entity.kind} / ${entity.assetId}</div>
+      <div class="editor-meta">${labelEntityKind(entity.kind)} / ${entity.assetId}</div>
     `;
   }
   renderColorGrading(settings: ColorGradingSettings): void {
@@ -198,8 +200,8 @@ export class EditorUI {
   renderLookSettings(color: string, surfaceSettings: LevelSurfaceSettings): void {
     if (!this.lookEl.childElementCount) {
       this.lookEl.innerHTML = `
-        <label class="editor-look-field"><span>Grass blades</span><input data-look-field="grassColor" type="color" /></label>
-        <div class="editor-meta">Water terrain</div>
+        <label class="editor-look-field"><span>${localize(editorText.fields.grassColor)}</span><input data-look-field="grassColor" type="color" /></label>
+        <div class="editor-meta">${localize(editorText.fields.waterTerrain)}</div>
         ${SURFACE_FIELDS.map(({ surface, field, label, min, max, step }) => `<label class="editor-grade-field"><span>${label}<output class="editor-grade-value" data-surface-output="${surface}.${field}"></output></span><input data-surface-kind="${surface}" data-surface-field="${field}" type="range" min="${min}" max="${max}" step="${step}" /></label>`).join("")}
       `;
     }
