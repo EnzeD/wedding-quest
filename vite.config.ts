@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LEVEL_PATH = path.resolve(__dirname, "public/levels/main.json");
 
@@ -42,5 +44,5 @@ export default defineConfig({
   server: {
     host: true,
   },
-  plugins: [levelSavePlugin()],
+  plugins: [levelSavePlugin(), cloudflare()],
 });
