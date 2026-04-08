@@ -114,8 +114,7 @@ function buildMill(): PrefabBlueprint {
       ...annexShifted.pieces,
       ...towerShifted.pieces,
       { piece: "watermill-wide", x: 3.5, y: 0.9, z: 1.45, rotY: R90, scale: 1.1 },
-      { piece: "banner-red", x: 2.75, y: 1.1, z: -0.1, rotY: R90 },
-      { piece: "banner-red", x: 4.25, y: 1.1, z: 3.1, rotY: R270 },
+      { piece: "banner-red", x: 2.55, y: 0.95, z: -0.45, rotY: R90 },
       { piece: "rock-wide", x: 1.9, y: 0, z: 3.2, scale: 0.9 },
     ],
     roofs: [...annexShifted.roofs, ...towerShifted.roofs],
@@ -207,6 +206,8 @@ function assemblePieces(pieces: Piece[]): THREE.Group {
   const group = new THREE.Group();
   for (const piece of pieces) {
     const object = cloneAsset(kenneyPath(piece.piece));
+    object.name = piece.piece;
+    object.userData.kenneyPiece = piece.piece;
     object.position.set(piece.x, piece.y, piece.z);
     object.rotation.y = piece.rotY ?? 0;
     if (piece.scale) object.scale.setScalar(piece.scale);

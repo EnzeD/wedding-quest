@@ -13,7 +13,7 @@
 | `src/styles/base.css` | Variables globales, fonts et styles de base du document |
 | `src/styles/game-ui.css` | Styles du HUD, des overlays menu/score et des boutons de jeu |
 | `src/styles/editor.css` | Styles desktop-first de l'editeur de niveau integre |
-| `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu |
+| `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu et palette du ciel |
 | `src/types.ts` | Interfaces partagees : collisions, etat, assets et schema du niveau data-driven |
 | `src/state.ts` | Gestion de l'etat du jeu : creation, reset, score, items collectes |
 | `src/assets.ts` | Chargement GLTF : manifeste, cache, clone, normalisation de taille |
@@ -23,6 +23,7 @@
 | `src/level-grid.ts` | Utilitaires de grille pour surfaces path/water et conversion monde/cellule |
 | `src/level-assets.ts` | Resolution et preload des assets utilises par les entites du niveau |
 | `src/level-catalog.ts` | Construction du catalogue de palette de l'editeur depuis les catalogues Kenney |
+| `src/terrain-ground.ts` | Sol de base deforme par le masque d'eau pour creuser les zones humides et lisser les berges |
 | `src/editor-entity.ts` | Helpers d'entites pour l'editeur (creation depuis palette, update de proprietes, snap) |
 | `src/editor-placement-preview.ts` | Ghost transparent de placement dans l'editeur pour visualiser l'objet avant pose |
 | `src/editor-preview.ts` | Generation lazy de previews 3D pour chaque item de palette de l'editeur |
@@ -34,6 +35,7 @@
 | `src/camera.ts` | Classe TopDownCamera : vue du dessus qui suit le joueur avec look-ahead |
 | `src/controls.ts` | Classe VirtualJoystick : joystick tactile + clavier WASD, input normalise |
 | `src/map.ts` | Scene de niveau data-driven : rendu du JSON, surfaces, entites et colliders |
+| `src/ambient-effects.ts` | Effets ambiants attaches aux entites : roue du moulin animee et fumee procedurale sur les cheminees |
 | `src/collision.ts` | Resolution des collisions : limites de map et AABB des entites/eau |
 | `src/items.ts` | ItemManager : spawn des objets collectables, animation, detection de ramassage |
 | `src/hud.ts` | HUD : timer, compteur d'objets, notifications, ecrans menu/score |
@@ -47,7 +49,7 @@
 | `src/shaders/toon.ts` | Conversion des materiaux GLTF en MeshToonMaterial avec gradient ramp 4 tons (look cartoon) |
 | `src/shaders/outline.ts` | Outline cartoon par hull inverse (clone scale BackSide noir) sur les meshes non-skinned |
 | `src/shaders/wind.ts` | Patch onBeforeCompile qui anime les vertices des arbres et bannieres avec sin(time) gate par Y |
-| `src/shaders/sky.ts` | Sky dome ShaderMaterial degrade horizon-zenith, suit la camera, dessine en premier |
+| `src/shaders/sky.ts` | Ciel low-poly optimise : dome shader horizon-zenith avec halo de soleil + nuages low-poly instancies qui suivent la camera |
 | `src/shaders/blob-shadow.ts` | Blob shadow circulaire (canvas radial) attache sous le joueur pour ancrer la silhouette |
 | `src/shaders/water.ts` | ShaderMaterial pour la couche d'eau : vagues animees, ecume sur les bords, sparkles |
 | `src/shaders/fresnel-pulse.ts` | Patch fresnel + sin pulse pour faire briller les pickups en silhouette |

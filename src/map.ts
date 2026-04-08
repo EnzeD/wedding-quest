@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { AmbientEffects } from "./ambient-effects.ts";
 import { cloneAsset, normalizeToHeight } from "./assets.ts";
 import { normalizeGrassColor } from "./color-grading.ts";
 import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./level-grid.ts";
@@ -7,6 +8,7 @@ import { buildKenney } from "./kenney-buildings.ts";
 import { PastureGrass } from "./grass.ts";
 import { DEFAULT_SURFACE_SETTINGS, normalizeSurfaceSettings } from "./surface-settings.ts";
 import { SurfaceLayerRenderer } from "./surface-layer-renderer.ts";
+import { TerrainGround } from "./terrain-ground.ts";
 import { applyToonMaterials } from "./shaders/toon.ts";
 import { createWaterMaterial } from "./shaders/water.ts";
 import type { Collider, LevelData, LevelEntity, LevelSurfaceSettings } from "./types.ts";
@@ -16,17 +18,6 @@ const COL = {
   path: 0xf0c59d,
   water: 0x5f74ca,
   hedge: 0x3da679,
-};
-
-function createGround(size: number, color: THREE.ColorRepresentation): THREE.Mesh {
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(size, size),
-    new THREE.MeshStandardMaterial({ color }),
-  );
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.receiveShadow = true;
-  mesh.name = "level-ground";
-  return mesh;
 }
 
 function createBoundary(size: number): THREE.Group {
@@ -94,7 +85,8 @@ export class MapScene {
   private entityColliders = new Map<string, Collider>();
   private waterColliders = new Map<string, Collider>();
   private grass = new PastureGrass();
-  private groundMesh = createGround(1, COL.ground);
+  private ambientEffects = new AmbientEffects();
+  private ground = new TerrainGround(COL.ground);
   private pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.08, radius: 0.3, y: 0.02 });
   private waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.85, bleed: 0.12, radius: 0.3, y: 0.05, customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92 }) });
   mapSize = 90;
@@ -109,8 +101,7 @@ export class MapScene {
     this.clear();
 
     this.root.add(this.surfaceRoot, this.entityRoot);
-    this.groundMesh = createGround(this.mapSize, COL.ground);
-    this.root.add(this.groundMesh);
+    this.root.add(this.ground.object);
     this.root.add(createBoundary(this.mapSize));
     this.grass.attachTo(this.root);
     this.updateSurfaceSettings(this.level.surfaceSettings);
@@ -126,10 +117,13 @@ export class MapScene {
     this.scene.add(this.root);
   }
   getGround(): THREE.Mesh {
-    return this.groundMesh;
+    return this.ground.object;
   }
   addOverlay(object: THREE.Object3D): void {
     this.scene.add(object);
+  }
+  update(dt: number): void {
+    this.ambientEffects.update(dt);
   }
   getColliders(): Collider[] {
     return [...this.entityColliders.values(), ...this.waterColliders.values()];
@@ -147,6 +141,7 @@ export class MapScene {
     applyEntityTransform(object, entity);
     this.entityRoot.add(object);
     this.entityObjects.set(entity.id, object);
+    this.ambientEffects.registerEntity(entity, object);
 
     const collider = buildCollider(entity, object);
     if (collider) this.entityColliders.set(entity.id, collider);
@@ -177,6 +172,7 @@ export class MapScene {
       this.entityRoot.remove(object);
       this.entityObjects.delete(id);
     }
+    this.ambientEffects.removeEntity(id);
     this.entityColliders.delete(id);
     this.rebuildPastureGrass();
   }
@@ -224,8 +220,11 @@ export class MapScene {
     this.entityObjects.clear();
     this.entityColliders.clear();
     this.waterColliders.clear();
+    this.ambientEffects.dispose();
+    this.ambientEffects = new AmbientEffects();
     this.grass.dispose();
     this.grass = new PastureGrass();
+    this.ground = new TerrainGround(COL.ground);
     this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: DEFAULT_SURFACE_SETTINGS.path.bleed, radius: DEFAULT_SURFACE_SETTINGS.path.radius, y: 0.02 });
     this.waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.85, bleed: DEFAULT_SURFACE_SETTINGS.water.bleed, radius: DEFAULT_SURFACE_SETTINGS.water.radius, y: 0.05, customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92 }) });
   }
@@ -236,6 +235,7 @@ export class MapScene {
       return;
     }
     this.waterSurface.render(this.mapSize, this.level.surfaceLayers.water);
+    this.ground.render(this.mapSize, this.level.surfaceLayers.water, this.level.surfaceSettings.water);
     this.rebuildWaterColliders();
   }
   private rebuildWaterColliders(): void {
