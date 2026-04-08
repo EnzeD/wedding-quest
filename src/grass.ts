@@ -12,6 +12,9 @@ const MOBILE_DENSITY = 3;
 const DESKTOP_DENSITY = 5;
 const EDGE_MARGIN = 0.72;
 const COLLIDER_PADDING = 0.28;
+const OPEN_EDGE_PADDING = 0.06;
+const BLOCKED_EDGE_PADDING = 0.36;
+const BLOCKED_CORNER_PADDING = 0.2;
 
 function seeded(seed: number): number {
   const value = Math.sin(seed * 127.1) * 43758.5453123;
@@ -76,10 +79,10 @@ function createInstanceGeometry(level: LevelData, colliders: Collider[]): THREE.
   for (let cellIndex = 0; cellIndex < eligibleCells.length; cellIndex++) {
     const cell = eligibleCells[cellIndex];
     const world = cellToWorld(cell, level.metadata.size);
-    const leftClear = isBlockedCell(level, cell.col - 1, cell.row) ? -0.28 : -0.46;
-    const rightClear = isBlockedCell(level, cell.col + 1, cell.row) ? 0.28 : 0.46;
-    const topClear = isBlockedCell(level, cell.col, cell.row - 1) ? -0.28 : -0.46;
-    const bottomClear = isBlockedCell(level, cell.col, cell.row + 1) ? 0.28 : 0.46;
+    const leftClear = isBlockedCell(level, cell.col - 1, cell.row) ? -0.5 + BLOCKED_EDGE_PADDING : -0.5 + OPEN_EDGE_PADDING;
+    const rightClear = isBlockedCell(level, cell.col + 1, cell.row) ? 0.5 - BLOCKED_EDGE_PADDING : 0.5 - OPEN_EDGE_PADDING;
+    const topClear = isBlockedCell(level, cell.col, cell.row - 1) ? -0.5 + BLOCKED_EDGE_PADDING : -0.5 + OPEN_EDGE_PADDING;
+    const bottomClear = isBlockedCell(level, cell.col, cell.row + 1) ? 0.5 - BLOCKED_EDGE_PADDING : 0.5 - OPEN_EDGE_PADDING;
     const bladeCount = perCell + (cellIndex < extra ? 1 : 0);
 
     for (let slot = 0; slot < bladeCount; slot++) {
@@ -97,6 +100,10 @@ function createInstanceGeometry(level: LevelData, colliders: Collider[]): THREE.
         ))) {
           continue;
         }
+        if (isBlockedCell(level, cell.col - 1, cell.row - 1) && x < world.x - BLOCKED_CORNER_PADDING && z < world.z - BLOCKED_CORNER_PADDING) continue;
+        if (isBlockedCell(level, cell.col + 1, cell.row - 1) && x > world.x + BLOCKED_CORNER_PADDING && z < world.z - BLOCKED_CORNER_PADDING) continue;
+        if (isBlockedCell(level, cell.col - 1, cell.row + 1) && x < world.x - BLOCKED_CORNER_PADDING && z > world.z + BLOCKED_CORNER_PADDING) continue;
+        if (isBlockedCell(level, cell.col + 1, cell.row + 1) && x > world.x + BLOCKED_CORNER_PADDING && z > world.z + BLOCKED_CORNER_PADDING) continue;
 
         offsets.push(x, 0.015, z);
         scales.push(0.82 + seeded(seed + 2.31) * 0.58);
@@ -135,7 +142,7 @@ export class PastureGrass {
       return;
     }
 
-    const material = createGrassMaterial();
+    const material = createGrassMaterial(level.grassColor);
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.frustumCulled = false;
     this.mesh.receiveShadow = false;
@@ -146,6 +153,10 @@ export class PastureGrass {
 
   updateInteractor(position: THREE.Vector3): void {
     this.mesh?.material.uniforms.uPlayerPosition.value.copy(position);
+  }
+
+  setColor(color: THREE.ColorRepresentation): void {
+    this.mesh?.material.uniforms.uGrassColor.value.set(color);
   }
 
   dispose(): void {

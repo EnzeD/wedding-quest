@@ -79,6 +79,16 @@ export interface ColorGradingSettings {
   lift: number;
 }
 
+export interface LevelSurfacePaintSettings {
+  bleed: number;
+  radius: number;
+}
+
+export interface LevelSurfaceSettings {
+  path: LevelSurfacePaintSettings;
+  water: LevelSurfacePaintSettings;
+}
+
 export interface LevelData {
   metadata: LevelMetadata;
   entities: LevelEntity[];
@@ -86,6 +96,8 @@ export interface LevelData {
     path: LevelSurfaceLayer;
     water: LevelSurfaceLayer;
   };
+  surfaceSettings: LevelSurfaceSettings;
   postProcessingEnabled: boolean;
+  grassColor: string;
   colorGrading: ColorGradingSettings;
 }

@@ -1,5 +1,6 @@
-import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
+import { DEFAULT_COLOR_GRADING, DEFAULT_GRASS_COLOR } from "./color-grading.ts";
 import { createEmptyLayer, normalizeLevel } from "./level-grid.ts";
+import { DEFAULT_SURFACE_SETTINGS } from "./surface-settings.ts";
 import type { LevelData } from "./types.ts";
 
 const LEVEL_URL = "/levels/main.json";
@@ -35,7 +36,12 @@ export function createEmptyLevel(size: number): LevelData {
       path: createEmptyLayer(size),
       water: createEmptyLayer(size),
     },
+    surfaceSettings: {
+      path: { ...DEFAULT_SURFACE_SETTINGS.path },
+      water: { ...DEFAULT_SURFACE_SETTINGS.water },
+    },
     postProcessingEnabled: true,
+    grassColor: DEFAULT_GRASS_COLOR,
     colorGrading: { ...DEFAULT_COLOR_GRADING },
   };
 }

@@ -1,5 +1,5 @@
 import type { EditorPaletteItem, EditorTab } from "./level-catalog.ts";
-import type { ColorGradingSettings, LevelEntity } from "./types.ts";
+import type { ColorGradingSettings, LevelEntity, LevelSurfaceSettings } from "./types.ts";
 
 interface EditorUiHandlers {
   onPick: (item: EditorPaletteItem) => void;
@@ -7,6 +7,8 @@ interface EditorUiHandlers {
   onSave: () => void;
   onReload: () => void;
   onPropChange: (field: string, value: string) => void;
+  onGrassColorChange: (value: string) => void;
+  onSurfaceSettingChange: (surface: "path" | "water", field: "bleed" | "radius", value: number) => void;
   onPostProcessingToggle: (enabled: boolean) => void;
   onColorGradingChange: (field: keyof ColorGradingSettings, value: number) => void;
   onColorGradingReset: () => void;
@@ -37,6 +39,12 @@ const COLOR_GRADING_FIELDS: Array<{
   { field: "vignette", label: "Vignette", min: 0, max: 1.5, step: 0.01, digits: 2 },
   { field: "lift", label: "Lift", min: -0.2, max: 0.2, step: 0.005, digits: 3 },
 ];
+const SURFACE_FIELDS = [
+  { surface: "path", field: "bleed", label: "Path bleed", min: 0, max: 0.2, step: 0.01, digits: 2 },
+  { surface: "path", field: "radius", label: "Path radius", min: 0, max: 0.6, step: 0.01, digits: 2 },
+  { surface: "water", field: "bleed", label: "Water bleed", min: 0, max: 0.24, step: 0.01, digits: 2 },
+  { surface: "water", field: "radius", label: "Water radius", min: 0, max: 0.6, step: 0.01, digits: 2 },
+] as const;
 
 export class EditorUI {
   private items: EditorPaletteItem[];
@@ -45,16 +53,15 @@ export class EditorUI {
   private tabsEl: HTMLDivElement;
   private paletteEl: HTMLDivElement;
   private propsEl: HTMLDivElement;
+  private lookEl: HTMLDivElement;
   private gradingEl: HTMLDivElement;
   private statusEl: HTMLDivElement;
   private eraseBtn: HTMLButtonElement;
   private fxBtn: HTMLButtonElement;
   private paletteButtons = new Map<string, HTMLButtonElement>();
   private previewObserver: IntersectionObserver | null = null;
-
   activeTab: EditorTab = "prefabs";
   activeItemId: string | null = null;
-
   constructor(items: EditorPaletteItem[], handlers: EditorUiHandlers) {
     this.items = items;
     this.handlers = handlers;
@@ -84,6 +91,7 @@ export class EditorUI {
             </div>
           </div>
           <p class="editor-help">Preview live. Save writes the toggle and grading values to the level JSON.</p>
+          <div class="editor-look"></div>
           <div class="editor-grading"></div>
         </section>
         <div class="editor-status"></div>
@@ -94,6 +102,7 @@ export class EditorUI {
     this.tabsEl = this.root.querySelector(".editor-tabs") as HTMLDivElement;
     this.paletteEl = this.root.querySelector(".editor-palette") as HTMLDivElement;
     this.propsEl = this.root.querySelector(".editor-props") as HTMLDivElement;
+    this.lookEl = this.root.querySelector(".editor-look") as HTMLDivElement;
     this.gradingEl = this.root.querySelector(".editor-grading") as HTMLDivElement;
     this.statusEl = this.root.querySelector(".editor-status") as HTMLDivElement;
     this.eraseBtn = this.root.querySelector("#editor-erase") as HTMLButtonElement;
@@ -109,6 +118,8 @@ export class EditorUI {
     });
     this.propsEl.addEventListener("change", (event) => this.onPropEvent(event));
     this.propsEl.addEventListener("input", (event) => this.onPropEvent(event));
+    this.lookEl.addEventListener("change", (event) => this.onLookEvent(event));
+    this.lookEl.addEventListener("input", (event) => this.onLookEvent(event));
     this.gradingEl.addEventListener("change", (event) => this.onColorGradingEvent(event));
     this.gradingEl.addEventListener("input", (event) => this.onColorGradingEvent(event));
 
@@ -116,17 +127,14 @@ export class EditorUI {
     this.renderPalette();
     this.renderSelection(null);
   }
-
   setPostProcessingEnabled(enabled: boolean): void {
     this.fxBtn.textContent = enabled ? "FX On" : "FX Off";
     this.fxBtn.classList.toggle("selected", enabled);
   }
-
   setStatus(text: string, isError = false): void {
     this.statusEl.textContent = text;
     this.statusEl.classList.toggle("error", isError);
   }
-
   setActiveTab(tab: EditorTab): void {
     if (tab === this.activeTab) return;
     this.activeTab = tab;
@@ -134,17 +142,11 @@ export class EditorUI {
     this.renderTabs();
     this.renderPalette();
   }
-
   setActiveItem(id: string | null): void {
-    if (this.activeItemId && this.paletteButtons.has(this.activeItemId)) {
-      this.paletteButtons.get(this.activeItemId)?.classList.remove("selected");
-    }
+    if (this.activeItemId && this.paletteButtons.has(this.activeItemId)) this.paletteButtons.get(this.activeItemId)?.classList.remove("selected");
     this.activeItemId = id;
-    if (id && this.paletteButtons.has(id)) {
-      this.paletteButtons.get(id)?.classList.add("selected");
-    }
+    if (id && this.paletteButtons.has(id)) this.paletteButtons.get(id)?.classList.add("selected");
   }
-
   updatePreview(itemId: string, preview: string): void {
     const button = this.paletteButtons.get(itemId);
     if (!button) return;
@@ -152,7 +154,6 @@ export class EditorUI {
     if (!thumb) return;
     thumb.innerHTML = `<img src="${preview}" alt="${button.dataset.label ?? itemId}" />`;
   }
-
   renderSelection(entity: LevelEntity | null): void {
     if (!entity) {
       this.propsEl.innerHTML = `<p class="editor-empty">Aucune selection.</p>`;
@@ -175,19 +176,12 @@ export class EditorUI {
       <div class="editor-meta">${entity.kind} / ${entity.assetId}</div>
     `;
   }
-
   renderColorGrading(settings: ColorGradingSettings): void {
     if (!this.gradingEl.childElementCount) {
-      this.gradingEl.innerHTML = COLOR_GRADING_FIELDS.map(
-        ({ field, label, min, max, step }) => `
-          <label class="editor-grade-field">
-            <span>${label}<output class="editor-grade-value" data-grade-output="${field}"></output></span>
-            <input data-grade-field="${field}" type="range" min="${min}" max="${max}" step="${step}" />
-          </label>
-        `,
-      ).join("");
+      this.gradingEl.innerHTML = COLOR_GRADING_FIELDS.map(({ field, label, min, max, step }) => `
+        <label class="editor-grade-field"><span>${label}<output class="editor-grade-value" data-grade-output="${field}"></output></span><input data-grade-field="${field}" type="range" min="${min}" max="${max}" step="${step}" /></label>
+      `).join("");
     }
-
     for (const { field, digits } of COLOR_GRADING_FIELDS) {
       const value = settings[field];
       const input = this.gradingEl.querySelector(`[data-grade-field="${field}"]`) as HTMLInputElement | null;
@@ -196,21 +190,33 @@ export class EditorUI {
       if (output) output.textContent = value.toFixed(digits);
     }
   }
-
+  renderLookSettings(color: string, surfaceSettings: LevelSurfaceSettings): void {
+    if (!this.lookEl.childElementCount) {
+      this.lookEl.innerHTML = `
+        <label class="editor-look-field"><span>Grass blades</span><input data-look-field="grassColor" type="color" /></label>
+        ${SURFACE_FIELDS.map(({ surface, field, label, min, max, step }) => `<label class="editor-grade-field"><span>${label}<output class="editor-grade-value" data-surface-output="${surface}.${field}"></output></span><input data-surface-kind="${surface}" data-surface-field="${field}" type="range" min="${min}" max="${max}" step="${step}" /></label>`).join("")}
+      `;
+    }
+    const input = this.lookEl.querySelector('[data-look-field="grassColor"]') as HTMLInputElement | null;
+    if (input) input.value = color;
+    for (const { surface, field, digits } of SURFACE_FIELDS) {
+      const value = surfaceSettings[surface][field];
+      const slider = this.lookEl.querySelector(`[data-surface-kind="${surface}"][data-surface-field="${field}"]`) as HTMLInputElement | null;
+      const output = this.lookEl.querySelector(`[data-surface-output="${surface}.${field}"]`) as HTMLOutputElement | null;
+      if (slider) slider.value = String(value);
+      if (output) output.textContent = value.toFixed(digits);
+    }
+  }
   private renderTabs(): void {
     this.tabsEl.innerHTML = "";
     (Object.keys(TAB_LABELS) as EditorTab[]).forEach((tab) => {
       const btn = document.createElement("button");
       btn.className = `editor-tab ${tab === this.activeTab ? "selected" : ""}`;
       btn.textContent = TAB_LABELS[tab];
-      btn.addEventListener("click", () => {
-        this.setActiveTab(tab);
-        this.handlers.onTab(tab);
-      });
+      btn.addEventListener("click", () => { this.setActiveTab(tab); this.handlers.onTab(tab); });
       this.tabsEl.appendChild(btn);
     });
   }
-
   private renderPalette(): void {
     const items = this.items.filter((item) => item.tab === this.activeTab);
     this.previewObserver?.disconnect();
@@ -226,16 +232,12 @@ export class EditorUI {
         <span class="editor-palette-thumb">${preview ? `<img src="${preview}" alt="${item.label}" />` : `<span class="editor-thumb-placeholder">${item.label.slice(0, 2).toUpperCase()}</span>`}</span>
         <span class="editor-palette-label">${item.label}</span>
       `;
-      button.addEventListener("click", () => {
-        this.setActiveItem(item.id);
-        this.handlers.onPick(item);
-      });
+      button.addEventListener("click", () => { this.setActiveItem(item.id); this.handlers.onPick(item); });
       this.paletteButtons.set(item.id, button);
       this.paletteEl.appendChild(button);
     }
     this.bindPreviewObserver(items);
   }
-
   private bindPreviewObserver(items: EditorPaletteItem[]): void {
     const byId = new Map(items.map((item) => [item.id, item]));
     this.previewObserver = new IntersectionObserver(
@@ -254,14 +256,27 @@ export class EditorUI {
     );
     for (const button of this.paletteButtons.values()) this.previewObserver.observe(button);
   }
-
   private onPropEvent(event: Event): void {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
     const field = target.dataset.field;
     if (!field) return;
     this.handlers.onPropChange(field, target.value);
   }
-
+  private onLookEvent(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.dataset.lookField === "grassColor") {
+      this.handlers.onGrassColorChange(target.value);
+      return;
+    }
+    const surface = target.dataset.surfaceKind as "path" | "water" | undefined;
+    const field = target.dataset.surfaceField as "bleed" | "radius" | undefined;
+    const value = Number(target.value);
+    const config = SURFACE_FIELDS.find((item) => item.surface === surface && item.field === field);
+    if (!surface || !field || !config || !Number.isFinite(value)) return;
+    const output = this.lookEl.querySelector(`[data-surface-output="${surface}.${field}"]`) as HTMLOutputElement | null;
+    if (output) output.textContent = value.toFixed(config.digits);
+    this.handlers.onSurfaceSettingChange(surface, field, value);
+  }
   private onColorGradingEvent(event: Event): void {
     const target = event.target as HTMLInputElement;
     const field = target.dataset.gradeField as keyof ColorGradingSettings | undefined;

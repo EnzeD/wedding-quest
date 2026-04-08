@@ -27,6 +27,7 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
       uShadowFoamColor: { value: shadowFoam },
       uRimColor: { value: rim },
       uAlphaMap: { value: null },
+      uTexelSize: { value: new THREE.Vector2(1, 1) },
       uOpacity: { value: opts.opacity ?? 0.9 },
     },
     transparent: true,
@@ -53,6 +54,7 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
       uniform vec3 uShadowFoamColor;
       uniform vec3 uRimColor;
       uniform sampler2D uAlphaMap;
+      uniform vec2 uTexelSize;
       uniform float uOpacity;
 
       float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -68,8 +70,28 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
         return 1.0 - smoothstep(width, width * 2.0, abs(field - center));
       }
 
+      float sampleBlurredAlpha(vec2 uv) {
+        vec2 x = vec2(uTexelSize.x, 0.0);
+        vec2 y = vec2(0.0, uTexelSize.y);
+        float sum = texture2D(uAlphaMap, uv).r * 4.0;
+        sum += texture2D(uAlphaMap, uv + x).r * 2.0;
+        sum += texture2D(uAlphaMap, uv - x).r * 2.0;
+        sum += texture2D(uAlphaMap, uv + y).r * 2.0;
+        sum += texture2D(uAlphaMap, uv - y).r * 2.0;
+        sum += texture2D(uAlphaMap, uv + x + y).r;
+        sum += texture2D(uAlphaMap, uv + x - y).r;
+        sum += texture2D(uAlphaMap, uv - x + y).r;
+        sum += texture2D(uAlphaMap, uv - x - y).r;
+        sum += texture2D(uAlphaMap, uv + x * 2.0).r;
+        sum += texture2D(uAlphaMap, uv - x * 2.0).r;
+        sum += texture2D(uAlphaMap, uv + y * 2.0).r;
+        sum += texture2D(uAlphaMap, uv - y * 2.0).r;
+        return sum / 20.0;
+      }
+
       void main() {
-        float alpha = texture2D(uAlphaMap, vUv).r;
+        float edgeField = sampleBlurredAlpha(vUv);
+        float alpha = smoothstep(0.02, 0.32, edgeField);
         if (alpha < 0.01) discard;
 
         vec2 world = vWorldPos.xz;
@@ -96,10 +118,10 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
         float darkFoamMask = contour(foamField, 0.44, 0.05) * 0.7;
 
         // Coastline foam is derived from the blurred alpha mask already produced by the canvas pass.
-        float shoreline = smoothstep(0.12, 0.36, alpha) * (1.0 - smoothstep(0.4, 0.82, alpha));
+        float shoreline = smoothstep(0.12, 0.36, edgeField) * (1.0 - smoothstep(0.4, 0.82, edgeField));
         float shorelinePulse = 0.85 + 0.15 * sin((world.x + world.y) * 0.75 + uTime * 1.6);
         shoreline *= shorelinePulse;
-        float innerShore = smoothstep(0.3, 0.56, alpha) * (1.0 - smoothstep(0.56, 0.92, alpha));
+        float innerShore = smoothstep(0.3, 0.56, edgeField) * (1.0 - smoothstep(0.56, 0.92, edgeField));
 
         col = mix(col, uShadowFoamColor, max(darkFoamMask, innerShore * 0.22));
         col = mix(col, uFoamColor, max(foamMask, shoreline));

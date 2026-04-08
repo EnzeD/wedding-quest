@@ -1,11 +1,15 @@
 import * as THREE from "three";
 import { cloneAsset, normalizeToHeight } from "./assets.ts";
+import { normalizeGrassColor } from "./color-grading.ts";
 import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./level-grid.ts";
 import { entityAssetPath, preloadEntityAsset, preloadLevelAssets } from "./level-assets.ts";
-import { PastureGrass } from "./grass.ts";
 import { buildKenney } from "./kenney-buildings.ts";
+import { PastureGrass } from "./grass.ts";
+import { DEFAULT_SURFACE_SETTINGS, normalizeSurfaceSettings } from "./surface-settings.ts";
 import { SurfaceLayerRenderer } from "./surface-layer-renderer.ts";
-import type { Collider, LevelData, LevelEntity } from "./types.ts";
+import { applyToonMaterials } from "./shaders/toon.ts";
+import { createWaterMaterial } from "./shaders/water.ts";
+import type { Collider, LevelData, LevelEntity, LevelSurfaceSettings } from "./types.ts";
 
 const COL = {
   ground: 0x41a479,
@@ -14,10 +18,10 @@ const COL = {
   hedge: 0x3da679,
 };
 
-function createGround(size: number): THREE.Mesh {
+function createGround(size: number, color: THREE.ColorRepresentation): THREE.Mesh {
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(size, size),
-    new THREE.MeshStandardMaterial({ color: COL.ground }),
+    new THREE.MeshStandardMaterial({ color }),
   );
   mesh.rotation.x = -Math.PI / 2;
   mesh.receiveShadow = true;
@@ -46,20 +50,17 @@ function createBoundary(size: number): THREE.Group {
 
 function buildEntityObject(entity: LevelEntity): THREE.Group {
   if (entity.kind === "prefab") {
-    return buildKenney(entity.assetId, entity.scale).group;
+    const built = buildKenney(entity.assetId, entity.scale).group; applyToonMaterials(built); return built;
   }
-
   const path = entityAssetPath(entity);
   if (!path) return new THREE.Group();
   const model = cloneAsset(path);
   return normalizeToHeight(model, entity.scale, entity.kind === "npc");
 }
-
 function applyEntityTransform(object: THREE.Object3D, entity: LevelEntity): void {
   object.position.set(entity.position.x, entity.position.y, entity.position.z);
   object.rotation.y = entity.rotationY;
 }
-
 function buildCollider(entity: LevelEntity, object: THREE.Object3D): Collider | null {
   if (entity.kind === "npc") return null;
   if (entity.collider) {
@@ -84,7 +85,6 @@ function buildCollider(entity: LevelEntity, object: THREE.Object3D): Collider | 
     name: entity.name ?? entity.assetId,
   };
 }
-
 export class MapScene {
   private scene: THREE.Scene;
   private root = new THREE.Group();
@@ -94,17 +94,14 @@ export class MapScene {
   private entityColliders = new Map<string, Collider>();
   private waterColliders = new Map<string, Collider>();
   private grass = new PastureGrass();
-  private groundMesh = createGround(1);
-  private pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.1, blur: 0.3, y: 0.02 });
-  private waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.82, bleed: 0.16, blur: 0.42, y: 0.05 });
-
+  private groundMesh = createGround(1, COL.ground);
+  private pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.08, radius: 0.3, y: 0.02 });
+  private waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.85, bleed: 0.12, radius: 0.3, y: 0.05, customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92 }) });
   mapSize = 90;
   level: LevelData | null = null;
-
   constructor(scene: THREE.Scene) {
     this.scene = scene;
   }
-
   async load(level: LevelData): Promise<void> {
     this.level = normalizeLevel(level);
     this.mapSize = this.level.metadata.size;
@@ -112,10 +109,11 @@ export class MapScene {
     this.clear();
 
     this.root.add(this.surfaceRoot, this.entityRoot);
-    this.groundMesh = createGround(this.mapSize);
+    this.groundMesh = createGround(this.mapSize, COL.ground);
     this.root.add(this.groundMesh);
     this.root.add(createBoundary(this.mapSize));
     this.grass.attachTo(this.root);
+    this.updateSurfaceSettings(this.level.surfaceSettings);
     this.pathSurface.attachTo(this.surfaceRoot);
     this.waterSurface.attachTo(this.surfaceRoot);
 
@@ -124,30 +122,24 @@ export class MapScene {
       await this.addEntity(entity, false);
     }
     this.rebuildPastureGrass();
-
+    this.applyGrassColor(this.level.grassColor);
     this.scene.add(this.root);
   }
-
   getGround(): THREE.Mesh {
     return this.groundMesh;
   }
-
   addOverlay(object: THREE.Object3D): void {
     this.scene.add(object);
   }
-
   getColliders(): Collider[] {
     return [...this.entityColliders.values(), ...this.waterColliders.values()];
   }
-
   getEntityObjects(): THREE.Group[] {
     return [...this.entityObjects.values()];
   }
-
   getEntityObject(id: string): THREE.Group | null {
     return this.entityObjects.get(id) ?? null;
   }
-
   async addEntity(entity: LevelEntity, syncGrass = true): Promise<void> {
     await preloadEntityAsset(entity);
     const object = buildEntityObject(entity);
@@ -160,7 +152,6 @@ export class MapScene {
     if (collider) this.entityColliders.set(entity.id, collider);
     if (syncGrass) this.rebuildPastureGrass();
   }
-
   async upsertEntity(entity: LevelEntity, rebuild = false): Promise<void> {
     const object = this.entityObjects.get(entity.id);
     if (!object || rebuild) {
@@ -175,13 +166,11 @@ export class MapScene {
     else this.entityColliders.delete(entity.id);
     this.rebuildPastureGrass();
   }
-
   setEntityTransform(entity: LevelEntity): void {
     const object = this.entityObjects.get(entity.id);
     if (!object) return;
     applyEntityTransform(object, entity);
   }
-
   removeEntity(id: string): void {
     const object = this.entityObjects.get(id);
     if (object) {
@@ -191,18 +180,12 @@ export class MapScene {
     this.entityColliders.delete(id);
     this.rebuildPastureGrass();
   }
-
   updateSurfaces(level: LevelData): void {
     this.level = normalizeLevel(level);
     this.mapSize = this.level.metadata.size;
     this.rebuildSurfaces();
     this.rebuildPastureGrass();
   }
-
-  updateGrassInteractor(position: THREE.Vector3): void {
-    this.grass.updateInteractor(position);
-  }
-
   updateSurfaceCell(type: "path" | "water", cell: GridCell, filled: boolean): void {
     if (!this.level) return;
     const layer = this.level.surfaceLayers[type];
@@ -212,13 +195,27 @@ export class MapScene {
     this.redrawSurface(type);
     this.rebuildPastureGrass();
   }
-
+  updateGrassInteractor(position: THREE.Vector3): void {
+    this.grass.updateInteractor(position);
+  }
+  updateGrassColor(color: string): void {
+    if (!this.level) return;
+    this.level.grassColor = normalizeGrassColor(color);
+    this.applyGrassColor(this.level.grassColor);
+  }
+  updateSurfaceSettings(settings: LevelSurfaceSettings): void {
+    if (!this.level) return;
+    this.level.surfaceSettings = normalizeSurfaceSettings(settings);
+    this.pathSurface.updateShape(this.level.surfaceSettings.path.bleed, this.level.surfaceSettings.path.radius);
+    this.waterSurface.updateShape(this.level.surfaceSettings.water.bleed, this.level.surfaceSettings.water.radius);
+    this.rebuildSurfaces();
+    this.rebuildPastureGrass();
+  }
   private rebuildSurfaces(): void {
     if (!this.level) return;
     this.redrawSurface("path");
     this.redrawSurface("water");
   }
-
   private clear(): void {
     this.scene.remove(this.root);
     this.root = new THREE.Group();
@@ -229,10 +226,9 @@ export class MapScene {
     this.waterColliders.clear();
     this.grass.dispose();
     this.grass = new PastureGrass();
-    this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.1, blur: 0.3, y: 0.02 });
-    this.waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.82, bleed: 0.16, blur: 0.42, y: 0.05 });
+    this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: DEFAULT_SURFACE_SETTINGS.path.bleed, radius: DEFAULT_SURFACE_SETTINGS.path.radius, y: 0.02 });
+    this.waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.85, bleed: DEFAULT_SURFACE_SETTINGS.water.bleed, radius: DEFAULT_SURFACE_SETTINGS.water.radius, y: 0.05, customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92 }) });
   }
-
   private redrawSurface(type: "path" | "water"): void {
     if (!this.level) return;
     if (type === "path") {
@@ -242,7 +238,6 @@ export class MapScene {
     this.waterSurface.render(this.mapSize, this.level.surfaceLayers.water);
     this.rebuildWaterColliders();
   }
-
   private rebuildWaterColliders(): void {
     if (!this.level) return;
     this.waterColliders.clear();
@@ -256,9 +251,11 @@ export class MapScene {
       }
     }
   }
-
   private rebuildPastureGrass(): void {
     if (!this.level) return;
     this.grass.rebuild(this.level, [...this.entityColliders.values()]);
+  }
+  private applyGrassColor(color: string): void {
+    this.grass.setColor(color);
   }
 }

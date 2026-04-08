@@ -179,6 +179,28 @@
   gap: 8px;
 }
 
+.editor-look-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.editor-look {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-look-field input[type="color"] {
+  width: 56px;
+  min-width: 56px;
+  height: 40px;
+  padding: 4px;
+  cursor: pointer;
+}
+
 .editor-grade-field {
   display: flex;
   flex-direction: column;

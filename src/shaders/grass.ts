@@ -1,15 +1,17 @@
 import * as THREE from "three";
 import { sharedTime } from "./clock.ts";
+import { DEFAULT_GRASS_COLOR } from "../color-grading.ts";
 
 const FOG_COLOR = new THREE.Color(0xc5d8eb);
 const SUN_DIRECTION = new THREE.Vector3(12, 24, 8).normalize();
 
-export function createGrassMaterial(): THREE.ShaderMaterial {
+export function createGrassMaterial(color: THREE.ColorRepresentation = DEFAULT_GRASS_COLOR): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     uniforms: {
       uTime: sharedTime,
       uPlayerPosition: { value: new THREE.Vector3(999, 0, 999) },
       uSunDirection: { value: SUN_DIRECTION.clone() },
+      uGrassColor: { value: new THREE.Color(color) },
       uFogColor: { value: FOG_COLOR.clone() },
       uFogNear: { value: 55 },
       uFogFar: { value: 130 },
@@ -90,6 +92,7 @@ export function createGrassMaterial(): THREE.ShaderMaterial {
     `,
     fragmentShader: `
       uniform vec3 uSunDirection;
+      uniform vec3 uGrassColor;
       uniform vec3 uFogColor;
       uniform float uFogNear;
       uniform float uFogFar;
@@ -104,7 +107,9 @@ export function createGrassMaterial(): THREE.ShaderMaterial {
         vec3 lightDir = normalize(uSunDirection);
         vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 
-        vec3 baseColor = mix(vec3(0.11, 0.30, 0.08), vec3(0.42, 0.72, 0.20), vBlade);
+        vec3 rootColor = uGrassColor * vec3(0.34, 0.4, 0.28);
+        vec3 tipColor = mix(uGrassColor, vec3(1.0), 0.18);
+        vec3 baseColor = mix(rootColor, tipColor, vBlade);
         baseColor *= mix(0.9, 1.12, vTone);
 
         float hemi = normal.y * 0.5 + 0.5;

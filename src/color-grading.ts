@@ -16,6 +16,8 @@ const COLOR_GRADING_LIMITS: Record<keyof ColorGradingSettings, { min: number; ma
   lift: { min: -0.2, max: 0.2 },
 };
 
+export const DEFAULT_GRASS_COLOR = "#41a479";
+
 export function normalizeColorGrading(
   value?: Partial<ColorGradingSettings> | null,
 ): ColorGradingSettings {
@@ -26,6 +28,13 @@ export function normalizeColorGrading(
     vignette: clamp("vignette", value?.vignette),
     lift: clamp("lift", value?.lift),
   };
+}
+
+export function normalizeGrassColor(value?: string | null): string {
+  if (typeof value !== "string") return DEFAULT_GRASS_COLOR;
+  const normalized = value.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(normalized)) return normalized.toLowerCase();
+  return DEFAULT_GRASS_COLOR;
 }
 
 function clamp(key: keyof ColorGradingSettings, value: number | undefined): number {

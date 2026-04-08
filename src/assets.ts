@@ -1,9 +1,21 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
+import { applyToonMaterials } from "./shaders/toon.ts";
+import { applyWindToObject } from "./shaders/wind.ts";
 import type { AssetManifest } from "./types.ts";
 
 const loader = new GLTFLoader();
+
+function isWindyAsset(path: string): boolean {
+  const lower = path.toLowerCase();
+  return (
+    lower.includes("/tree") ||
+    lower.includes("tree.glb") ||
+    lower.includes("tree-") ||
+    lower.includes("banner-")
+  );
+}
 
 interface CachedAsset {
   scene: THREE.Group;
@@ -39,6 +51,10 @@ async function loadGltf(path: string): Promise<CachedAsset> {
             child.receiveShadow = true;
           }
         });
+        applyToonMaterials(root);
+        if (isWindyAsset(path)) {
+          applyWindToObject(root, { amplitude: 0.07, frequency: 1.4, swayFloor: 0.3 });
+        }
         const entry: CachedAsset = { scene: root, animations: gltf.animations };
         cache.set(path, entry);
         resolve(entry);

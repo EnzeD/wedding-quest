@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { cloneAsset, normalizeToHeight, getManifest, getAnimations } from "./assets.ts";
+import { createBlobShadow } from "./shaders/blob-shadow.ts";
 import type { Character } from "./types.ts";
 
 const WEAPON_NODES = [
@@ -29,6 +30,7 @@ export class Player {
   constructor(scene: THREE.Scene) {
     this.mesh = new THREE.Group();
     this.buildPlaceholder();
+    this.mesh.add(createBlobShadow(0.65));
     scene.add(this.mesh);
   }
 
@@ -82,8 +84,13 @@ export class Player {
 
     const normalized = normalizeToHeight(model, CONFIG.player.height, true);
 
-    // Remove placeholder children
-    while (this.mesh.children.length > 0) this.mesh.remove(this.mesh.children[0]);
+    // Remove placeholder children but keep the blob shadow
+    const keep: THREE.Object3D[] = [];
+    for (const child of [...this.mesh.children]) {
+      if (child.name === "blob-shadow") keep.push(child);
+      this.mesh.remove(child);
+    }
+    for (const child of keep) this.mesh.add(child);
     this.mesh.add(normalized);
 
     // Setup animations

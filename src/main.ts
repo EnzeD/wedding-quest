@@ -12,7 +12,9 @@ import { ItemManager } from "./items.ts";
 import { createFPSCounter, createHUD, updateFPSCounter, updateHUD, showHUD, showNotification } from "./hud.ts";
 import { showMenu, showScore, updateScoreScreen, createMenuScreen, createScoreScreen } from "./hud.ts";
 import { createInitialState, resetForNewGame, addCollectedItem, computeFinalScore } from "./state.ts";
+import { createSkyDome } from "./shaders/sky.ts";
 import { createPostComposer } from "./shaders/post.ts";
+import { tickShaders } from "./shaders/clock.ts";
 
 const state = createInitialState();
 const searchParams = new URLSearchParams(window.location.search);
@@ -34,18 +36,23 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, CONFIG.render.maxDpr));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-resize();
+const SKY_BOTTOM = new THREE.Color(0xf6c39a);
+const SKY_TOP = new THREE.Color(0x6fa8d9);
+renderer.setClearColor(SKY_BOTTOM, 1);
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x9bbdec);
-scene.fog = new THREE.Fog(0x9bbdec, 50, 120);
+scene.background = null;
+scene.fog = new THREE.Fog(0xc5d8eb, 55, 130);
 const mapScene = new MapScene(scene);
 
+const skyDome = createSkyDome({ radius: 180, top: SKY_TOP, bottom: SKY_BOTTOM });
+scene.add(skyDome);
+
 // Lights
-const ambient = new THREE.AmbientLight(0xffffff, CONFIG.lighting.ambient);
-const hemi = new THREE.HemisphereLight(0xdcdce9, 0x905743, CONFIG.lighting.hemi);
-const dirLight = new THREE.DirectionalLight(0xf8d6ae, CONFIG.lighting.dir);
+const ambient = new THREE.AmbientLight(0xc8d6ff, CONFIG.lighting.ambient);
+const hemi = new THREE.HemisphereLight(0xdcdce9, 0x6a513a, CONFIG.lighting.hemi);
+const dirLight = new THREE.DirectionalLight(0xfde2b5, CONFIG.lighting.dir);
 dirLight.position.set(12, 24, 8);
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.set(CONFIG.lighting.shadowMapSize, CONFIG.lighting.shadowMapSize);
@@ -53,10 +60,12 @@ dirLight.shadow.camera.left = -50;
 dirLight.shadow.camera.right = 50;
 dirLight.shadow.camera.top = 50;
 dirLight.shadow.camera.bottom = -50;
+dirLight.shadow.bias = -0.0005;
 scene.add(ambient, hemi, dirLight);
 
 // Post-processing composer (color grade + vignette).
 const post = createPostComposer(renderer, scene, camera);
+resize();
 
 // Player + controls
 const player = new Player(scene);
@@ -162,6 +171,9 @@ function animate(): void {
       fpsSampleFrames = 0;
     }
   }
+
+  tickShaders(dt);
+  skyDome.position.copy(camera.position);
 
   if (state.mode === "playing") {
     player.update(joystick.input, dt);
