@@ -30,6 +30,16 @@ export const CONFIG = {
     dir: 1.0,
     shadowMapSize: 1024,
   },
+  sky: {
+    radius: 180,
+    topColor: 0x6fa8d9,
+    horizonColor: 0xf6c39a,
+    bottomColor: 0xffead3,
+    sunColor: 0xfff0b8,
+    cloudColor: 0xfffaf0,
+    cloudShadowColor: 0xdccfbf,
+    sunDirection: new THREE.Vector3(12, 24, 8).normalize(),
+  },
   match: {
     totalTime: 600,
     warningTime: 60,
@@ -42,6 +52,17 @@ export const CONFIG = {
     rotateSpeed: 1.5,
     pickupRadius: 1.5,
     glowColor: 0xffb349,
+  },
+  ambient: {
+    waterWheelSpeed: 0.35,
+    smoke: {
+      particleCount: 9,
+      riseSpeed: 0.24,
+      spread: 0.13,
+      height: 1.45,
+      baseScale: 0.28,
+      opacity: 0.4,
+    },
   },
   render: {
     maxDpr: 2,

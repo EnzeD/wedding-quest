@@ -12,7 +12,7 @@ import { ItemManager } from "./items.ts";
 import { createFPSCounter, createHUD, updateFPSCounter, updateHUD, showHUD, showNotification } from "./hud.ts";
 import { showMenu, showScore, updateScoreScreen, createMenuScreen, createScoreScreen } from "./hud.ts";
 import { createInitialState, resetForNewGame, addCollectedItem, computeFinalScore } from "./state.ts";
-import { createSkyDome } from "./shaders/sky.ts";
+import { LowPolySky } from "./shaders/sky.ts";
 import { createPostComposer } from "./shaders/post.ts";
 import { tickShaders } from "./shaders/clock.ts";
 
@@ -36,9 +36,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, CONFIG.render.maxDpr));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-const SKY_BOTTOM = new THREE.Color(0xf6c39a);
-const SKY_TOP = new THREE.Color(0x6fa8d9);
-renderer.setClearColor(SKY_BOTTOM, 1);
+renderer.setClearColor(CONFIG.sky.bottomColor, 1);
 
 // Scene
 const scene = new THREE.Scene();
@@ -46,14 +44,24 @@ scene.background = null;
 scene.fog = new THREE.Fog(0xc5d8eb, 55, 130);
 const mapScene = new MapScene(scene);
 
-const skyDome = createSkyDome({ radius: 180, top: SKY_TOP, bottom: SKY_BOTTOM });
-scene.add(skyDome);
+const sky = new LowPolySky({
+  radius: CONFIG.sky.radius,
+  top: CONFIG.sky.topColor,
+  horizon: CONFIG.sky.horizonColor,
+  bottom: CONFIG.sky.bottomColor,
+  sun: CONFIG.sky.sunColor,
+  cloud: CONFIG.sky.cloudColor,
+  cloudShadow: CONFIG.sky.cloudShadowColor,
+  sunDirection: CONFIG.sky.sunDirection,
+});
+scene.add(sky.object);
 
 // Lights
 const ambient = new THREE.AmbientLight(0xc8d6ff, CONFIG.lighting.ambient);
 const hemi = new THREE.HemisphereLight(0xdcdce9, 0x6a513a, CONFIG.lighting.hemi);
 const dirLight = new THREE.DirectionalLight(0xfde2b5, CONFIG.lighting.dir);
-dirLight.position.set(12, 24, 8);
+const sunShadowOffset = CONFIG.sky.sunDirection.clone().multiplyScalar(28);
+dirLight.position.copy(sunShadowOffset);
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.set(CONFIG.lighting.shadowMapSize, CONFIG.lighting.shadowMapSize);
 dirLight.shadow.camera.left = -50;
@@ -178,7 +186,8 @@ function animate(): void {
   }
 
   tickShaders(dt);
-  skyDome.position.copy(camera.position);
+  sky.update(camera.position, dt);
+  mapScene.update(dt);
 
   if (state.mode === "playing") {
     player.update(cameraCtrl.toWorldMovement(joystick.input, movementInput), dt);
@@ -205,7 +214,7 @@ function animate(): void {
 
     updateHUD(state);
 
-    dirLight.position.set(player.mesh.position.x + 12, 24, player.mesh.position.z + 8);
+    dirLight.position.copy(player.mesh.position).add(sunShadowOffset);
     dirLight.target = player.mesh;
   }
 
