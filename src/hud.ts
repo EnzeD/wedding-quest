@@ -4,6 +4,7 @@ import type { GameState } from "./state.ts";
 let timerEl: HTMLElement;
 let itemCountEl: HTMLElement;
 let notificationEl: HTMLElement;
+let fpsEl: HTMLElement | null = null;
 let notifTimeout: ReturnType<typeof setTimeout> | null = null;
 let menuEl: HTMLElement;
 let scoreEl: HTMLElement;
@@ -28,6 +29,25 @@ export function createHUD(): void {
   notificationEl.id = "notification";
   notificationEl.className = "hud-notification";
   hud.appendChild(notificationEl);
+}
+
+export function createFPSCounter(): void {
+  if (fpsEl) return;
+
+  fpsEl = document.createElement("div");
+  fpsEl.id = "fps-counter";
+  fpsEl.className = "hud-panel hud-fps";
+  fpsEl.textContent = "-- FPS";
+  document.body.appendChild(fpsEl);
+}
+
+export function updateFPSCounter(fps: number): void {
+  if (!fpsEl) return;
+
+  const roundedFps = Math.round(fps);
+  fpsEl.textContent = `${roundedFps} FPS`;
+  fpsEl.classList.toggle("warning", roundedFps < 50 && roundedFps >= 30);
+  fpsEl.classList.toggle("critical", roundedFps < 30);
 }
 
 export function updateHUD(state: GameState): void {

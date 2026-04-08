@@ -9,14 +9,19 @@ import { VirtualJoystick } from "./controls.ts";
 import { MapScene } from "./map.ts";
 import { resolveCollisions } from "./collision.ts";
 import { ItemManager } from "./items.ts";
-import { createHUD, updateHUD, showHUD, showNotification } from "./hud.ts";
+import { createFPSCounter, createHUD, updateFPSCounter, updateHUD, showHUD, showNotification } from "./hud.ts";
 import { showMenu, showScore, updateScoreScreen, createMenuScreen, createScoreScreen } from "./hud.ts";
 import { createInitialState, resetForNewGame, addCollectedItem, computeFinalScore } from "./state.ts";
 import { createPostComposer } from "./shaders/post.ts";
 
 const state = createInitialState();
-const editorMode = new URLSearchParams(window.location.search).get("editor") === "1";
+const searchParams = new URLSearchParams(window.location.search);
+const editorMode = searchParams.get("editor") === "1";
+const fpsParam = searchParams.get("fps");
+const fpsCounterEnabled = fpsParam === "0" ? false : import.meta.env.DEV || editorMode || fpsParam === "1";
 let editor: LevelEditor | null = null;
+let fpsSampleElapsed = 0;
+let fpsSampleFrames = 0;
 
 // Camera (create first so resize() can use it)
 const cameraCtrl = new TopDownCamera();
@@ -62,6 +67,7 @@ const clock = new THREE.Clock();
 
 // HUD
 createHUD();
+if (fpsCounterEnabled) createFPSCounter();
 createMenuScreen();
 createScoreScreen();
 
@@ -143,7 +149,19 @@ function endGame(): void {
 
 function animate(): void {
   requestAnimationFrame(animate);
-  const dt = Math.min(clock.getDelta(), 0.1);
+  const rawDt = clock.getDelta();
+  const dt = Math.min(rawDt, 0.1);
+
+  if (fpsCounterEnabled && rawDt > 0) {
+    fpsSampleElapsed += rawDt;
+    fpsSampleFrames += 1;
+
+    if (fpsSampleElapsed >= 0.25) {
+      updateFPSCounter(fpsSampleFrames / fpsSampleElapsed);
+      fpsSampleElapsed = 0;
+      fpsSampleFrames = 0;
+    }
+  }
 
   if (state.mode === "playing") {
     player.update(joystick.input, dt);
