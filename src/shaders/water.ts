@@ -10,12 +10,12 @@ interface WaterMaterialOptions {
 // Reads the existing canvas alpha texture (set later via uAlphaMap) and
 // renders stylized body bands plus Wind Waker-inspired foam contours.
 export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMaterial {
-  const base = new THREE.Color(opts.color).offsetHSL(0.015, 0.08, 0.12);
-  const deep = base.clone().lerp(new THREE.Color(0x2b6cb0), 0.45).multiplyScalar(0.9);
-  const light = base.clone().lerp(new THREE.Color(0xd8f7ff), 0.22);
+  const base = new THREE.Color(opts.color).lerp(new THREE.Color(0x63d6f5), 0.34).offsetHSL(0.0, 0.06, 0.09);
+  const deep = base.clone().lerp(new THREE.Color(0x2f84bf), 0.5).multiplyScalar(0.92);
+  const light = base.clone().lerp(new THREE.Color(0xe8fdff), 0.18);
   const foam = base.clone().lerp(new THREE.Color(0xffffff), 0.84);
-  const shadowFoam = base.clone().lerp(new THREE.Color(0x2f5fa3), 0.45);
-  const rim = base.clone().lerp(new THREE.Color(0xc9f2ff), 0.5);
+  const shadowFoam = base.clone().lerp(new THREE.Color(0x4ea5d6), 0.38);
+  const rim = base.clone().lerp(new THREE.Color(0xf2feff), 0.38);
 
   return new THREE.ShaderMaterial({
     uniforms: {
@@ -99,27 +99,27 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
         float t2 = uTime * 0.13;
 
         vec2 warp = vec2(
-          sin(world.x * 0.22 + world.y * 0.14 + t1) + sin(world.y * 0.31 - t2),
-          cos(world.y * 0.19 - world.x * 0.12 - t1) + cos(world.x * 0.27 + t2)
+          sin(world.x * 0.46 + world.y * 0.3 + t1) + sin(world.y * 0.62 - t2),
+          cos(world.y * 0.42 - world.x * 0.24 - t1) + cos(world.x * 0.56 + t2)
         ) * 0.18;
 
         float bodyField =
-          noise(world * 0.11 - warp * 0.8 + vec2(-t1 * 0.6, t1 * 0.3)) * 0.62 +
-          noise(world * 0.24 + warp * 1.4 + vec2(t2 * 0.35, -t1 * 0.55)) * 0.38;
+          noise(world * 0.26 - warp * 0.8 + vec2(-t1 * 0.6, t1 * 0.3)) * 0.62 +
+          noise(world * 0.54 + warp * 1.4 + vec2(t2 * 0.35, -t1 * 0.55)) * 0.38;
         float bands = floor(bodyField * 4.0) / 3.0;
         vec3 col = mix(uDeepColor, uColor, bands);
         col = mix(col, uLightColor, smoothstep(0.62, 0.95, bodyField) * 0.55);
 
-        vec2 foamUv = world * 0.2 + warp * 1.3;
+        vec2 foamUv = world * 0.48 + warp * 1.3;
         float foamField =
           noise(foamUv + vec2(t1 * 0.8, -t1 * 0.55)) * 0.7 +
-          noise(foamUv * 1.9 - vec2(t2 * 0.45, t1 * 0.35)) * 0.3;
+          noise(foamUv * 2.6 - vec2(t2 * 0.45, t1 * 0.35)) * 0.3;
         float foamMask = contour(foamField, 0.62, 0.045);
         float darkFoamMask = contour(foamField, 0.44, 0.05) * 0.7;
 
         // Coastline foam is derived from the blurred alpha mask already produced by the canvas pass.
         float shoreline = smoothstep(0.12, 0.36, edgeField) * (1.0 - smoothstep(0.4, 0.82, edgeField));
-        float shorelinePulse = 0.85 + 0.15 * sin((world.x + world.y) * 0.75 + uTime * 1.6);
+        float shorelinePulse = 0.85 + 0.15 * sin((world.x + world.y) * 1.55 + uTime * 1.6);
         shoreline *= shorelinePulse;
         float innerShore = smoothstep(0.3, 0.56, edgeField) * (1.0 - smoothstep(0.56, 0.92, edgeField));
 
