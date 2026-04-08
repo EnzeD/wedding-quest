@@ -10,20 +10,26 @@
   border: 0;
   background: none;
   border-image-source: url("/assets/kenney-ui/blue/button_rectangle_flat.png");
-  border-image-slice: 30 fill;
-  border-image-width: 15px;
+  border-image-slice: var(--kenney-flat-slice);
+  border-image-width: var(--kenney-flat-width);
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
   padding: 8px 18px;
   font-family: var(--font-display);
   font-size: clamp(16px, 3vw, 28px);
   letter-spacing: 1px;
   color: var(--white);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  line-height: 1;
+  text-align: center;
 }
 
 .hud-top-center {
   top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  width: fit-content;
+  margin-inline: auto;
 }
 
 .hud-top-left {
@@ -60,13 +66,18 @@
 .hud-notification {
   position: absolute;
   bottom: 220px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  width: fit-content;
+  max-width: calc(100vw - 24px);
+  margin-inline: auto;
   border: 0;
   background: none;
   border-image-source: url("/assets/kenney-ui/yellow/button_rectangle_depth_flat.png");
-  border-image-slice: 30 30 46 30 fill;
-  border-image-width: 15px 15px 23px 15px;
+  border-image-slice: var(--kenney-depth-slice);
+  border-image-width: var(--kenney-depth-width);
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
   padding: 10px 24px;
   font-family: var(--font-display);
   font-size: clamp(14px, 2.5vw, 22px);
@@ -92,8 +103,10 @@
   border: 0;
   background: none;
   border-image-source: url("/assets/kenney-ui/blue/button_rectangle_flat.png");
-  border-image-slice: 30 fill;
-  border-image-width: 15px;
+  border-image-slice: var(--kenney-flat-slice);
+  border-image-width: var(--kenney-flat-width);
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
   padding: 32px 40px;
   text-align: center;
   max-width: 400px;
@@ -165,8 +178,10 @@
 .char-btn {
   padding: 10px 24px;
   border-image-source: url("/assets/kenney-ui/grey/button_rectangle_depth_flat.png");
-  border-image-slice: 30 30 46 30 fill;
-  border-image-width: 15px 15px 23px 15px;
+  border-image-slice: var(--kenney-depth-slice);
+  border-image-width: var(--kenney-depth-width);
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
   font-family: var(--font-body);
   font-size: 16px;
 }
@@ -179,8 +194,10 @@
   width: 100%;
   padding: 16px;
   border-image-source: url("/assets/kenney-ui/green/button_rectangle_depth_flat.png");
-  border-image-slice: 30 30 46 30 fill;
-  border-image-width: 15px 15px 23px 15px;
+  border-image-slice: var(--kenney-depth-slice);
+  border-image-width: var(--kenney-depth-width);
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
   font-family: var(--font-display);
   font-size: clamp(18px, 3vw, 24px);
   letter-spacing: 1px;

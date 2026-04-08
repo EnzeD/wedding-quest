@@ -17,6 +17,10 @@
 :root {
   --font-display: "Kenney Future", sans-serif;
   --font-body: "Kenney Future Narrow", sans-serif;
+  --kenney-flat-slice: 32 fill;
+  --kenney-flat-width: 16px;
+  --kenney-depth-slice: 32 32 48 32 fill;
+  --kenney-depth-width: 16px 16px 24px 16px;
   --amber: #ffb349;
   --orange: #ff8744;
   --red: #db4e5b;
@@ -53,6 +57,8 @@ canvas {
   border: 0;
   background: none;
   border-image-source: url("/assets/kenney-ui/blue/button_rectangle_flat.png");
-  border-image-slice: 30 fill;
-  border-image-width: 15px;
+  border-image-slice: var(--kenney-flat-slice);
+  border-image-width: var(--kenney-flat-width);
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
 }
