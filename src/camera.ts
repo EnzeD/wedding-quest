@@ -9,6 +9,10 @@ export class TopDownCamera {
   private camera: THREE.PerspectiveCamera;
   private currentPosition = new THREE.Vector3();
   private lookAtTarget = new THREE.Vector3();
+  private orbitOffset = new THREE.Vector3();
+  private orbitDistance = CONFIG.camera.offset.length();
+  private yaw = Math.atan2(CONFIG.camera.offset.x, CONFIG.camera.offset.z);
+  private pitch = Math.asin(CONFIG.camera.offset.y / this.orbitDistance);
   private initialized = false;
 
   constructor() {
@@ -29,12 +33,31 @@ export class TopDownCamera {
     this.camera.updateProjectionMatrix();
   }
 
-  update(target: THREE.Object3D, _velocity: THREE.Vector2, dt: number): void {
-    const desiredPos = new THREE.Vector3(
-      target.position.x + CONFIG.camera.offset.x,
-      CONFIG.camera.offset.y,
-      target.position.z + CONFIG.camera.offset.z,
+  rotate(deltaX: number, deltaY: number): void {
+    const { rotateSpeed, minPitch, maxPitch } = CONFIG.camera.freeLook;
+    this.yaw -= deltaX * rotateSpeed;
+    this.pitch = THREE.MathUtils.clamp(this.pitch + deltaY * rotateSpeed, minPitch, maxPitch);
+  }
+
+  toWorldMovement(input: THREE.Vector2, target = new THREE.Vector2()): THREE.Vector2 {
+    const forwardAmount = -input.y;
+    const rightX = Math.cos(this.yaw);
+    const rightZ = -Math.sin(this.yaw);
+    const forwardX = -Math.sin(this.yaw);
+    const forwardZ = -Math.cos(this.yaw);
+
+    target.set(
+      rightX * input.x + forwardX * forwardAmount,
+      rightZ * input.x + forwardZ * forwardAmount,
     );
+
+    const lengthSq = target.lengthSq();
+    if (lengthSq > 1) target.multiplyScalar(1 / Math.sqrt(lengthSq));
+    return target;
+  }
+
+  update(target: THREE.Object3D, _velocity: THREE.Vector2, dt: number): void {
+    const desiredPos = this.getDesiredPosition(target);
 
     if (!this.initialized) {
       this.currentPosition.copy(desiredPos);
@@ -54,14 +77,21 @@ export class TopDownCamera {
   }
 
   snapTo(target: THREE.Object3D): void {
-    this.currentPosition.set(
-      target.position.x + CONFIG.camera.offset.x,
-      CONFIG.camera.offset.y,
-      target.position.z + CONFIG.camera.offset.z,
-    );
+    this.currentPosition.copy(this.getDesiredPosition(target));
     this.lookAtTarget.copy(target.position);
     this.camera.position.copy(this.currentPosition);
     this.camera.lookAt(target.position.x, 0, target.position.z);
     this.initialized = true;
+  }
+
+  private getDesiredPosition(target: THREE.Object3D): THREE.Vector3 {
+    const planarDistance = Math.cos(this.pitch) * this.orbitDistance;
+    this.orbitOffset.set(
+      Math.sin(this.yaw) * planarDistance,
+      Math.sin(this.pitch) * this.orbitDistance,
+      Math.cos(this.yaw) * planarDistance,
+    );
+
+    return this.orbitOffset.add(target.position);
   }
 }

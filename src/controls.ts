@@ -114,3 +114,61 @@ export class VirtualJoystick {
   show(): void { this.container.style.display = "block"; }
   hide(): void { this.container.style.display = "none"; }
 }
+
+export class FreeLookInput {
+  private pointerId: number | null = null;
+  private lookDelta = new THREE.Vector2(0, 0);
+  private lastPointer = new THREE.Vector2(0, 0);
+
+  constructor(private surface: HTMLElement) {
+    this.surface.addEventListener("pointerdown", this.onPointerDown, { passive: false });
+    this.surface.addEventListener("pointermove", this.onPointerMove, { passive: false });
+    this.surface.addEventListener("pointerup", this.onPointerEnd);
+    this.surface.addEventListener("pointercancel", this.onPointerEnd);
+  }
+
+  consumeDelta(target = new THREE.Vector2()): THREE.Vector2 {
+    target.copy(this.lookDelta);
+    this.lookDelta.set(0, 0);
+    return target;
+  }
+
+  reset(): void {
+    if (this.pointerId !== null && this.surface.hasPointerCapture(this.pointerId)) {
+      this.surface.releasePointerCapture(this.pointerId);
+    }
+
+    this.pointerId = null;
+    this.lookDelta.set(0, 0);
+    this.surface.style.cursor = "";
+  }
+
+  private onPointerDown = (event: PointerEvent): void => {
+    if (this.pointerId !== null) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    this.pointerId = event.pointerId;
+    this.lastPointer.set(event.clientX, event.clientY);
+    this.surface.setPointerCapture(event.pointerId);
+
+    if (event.pointerType === "mouse") {
+      this.surface.style.cursor = "grabbing";
+    }
+
+    event.preventDefault();
+  };
+
+  private onPointerMove = (event: PointerEvent): void => {
+    if (event.pointerId !== this.pointerId) return;
+
+    this.lookDelta.x += event.clientX - this.lastPointer.x;
+    this.lookDelta.y += event.clientY - this.lastPointer.y;
+    this.lastPointer.set(event.clientX, event.clientY);
+    event.preventDefault();
+  };
+
+  private onPointerEnd = (event: PointerEvent): void => {
+    if (event.pointerId !== this.pointerId) return;
+    this.reset();
+  };
+}

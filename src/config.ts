@@ -13,6 +13,11 @@ export const CONFIG = {
     fov: 50,
     near: 0.1,
     far: 200,
+    freeLook: {
+      rotateSpeed: 0.005,
+      minPitch: THREE.MathUtils.degToRad(40),
+      maxPitch: THREE.MathUtils.degToRad(78),
+    },
   },
   player: {
     speed: 7,

@@ -5,7 +5,7 @@ import { loadLevel } from "./level-data.ts";
 import { LevelEditor } from "./editor.ts";
 import { Player } from "./player.ts";
 import { TopDownCamera } from "./camera.ts";
-import { VirtualJoystick } from "./controls.ts";
+import { FreeLookInput, VirtualJoystick } from "./controls.ts";
 import { MapScene } from "./map.ts";
 import { resolveCollisions } from "./collision.ts";
 import { ItemManager } from "./items.ts";
@@ -71,6 +71,9 @@ resize();
 const player = new Player(scene);
 player.mesh.position.set(0, 0, 5);
 const joystick = new VirtualJoystick();
+const freeLook = editorMode ? null : new FreeLookInput(canvas);
+const freeLookDelta = new THREE.Vector2();
+const movementInput = new THREE.Vector2();
 const items = new ItemManager(scene);
 const clock = new THREE.Clock();
 
@@ -137,10 +140,12 @@ function setMode(mode: "menu" | "playing" | "score"): void {
   showMenu(mode === "menu");
   showScore(mode === "score");
   joystick[mode === "playing" ? "show" : "hide"]();
+  if (mode !== "playing") freeLook?.reset();
 }
 
 function startGame(): void {
   resetForNewGame(state);
+  freeLook?.reset();
   player.loadModel(state.character);
   player.mesh.position.set(0, 0, 5);
   cameraCtrl.snapTo(player.mesh);
@@ -176,7 +181,7 @@ function animate(): void {
   skyDome.position.copy(camera.position);
 
   if (state.mode === "playing") {
-    player.update(joystick.input, dt);
+    player.update(cameraCtrl.toWorldMovement(joystick.input, movementInput), dt);
     resolveCollisions(player.mesh.position, mapScene.getColliders(), mapScene.mapSize);
     items.update(dt);
 
@@ -209,6 +214,8 @@ function animate(): void {
   if (editor) {
     editor.update();
   } else {
+    const lookDelta = freeLook?.consumeDelta(freeLookDelta);
+    if (lookDelta) cameraCtrl.rotate(lookDelta.x, lookDelta.y);
     cameraCtrl.update(player.mesh, player.velocity, dt);
   }
 
