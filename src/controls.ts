@@ -48,7 +48,7 @@ export class VirtualJoystick {
     this.actionButtons = document.createElement("div");
     this.actionButtons.className = "action-buttons";
 
-    this.sprintButton = this.createActionButton("action-button--sprint", "Run");
+    this.sprintButton = this.createActionButton("action-button--sprint", "Sprint");
     this.jumpButton = this.createActionButton("action-button--jump", "Jump");
     this.actionButtons.append(this.sprintButton, this.jumpButton);
     document.body.appendChild(this.actionButtons);

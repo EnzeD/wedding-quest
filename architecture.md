@@ -9,9 +9,10 @@
 | `public/assets.json` | Manifeste des assets GLTF (chemins vers modeles par categorie) |
 | `public/levels/main.json` | Source de verite du niveau jouable et editable (entites, surfaces, reglages path/water dont relief d'eau et pente de berge, toggle post-process, couleur d'herbe, color grading) |
 | `public/assets/toonshooter/` | Assets GLTF placeholder (Quaternius low-poly) : Characters, Environment, Guns, Texture |
-| `src/style.css` | Point d'entree CSS qui importe les feuilles base, jeu et editeur |
+| `src/style.css` | Point d'entree CSS qui importe les feuilles base, HUD, controles mobiles et editeur |
 | `src/styles/base.css` | Variables globales, fonts et styles de base du document |
-| `src/styles/game-ui.css` | Styles du HUD, des overlays menu/score et des boutons de jeu, dont les actions mobile sprint/saut |
+| `src/styles/game-ui.css` | Styles du HUD et des overlays menu/score |
+| `src/styles/mobile-controls.css` | Styles des boutons d'action tactiles mobile et de leurs icones sprint/saut |
 | `src/styles/editor.css` | Styles desktop-first de l'editeur de niveau integre |
 | `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu et palette du ciel |
 | `src/types.ts` | Interfaces partagees : collisions, etat, assets et schema du niveau data-driven |
