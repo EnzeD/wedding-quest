@@ -106,7 +106,7 @@ async function init(): Promise<void> {
   const level = await loadLevel();
   post.setEnabled(level.postProcessingEnabled);
   post.setColorGrading(level.colorGrading);
-  await mapScene.load(level);
+  await mapScene.load(level, { includePickups: editorMode });
   mapScene.updateGrassInteractor(player.mesh.position);
 
   // Wire up menu buttons now that everything is ready
@@ -157,8 +157,7 @@ function startGame(): void {
   player.loadModel(state.character);
   player.mesh.position.set(0, 0, 5);
   cameraCtrl.snapTo(player.mesh);
-  items.spawn(state.character);
-  state.totalItems = 10;
+  state.totalItems = items.spawn(state.character, mapScene.level!).length;
   setMode("playing");
   clock.getDelta(); // reset clock
 }
@@ -228,6 +227,7 @@ function animate(): void {
     cameraCtrl.update(player.mesh, player.velocity, dt);
   }
 
+  mapScene.updateWaterView(camera);
   post.render();
 }
 

@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { AmbientEffects } from "./ambient-effects.ts";
 import { cloneAsset, normalizeToHeight } from "./assets.ts";
 import { normalizeGrassColor } from "./color-grading.ts";
+import { CONFIG } from "./config.ts";
 import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./level-grid.ts";
 import { entityAssetPath, preloadEntityAsset, preloadLevelAssets } from "./level-assets.ts";
 import { buildKenney } from "./kenney-buildings.ts";
@@ -13,11 +14,19 @@ import { applyToonMaterials } from "./shaders/toon.ts";
 import { createWaterMaterial } from "./shaders/water.ts";
 import type { Collider, LevelData, LevelEntity, LevelSurfaceSettings } from "./types.ts";
 
+interface MapLoadOptions {
+  includePickups?: boolean;
+}
+
 const COL = {
   ground: 0x41a479,
   path: 0xf0c59d,
   water: 0x5f74ca,
   hedge: 0x3da679,
+};
+
+function getWaterSurfaceHeight(depth: number): number {
+  return 0.035 - depth * 0.18;
 }
 
 function createBoundary(size: number): THREE.Group {
@@ -53,7 +62,7 @@ function applyEntityTransform(object: THREE.Object3D, entity: LevelEntity): void
   object.rotation.y = entity.rotationY;
 }
 function buildCollider(entity: LevelEntity, object: THREE.Object3D): Collider | null {
-  if (entity.kind === "npc") return null;
+  if (entity.kind === "npc" || entity.kind === "pickup") return null;
   if (entity.collider) {
     return {
       x: entity.position.x,
@@ -88,16 +97,26 @@ export class MapScene {
   private ambientEffects = new AmbientEffects();
   private ground = new TerrainGround(COL.ground);
   private pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.08, radius: 0.3, y: 0.02 });
-  private waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.85, bleed: 0.12, radius: 0.3, y: 0.05, customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92 }) });
+  private waterSurface = new SurfaceLayerRenderer({
+    color: COL.water,
+    opacity: 0.85,
+    bleed: 0.12,
+    radius: 0.3,
+    y: getWaterSurfaceHeight(DEFAULT_SURFACE_SETTINGS.water.depth),
+    customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92, sunDirection: CONFIG.sky.sunDirection }),
+  });
+  private includePickups = true;
+  private waterViewDir = new THREE.Vector3();
   mapSize = 90;
   level: LevelData | null = null;
   constructor(scene: THREE.Scene) {
     this.scene = scene;
   }
-  async load(level: LevelData): Promise<void> {
+  async load(level: LevelData, options: MapLoadOptions = {}): Promise<void> {
     this.level = normalizeLevel(level);
+    this.includePickups = options.includePickups ?? true;
     this.mapSize = this.level.metadata.size;
-    await preloadLevelAssets(this.level);
+    await preloadLevelAssets(this.level, this.includePickups);
     this.clear();
 
     this.root.add(this.surfaceRoot, this.entityRoot);
@@ -110,6 +129,7 @@ export class MapScene {
 
     this.rebuildSurfaces();
     for (const entity of this.level.entities) {
+      if (!this.includePickups && entity.kind === "pickup") continue;
       await this.addEntity(entity, false);
     }
     this.rebuildPastureGrass();
@@ -124,6 +144,18 @@ export class MapScene {
   }
   update(dt: number): void {
     this.ambientEffects.update(dt);
+  }
+  updateWaterView(camera: THREE.Camera): void {
+    const uniforms = this.waterSurface.getShaderUniforms();
+    if (!uniforms?.uViewForward) return;
+    camera.getWorldDirection(this.waterViewDir);
+    const viewForward = uniforms.uViewForward.value as THREE.Vector2;
+    viewForward.set(this.waterViewDir.x, this.waterViewDir.z);
+    if (viewForward.lengthSq() < 1e-6) {
+      viewForward.set(0, -1);
+      return;
+    }
+    viewForward.normalize();
   }
   getColliders(): Collider[] {
     return [...this.entityColliders.values(), ...this.waterColliders.values()];
@@ -204,6 +236,7 @@ export class MapScene {
     this.level.surfaceSettings = normalizeSurfaceSettings(settings);
     this.pathSurface.updateShape(this.level.surfaceSettings.path.bleed, this.level.surfaceSettings.path.radius);
     this.waterSurface.updateShape(this.level.surfaceSettings.water.bleed, this.level.surfaceSettings.water.radius);
+    this.waterSurface.setHeight(getWaterSurfaceHeight(this.level.surfaceSettings.water.depth));
     this.rebuildSurfaces();
     this.rebuildPastureGrass();
   }
@@ -226,7 +259,14 @@ export class MapScene {
     this.grass = new PastureGrass();
     this.ground = new TerrainGround(COL.ground);
     this.pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: DEFAULT_SURFACE_SETTINGS.path.bleed, radius: DEFAULT_SURFACE_SETTINGS.path.radius, y: 0.02 });
-    this.waterSurface = new SurfaceLayerRenderer({ color: COL.water, opacity: 0.85, bleed: DEFAULT_SURFACE_SETTINGS.water.bleed, radius: DEFAULT_SURFACE_SETTINGS.water.radius, y: 0.05, customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92 }) });
+    this.waterSurface = new SurfaceLayerRenderer({
+      color: COL.water,
+      opacity: 0.85,
+      bleed: DEFAULT_SURFACE_SETTINGS.water.bleed,
+      radius: DEFAULT_SURFACE_SETTINGS.water.radius,
+      y: getWaterSurfaceHeight(DEFAULT_SURFACE_SETTINGS.water.depth),
+      customMaterial: createWaterMaterial({ color: COL.water, opacity: 0.92, sunDirection: CONFIG.sky.sunDirection }),
+    });
   }
   private redrawSurface(type: "path" | "water"): void {
     if (!this.level) return;

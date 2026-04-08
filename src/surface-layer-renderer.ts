@@ -93,6 +93,16 @@ export class SurfaceLayerRenderer {
     this.style.radius = radius;
   }
 
+  setHeight(y: number): void {
+    this.style.y = y;
+    this.mesh.position.y = y;
+  }
+
+  getShaderUniforms(): Record<string, { value: unknown }> | null {
+    if (!(this.material instanceof THREE.ShaderMaterial)) return null;
+    return this.material.uniforms as Record<string, { value: unknown }>;
+  }
+
   private resize(size: number): void {
     this.size = size;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);

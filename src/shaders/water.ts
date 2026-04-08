@@ -4,6 +4,7 @@ import { sharedTime } from "./clock.ts";
 interface WaterMaterialOptions {
   color: THREE.ColorRepresentation;
   opacity?: number;
+  sunDirection?: THREE.Vector3;
 }
 
 // ShaderMaterial drop-in for the water surface layer.
@@ -16,6 +17,9 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
   const foam = base.clone().lerp(new THREE.Color(0xffffff), 0.84);
   const shadowFoam = base.clone().lerp(new THREE.Color(0x4ea5d6), 0.38);
   const rim = base.clone().lerp(new THREE.Color(0xf2feff), 0.38);
+  const reflect = base.clone().lerp(new THREE.Color(0xe5fbff), 0.42);
+  const sun = new THREE.Color(0xfff6cc);
+  const sunDirection = (opts.sunDirection ?? new THREE.Vector3(12, 24, 8)).clone().normalize();
 
   return new THREE.ShaderMaterial({
     uniforms: {
@@ -26,6 +30,10 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
       uFoamColor: { value: foam },
       uShadowFoamColor: { value: shadowFoam },
       uRimColor: { value: rim },
+      uReflectColor: { value: reflect },
+      uSunColor: { value: sun },
+      uSunDirection: { value: sunDirection },
+      uViewForward: { value: new THREE.Vector2(0.0, -1.0) },
       uAlphaMap: { value: null },
       uTexelSize: { value: new THREE.Vector2(1, 1) },
       uOpacity: { value: opts.opacity ?? 0.9 },
@@ -53,6 +61,10 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
       uniform vec3 uFoamColor;
       uniform vec3 uShadowFoamColor;
       uniform vec3 uRimColor;
+      uniform vec3 uReflectColor;
+      uniform vec3 uSunColor;
+      uniform vec3 uSunDirection;
+      uniform vec2 uViewForward;
       uniform sampler2D uAlphaMap;
       uniform vec2 uTexelSize;
       uniform float uOpacity;
@@ -127,7 +139,23 @@ export function createWaterMaterial(opts: WaterMaterialOptions): THREE.ShaderMat
         col = mix(col, uFoamColor, max(foamMask, shoreline));
 
         vec3 viewDir = normalize(cameraPosition - vWorldPos);
+        vec3 waterNormal = normalize(vec3(
+          sin(world.x * 0.62 + t1) * 0.14 + cos(world.y * 0.88 - t2) * 0.1 + warp.x * 0.28,
+          1.0,
+          cos(world.y * 0.74 - t1) * 0.14 + sin(world.x * 0.96 + t2) * 0.1 + warp.y * 0.28
+        ));
+        vec3 reflectDir = reflect(-viewDir, waterNormal);
         float fresnel = pow(1.0 - max(dot(viewDir, vec3(0.0, 1.0, 0.0)), 0.0), 3.0);
+        vec2 viewForward = normalize(uViewForward + vec2(0.0001, 0.0001));
+        vec2 viewRight = vec2(-viewForward.y, viewForward.x);
+        float cameraBandField = sin(dot(world, viewRight) * 0.38);
+        float cameraBand = smoothstep(0.26, 0.93, cameraBandField * 0.5 + 0.5);
+        cameraBand *= 0.38 + fresnel * 0.82;
+        float skyReflect = smoothstep(0.1, 0.92, reflectDir.y * 0.5 + 0.5) * (0.25 + fresnel * 0.75);
+        float sunGlint = pow(max(dot(reflectDir, normalize(uSunDirection)), 0.0), 22.0) * (0.18 + fresnel * 0.82);
+        col = mix(col, uReflectColor, cameraBand * 1.02);
+        col = mix(col, uReflectColor, skyReflect * 0.3);
+        col = mix(col, uSunColor, sunGlint * 0.58);
         col = mix(col, uRimColor, fresnel * 0.24);
 
         gl_FragColor = vec4(col, alpha * uOpacity);
