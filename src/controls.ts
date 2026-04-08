@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { controlsText, localize } from "./i18n.ts";
 
 export class VirtualJoystick {
   input = new THREE.Vector2(0, 0);
@@ -48,8 +49,8 @@ export class VirtualJoystick {
     this.actionButtons = document.createElement("div");
     this.actionButtons.className = "action-buttons";
 
-    this.sprintButton = this.createActionButton("action-button--sprint", "Sprint");
-    this.jumpButton = this.createActionButton("action-button--jump", "Jump");
+    this.sprintButton = this.createActionButton("action-button--sprint", localize(controlsText.sprint));
+    this.jumpButton = this.createActionButton("action-button--jump", localize(controlsText.jump));
     this.actionButtons.append(this.sprintButton, this.jumpButton);
     document.body.appendChild(this.actionButtons);
 

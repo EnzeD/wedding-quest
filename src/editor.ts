@@ -9,6 +9,7 @@ import { loadLevel, saveLevel } from "./level-data.ts";
 import { cellKey, cloneLevel, getCell, setCell, worldToCell } from "./level-grid.ts";
 import { MapScene } from "./map.ts";
 import { DEFAULT_COLOR_GRADING } from "./color-grading.ts";
+import { editorText, localize } from "./i18n.ts";
 import { normalizeSurfaceSettings } from "./surface-settings.ts";
 import type { ColorGradingSettings, LevelData, LevelSurfaceSettings, SurfaceSettingField } from "./types.ts";
 
@@ -97,7 +98,7 @@ export class LevelEditor {
     editor.ui.renderLookSettings(editor.level.grassColor, editor.level.surfaceSettings);
     editor.level.colorGrading = editor.setColorGrading(editor.level.colorGrading);
     editor.ui.renderColorGrading(editor.level.colorGrading);
-    editor.ui.setStatus("Editor mode actif");
+    editor.ui.setStatus(localize(editorText.status.active));
     return editor;
   }
   update(): void { this.controls.update(); this.refreshSelectionBox(); }
@@ -105,12 +106,12 @@ export class LevelEditor {
     if (!this.ui) return;
     try {
       await saveLevel(this.level);
-      await this.reload("Sauvegarde OK");
+      await this.reload(localize(editorText.status.saveOk));
     } catch (error) {
       this.ui.setStatus((error as Error).message, true);
     }
   }
-  private async reload(status = "Niveau recharge"): Promise<void> {
+  private async reload(status = localize(editorText.status.reloaded)): Promise<void> {
     if (!this.ui) return;
     try {
       this.level = await loadLevel();

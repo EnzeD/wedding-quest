@@ -38,6 +38,7 @@
 | `src/npc-animations.ts` | Controleur d'animations des PNJ : idle en boucle + emotes ponctuelles (`emote-yes` / `emote-no`) des personnages Kenney |
 | `src/camera.ts` | Classe TopDownCamera : vue du dessus qui suit le joueur avec look-ahead |
 | `src/controls.ts` | Classe VirtualJoystick : joystick tactile + clavier WASD/Shift/Space, plus boutons mobile pour sprint et saut |
+| `src/i18n.ts` | Localisation FR/EN : detection de `?english=1`, textes UI partages et application des traductions statiques du DOM |
 | `src/map.ts` | Scene de niveau data-driven : rendu du JSON, surfaces, entites et colliders |
 | `src/ambient-effects.ts` | Effets ambiants attaches aux entites : roue du moulin animee et fumee procedurale sur les cheminees |
 | `src/collision.ts` | Resolution des collisions : limites de map et AABB des entites/eau |

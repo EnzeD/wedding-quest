@@ -1,4 +1,5 @@
 import { CONFIG } from "./config.ts";
+import { hudText, localize } from "./i18n.ts";
 import type { GameState } from "./state.ts";
 
 let timerEl: HTMLElement;
@@ -37,7 +38,7 @@ export function createFPSCounter(): void {
   fpsEl = document.createElement("div");
   fpsEl.id = "fps-counter";
   fpsEl.className = "hud-panel hud-fps";
-  fpsEl.textContent = "-- FPS";
+  fpsEl.textContent = localize(hudText.fps);
   document.body.appendChild(fpsEl);
 }
 
@@ -114,13 +115,13 @@ export function updateScoreScreen(state: GameState, finalScore: number): void {
 
   detailEl.innerHTML = `
     <div class="score-section">
-      <h3>Objets (${state.collectedItems.length}/${state.totalItems})</h3>
+      <h3>${localize(hudText.items)} (${state.collectedItems.length}/${state.totalItems})</h3>
       ${itemList}
     </div>
     <div class="score-section">
-      <div class="score-item">Bonus temps <span>+${timeBonus}</span></div>
-      ${completionBonus > 0 ? `<div class="score-item">Bonus completion <span>+${completionBonus}</span></div>` : ""}
+      <div class="score-item">${localize(hudText.timeBonus)} <span>+${timeBonus}</span></div>
+      ${completionBonus > 0 ? `<div class="score-item">${localize(hudText.completionBonus)} <span>+${completionBonus}</span></div>` : ""}
     </div>
-    <div class="score-total">Score total : ${finalScore}</div>
+    <div class="score-total">${localize(hudText.totalScore)} : ${finalScore}</div>
   `;
 }

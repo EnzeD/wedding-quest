@@ -1,4 +1,5 @@
 import { DEFAULT_COLOR_GRADING, DEFAULT_GRASS_COLOR } from "./color-grading.ts";
+import { formatLevelLoadError, formatLevelSaveError } from "./i18n.ts";
 import { createEmptyLayer, normalizeLevel } from "./level-grid.ts";
 import { DEFAULT_SURFACE_SETTINGS } from "./surface-settings.ts";
 import type { LevelData } from "./types.ts";
@@ -7,7 +8,7 @@ const LEVEL_URL = "/levels/main.json";
 
 export async function loadLevel(url = LEVEL_URL): Promise<LevelData> {
   const res = await fetch(`${url}?t=${Date.now()}`);
-  if (!res.ok) throw new Error(`Failed to load level: ${res.status}`);
+  if (!res.ok) throw new Error(formatLevelLoadError(res.status));
   return normalizeLevel((await res.json()) as LevelData);
 }
 
@@ -19,7 +20,7 @@ export async function saveLevel(level: LevelData): Promise<void> {
   });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(text || `Failed to save level: ${res.status}`);
+    throw new Error(text || formatLevelSaveError(res.status));
   }
 }
 

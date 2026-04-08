@@ -15,6 +15,7 @@ import { createInitialState, resetForNewGame, addCollectedItem, computeFinalScor
 import { LowPolySky } from "./shaders/sky.ts";
 import { createPostComposer } from "./shaders/post.ts";
 import { tickShaders } from "./shaders/clock.ts";
+import { applyDocumentTranslations } from "./i18n.ts";
 
 const state = createInitialState();
 const searchParams = new URLSearchParams(window.location.search);
@@ -24,6 +25,8 @@ const fpsCounterEnabled = fpsParam === "0" ? false : import.meta.env.DEV || edit
 let editor: LevelEditor | null = null;
 let fpsSampleElapsed = 0;
 let fpsSampleFrames = 0;
+
+applyDocumentTranslations();
 
 // Camera (create first so resize() can use it)
 const cameraCtrl = new TopDownCamera();

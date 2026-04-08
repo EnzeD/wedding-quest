@@ -17,21 +17,21 @@
       <div class="menu-panel">
         <h1>Wedding Quest</h1>
         <p class="subtitle">Sarah & Nicolas</p>
-        <input type="text" id="player-name" placeholder="Ton prenom" maxlength="20" />
+        <input type="text" id="player-name" placeholder="Ton prenom" maxlength="20" data-i18n-placeholder="menu.placeholder" />
         <div class="character-select">
           <button class="char-btn selected" data-char="nicolas">Nicolas</button>
           <button class="char-btn" data-char="sarah">Sarah</button>
         </div>
-        <button id="play-btn" class="primary-btn">Jouer</button>
+        <button id="play-btn" class="primary-btn" data-i18n="menu.play">Jouer</button>
       </div>
     </div>
 
     <!-- Score screen -->
     <div id="score-screen" class="overlay-screen" style="display: none">
       <div class="menu-panel">
-        <h2>C'est l'heure !</h2>
+        <h2 data-i18n="score.title">C'est l'heure !</h2>
         <div id="score-detail"></div>
-        <button id="replay-btn" class="primary-btn">Rejouer</button>
+        <button id="replay-btn" class="primary-btn" data-i18n="score.replay">Rejouer</button>
       </div>
     </div>
 
