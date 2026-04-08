@@ -7,11 +7,20 @@ export class VirtualJoystick {
   private maxRadius = 55;
   private container: HTMLDivElement;
   private knob: HTMLDivElement;
+  private actionButtons: HTMLDivElement;
+  private sprintButton: HTMLButtonElement;
+  private jumpButton: HTMLButtonElement;
+  private sprintPointerId: number | null = null;
   private centerX = 0;
   private centerY = 0;
+  private touchButtonsEnabled =
+    window.matchMedia("(hover: none), (pointer: coarse)").matches ||
+    navigator.maxTouchPoints > 0;
 
   // Keyboard support for desktop
-  private keys = { up: false, down: false, left: false, right: false };
+  private keys = { up: false, down: false, left: false, right: false, sprint: false };
+  private sprintPressed = false;
+  private jumpQueued = false;
 
   constructor() {
     this.container = document.createElement("div");
@@ -36,6 +45,13 @@ export class VirtualJoystick {
 
     this.container.appendChild(this.knob);
     document.body.appendChild(this.container);
+    this.actionButtons = document.createElement("div");
+    this.actionButtons.className = "action-buttons";
+
+    this.sprintButton = this.createActionButton("action-button--sprint", "Run");
+    this.jumpButton = this.createActionButton("action-button--jump", "Jump");
+    this.actionButtons.append(this.sprintButton, this.jumpButton);
+    document.body.appendChild(this.actionButtons);
 
     this.container.addEventListener("touchstart", (e) => this.onTouchStart(e), { passive: false });
     document.addEventListener("touchmove", (e) => this.onTouchMove(e), { passive: false });
@@ -43,15 +59,29 @@ export class VirtualJoystick {
 
     document.addEventListener("keydown", (e) => this.onKey(e, true));
     document.addEventListener("keyup", (e) => this.onKey(e, false));
+
+    this.sprintButton.addEventListener("pointerdown", this.onSprintPointerDown);
+    this.sprintButton.addEventListener("pointerup", this.onSprintPointerEnd);
+    this.sprintButton.addEventListener("pointercancel", this.onSprintPointerEnd);
+    this.jumpButton.addEventListener("pointerdown", this.onJumpPointerDown);
   }
 
   private onKey(e: KeyboardEvent, down: boolean): void {
+    let handled = true;
     switch (e.code) {
       case "ArrowUp": case "KeyW": this.keys.up = down; break;
       case "ArrowDown": case "KeyS": this.keys.down = down; break;
       case "ArrowLeft": case "KeyA": this.keys.left = down; break;
       case "ArrowRight": case "KeyD": this.keys.right = down; break;
+      case "ShiftLeft": case "ShiftRight": this.keys.sprint = down; break;
+      case "Space":
+        if (down && !e.repeat) this.jumpQueued = true;
+        break;
+      default:
+        handled = false;
     }
+    if (!handled) return;
+    e.preventDefault();
     if (!this.active) this.updateKeyboardInput();
   }
 
@@ -111,8 +141,78 @@ export class VirtualJoystick {
     this.input.y = dy / this.maxRadius;
   }
 
-  show(): void { this.container.style.display = "block"; }
-  hide(): void { this.container.style.display = "none"; }
+  private createActionButton(modifier: string, label: string): HTMLButtonElement {
+    const button = document.createElement("button");
+    button.className = `action-button ${modifier}`;
+    button.type = "button";
+    button.setAttribute("aria-label", label);
+    button.innerHTML = `
+      <span class="action-button-icon" aria-hidden="true"></span>
+      <span class="action-button-label">${label}</span>
+    `;
+    return button;
+  }
+
+  private onSprintPointerDown = (event: PointerEvent): void => {
+    if (this.sprintPointerId !== null) return;
+    this.sprintPointerId = event.pointerId;
+    this.sprintPressed = true;
+    this.sprintButton.classList.add("pressed");
+    this.sprintButton.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  };
+
+  private onSprintPointerEnd = (event: PointerEvent): void => {
+    if (event.pointerId !== this.sprintPointerId) return;
+    this.sprintPressed = false;
+    this.sprintPointerId = null;
+    this.sprintButton.classList.remove("pressed");
+    if (this.sprintButton.hasPointerCapture(event.pointerId)) {
+      this.sprintButton.releasePointerCapture(event.pointerId);
+    }
+    event.preventDefault();
+  };
+
+  private onJumpPointerDown = (event: PointerEvent): void => {
+    this.jumpQueued = true;
+    event.preventDefault();
+  };
+
+  isSprinting(): boolean {
+    return this.keys.sprint || this.sprintPressed;
+  }
+
+  consumeJump(): boolean {
+    const jump = this.jumpQueued;
+    this.jumpQueued = false;
+    return jump;
+  }
+
+  private resetActions(): void {
+    if (this.sprintPointerId !== null && this.sprintButton.hasPointerCapture(this.sprintPointerId)) {
+      this.sprintButton.releasePointerCapture(this.sprintPointerId);
+    }
+    this.sprintPressed = false;
+    this.sprintPointerId = null;
+    this.jumpQueued = false;
+    this.keys.sprint = false;
+    this.sprintButton.classList.remove("pressed");
+  }
+
+  show(): void {
+    this.container.style.display = "block";
+    this.actionButtons.style.display = this.touchButtonsEnabled ? "flex" : "none";
+  }
+
+  hide(): void {
+    this.container.style.display = "none";
+    this.actionButtons.style.display = "none";
+    this.active = false;
+    this.touchId = null;
+    this.input.set(0, 0);
+    this.knob.style.transform = "translate(0px, 0px)";
+    this.resetActions();
+  }
 }
 
 export class FreeLookInput {

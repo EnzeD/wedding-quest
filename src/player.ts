@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { CONFIG } from "./config.ts";
 import { cloneAsset, normalizeToHeight, getManifest, getAnimations } from "./assets.ts";
+import { PlayerDustTrail } from "./player-dust.ts";
 import { createBlobShadow } from "./shaders/blob-shadow.ts";
 import type { Character } from "./types.ts";
 
@@ -10,25 +11,33 @@ const WEAPON_NODES = [
   "Shotgun", "Shovel", "SMG", "Sniper", "Sniper_2",
 ];
 
-type AnimState = "idle" | "walk" | "run";
+type AnimState = "idle" | "walk" | "run" | "jump";
 
 const CLIP_ALIASES: Record<AnimState, string[]> = {
   idle: ["idle", "Idle", "static"],
   walk: ["walk", "Walk"],
   run: ["sprint", "run", "Run"],
+  jump: ["jump", "Jump"],
 };
 
 export class Player {
   mesh: THREE.Group;
   velocity = new THREE.Vector2(0, 0);
 
+  private visualRoot: THREE.Group;
   private mixer: THREE.AnimationMixer | null = null;
   private actions = new Map<string, THREE.AnimationAction>();
   private currentAnim: AnimState = "idle";
   private missingClips = new Set<AnimState>();
+  private jumpElapsed = 0;
+  private jumping = false;
+  private dust: PlayerDustTrail;
 
   constructor(scene: THREE.Scene) {
     this.mesh = new THREE.Group();
+    this.visualRoot = new THREE.Group();
+    this.mesh.add(this.visualRoot);
+    this.dust = new PlayerDustTrail(scene);
     this.buildPlaceholder();
     this.mesh.add(createBlobShadow(0.65));
     scene.add(this.mesh);
@@ -43,7 +52,7 @@ export class Player {
     );
     body.position.y = 0.7;
     body.castShadow = true;
-    this.mesh.add(body);
+    this.visualRoot.add(body);
 
     const head = new THREE.Mesh(
       new THREE.SphereGeometry(0.3, 12, 8),
@@ -51,14 +60,14 @@ export class Player {
     );
     head.position.y = 1.5;
     head.castShadow = true;
-    this.mesh.add(head);
+    this.visualRoot.add(head);
 
     const underwear = new THREE.Mesh(
       new THREE.CylinderGeometry(0.38, 0.36, 0.3, 12),
       new THREE.MeshStandardMaterial({ color: 0x4444ff }),
     );
     underwear.position.y = 0.35;
-    this.mesh.add(underwear);
+    this.visualRoot.add(underwear);
   }
 
   loadModel(character: Character): void {
@@ -74,6 +83,10 @@ export class Player {
     this.actions.clear();
     this.currentAnim = "idle";
     this.missingClips.clear();
+    this.jumpElapsed = 0;
+    this.jumping = false;
+    this.visualRoot.position.y = 0;
+    this.dust.reset();
 
     // Hide weapon nodes (hides the node and all its mesh children)
     model.traverse((child) => {
@@ -84,14 +97,8 @@ export class Player {
 
     const normalized = normalizeToHeight(model, CONFIG.player.height, true);
 
-    // Remove placeholder children but keep the blob shadow
-    const keep: THREE.Object3D[] = [];
-    for (const child of [...this.mesh.children]) {
-      if (child.name === "blob-shadow") keep.push(child);
-      this.mesh.remove(child);
-    }
-    for (const child of keep) this.mesh.add(child);
-    this.mesh.add(normalized);
+    this.visualRoot.clear();
+    this.visualRoot.add(normalized);
 
     // Setup animations
     const clips = getAnimations(path);
@@ -99,6 +106,10 @@ export class Player {
       this.mixer = new THREE.AnimationMixer(normalized);
       for (const clip of clips) {
         const action = this.mixer.clipAction(clip);
+        if (clip.name === "jump") {
+          action.setLoop(THREE.LoopOnce, 1);
+          action.clampWhenFinished = true;
+        }
         this.actions.set(clip.name, action);
       }
       this.playAnim("idle");
@@ -135,23 +146,53 @@ export class Player {
     return null;
   }
 
-  update(joystickInput: THREE.Vector2, dt: number): void {
+  private startJump(): void {
+    if (this.jumping) return;
+    this.jumping = true;
+    this.jumpElapsed = 0;
+    this.playAnim("jump");
+  }
+
+  private updateJump(dt: number): void {
+    if (!this.jumping) {
+      this.visualRoot.position.y = 0;
+      return;
+    }
+
+    this.jumpElapsed += dt;
+    const t = Math.min(this.jumpElapsed / CONFIG.player.jumpDuration, 1);
+    this.visualRoot.position.y = 4 * t * (1 - t) * CONFIG.player.jumpHeight;
+
+    if (t >= 1) {
+      this.jumping = false;
+      this.jumpElapsed = 0;
+      this.visualRoot.position.y = 0;
+    }
+  }
+
+  update(joystickInput: THREE.Vector2, dt: number, sprinting: boolean, jumpPressed: boolean): void {
     this.velocity.copy(joystickInput);
+    if (jumpPressed) this.startJump();
+    this.updateJump(dt);
 
     // Update animation mixer
     this.mixer?.update(dt);
 
     const inputLen = joystickInput.length();
 
-    if (inputLen < 0.1) {
+    if (this.jumping) {
+      this.playAnim("jump");
+    } else if (inputLen < 0.1) {
       this.playAnim("idle");
-      return;
+    } else {
+      this.playAnim(sprinting ? "run" : "walk");
     }
 
-    // Choose walk vs run based on joystick intensity
-    this.playAnim(inputLen > 0.7 ? "run" : "walk");
+    this.dust.update(this.mesh.position, joystickInput, inputLen >= 0.1, sprinting, !this.jumping, dt);
 
-    const speed = CONFIG.player.speed * (inputLen > 0.7 ? 1 : 0.5);
+    if (inputLen < 0.1) return;
+
+    const speed = CONFIG.player.speed * (sprinting ? CONFIG.player.sprintMultiplier : 1);
     const moveX = joystickInput.x * speed * dt;
     const moveZ = joystickInput.y * speed * dt;
 

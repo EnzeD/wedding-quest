@@ -11,7 +11,7 @@
 | `public/assets/toonshooter/` | Assets GLTF placeholder (Quaternius low-poly) : Characters, Environment, Guns, Texture |
 | `src/style.css` | Point d'entree CSS qui importe les feuilles base, jeu et editeur |
 | `src/styles/base.css` | Variables globales, fonts et styles de base du document |
-| `src/styles/game-ui.css` | Styles du HUD, des overlays menu/score et des boutons de jeu |
+| `src/styles/game-ui.css` | Styles du HUD, des overlays menu/score et des boutons de jeu, dont les actions mobile sprint/saut |
 | `src/styles/editor.css` | Styles desktop-first de l'editeur de niveau integre |
 | `src/config.ts` | Constantes de jeu : camera, mouvement, map, timing, items, rendu et palette du ciel |
 | `src/types.ts` | Interfaces partagees : collisions, etat, assets et schema du niveau data-driven |
@@ -32,9 +32,11 @@
 | `src/editor.ts` | Controleur de l'editeur : raycast, selection, drag, pinceau, toggle FX, couleur d'herbe, reglages de surfaces path/water, color grading, save/reload |
 | `src/surface-layer-renderer.ts` | Rendu lisse des couches path/water a partir de la grille du niveau, sans tuiles carrees visibles |
 | `src/main.ts` | Point d'entree : scene, renderer, lumieres, game loop, mode jeu et mode editeur |
-| `src/player.ts` | Classe Player : mesh placeholder ou GLTF, deplacement direct (top-down) |
+| `src/player.ts` | Classe Player : mesh placeholder ou GLTF, deplacement direct (top-down), sprint explicite et saut avec clip `jump` |
+| `src/player-dust.ts` | Particules legeres attachees au mouvement du joueur, plus denses en sprint pour ajouter du delight |
+| `src/npc-animations.ts` | Controleur d'animations des PNJ : idle en boucle + emotes ponctuelles (`emote-yes` / `emote-no`) des personnages Kenney |
 | `src/camera.ts` | Classe TopDownCamera : vue du dessus qui suit le joueur avec look-ahead |
-| `src/controls.ts` | Classe VirtualJoystick : joystick tactile + clavier WASD, input normalise |
+| `src/controls.ts` | Classe VirtualJoystick : joystick tactile + clavier WASD/Shift/Space, plus boutons mobile pour sprint et saut |
 | `src/map.ts` | Scene de niveau data-driven : rendu du JSON, surfaces, entites et colliders |
 | `src/ambient-effects.ts` | Effets ambiants attaches aux entites : roue du moulin animee et fumee procedurale sur les cheminees |
 | `src/collision.ts` | Resolution des collisions : limites de map et AABB des entites/eau |

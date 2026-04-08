@@ -83,8 +83,10 @@ Le joueur avance le texte en tappant l'ecran.
 - Vue top-down (camera au-dessus du personnage, regard vers le bas)
 - Style top-down action/adventure
 - **Joystick gauche** : deplacement direct (haut/bas/gauche/droite dans le monde)
-- **Clavier** : WASD ou fleches pour desktop
+- **Clavier** : WASD ou fleches pour desktop, `Maj` pour sprinter, `Espace` pour sauter
+- **Mobile** : deux boutons a droite pour sprinter et sauter
 - La camera suit le joueur avec un leger look-ahead dans la direction du mouvement
+- Le deplacement declenche de petites particules de sol pour donner de la vie, plus presentes en sprint
 - Bouton d'interaction (A) pour parler aux PNJ quand on est a proximite
 
 ### La map
@@ -160,6 +162,7 @@ Les petits objets (alliances, montre, boutons de manchettes) ne changent pas for
 - Timer en haut au centre
 - Compteur d'objets en haut a gauche (ex: "3/10")
 - Joystick en bas a gauche
+- Boutons sprint + saut en bas a droite
 - Bouton interaction (A) en bas a droite (apparait a proximite d'un PNJ)
 - Mini notification quand un objet est ramasse ("Pantalon recupere ! +100")
 
@@ -171,6 +174,7 @@ Les petits objets (alliances, montre, boutons de manchettes) ne changent pas for
 
 - Places a des endroits fixes sur la map
 - Icone de dialogue visible au-dessus de leur tete (!)
+- Au repos, ils jouent une idle loop et lancent parfois un petit hochement de tete / emote
 - Quand le joueur s'approche, le bouton (A) apparait
 - Interaction = mini cinematique style Zelda :
   - Camera recentree sur le PNJ

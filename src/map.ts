@@ -7,6 +7,7 @@ import { cellKey, cellToWorld, getCell, normalizeLevel, type GridCell } from "./
 import { entityAssetPath, preloadEntityAsset, preloadLevelAssets } from "./level-assets.ts";
 import { buildKenney } from "./kenney-buildings.ts";
 import { PastureGrass } from "./grass.ts";
+import { NpcAnimationController } from "./npc-animations.ts";
 import { DEFAULT_SURFACE_SETTINGS, normalizeSurfaceSettings } from "./surface-settings.ts";
 import { SurfaceLayerRenderer } from "./surface-layer-renderer.ts";
 import { TerrainGround } from "./terrain-ground.ts";
@@ -95,6 +96,7 @@ export class MapScene {
   private waterColliders = new Map<string, Collider>();
   private grass = new PastureGrass();
   private ambientEffects = new AmbientEffects();
+  private npcAnimations = new NpcAnimationController();
   private ground = new TerrainGround(COL.ground);
   private pathSurface = new SurfaceLayerRenderer({ color: COL.path, opacity: 0.96, bleed: 0.08, radius: 0.3, y: 0.02 });
   private waterSurface = new SurfaceLayerRenderer({
@@ -144,6 +146,7 @@ export class MapScene {
   }
   update(dt: number): void {
     this.ambientEffects.update(dt);
+    this.npcAnimations.update(dt);
   }
   updateWaterView(camera: THREE.Camera): void {
     const uniforms = this.waterSurface.getShaderUniforms();
@@ -174,6 +177,7 @@ export class MapScene {
     this.entityRoot.add(object);
     this.entityObjects.set(entity.id, object);
     this.ambientEffects.registerEntity(entity, object);
+    this.npcAnimations.register(entity, object);
 
     const collider = buildCollider(entity, object);
     if (collider) this.entityColliders.set(entity.id, collider);
@@ -205,6 +209,7 @@ export class MapScene {
       this.entityObjects.delete(id);
     }
     this.ambientEffects.removeEntity(id);
+    this.npcAnimations.remove(id);
     this.entityColliders.delete(id);
     this.rebuildPastureGrass();
   }
@@ -255,6 +260,8 @@ export class MapScene {
     this.waterColliders.clear();
     this.ambientEffects.dispose();
     this.ambientEffects = new AmbientEffects();
+    this.npcAnimations.clear();
+    this.npcAnimations = new NpcAnimationController();
     this.grass.dispose();
     this.grass = new PastureGrass();
     this.ground = new TerrainGround(COL.ground);

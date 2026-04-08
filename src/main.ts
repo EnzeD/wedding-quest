@@ -189,7 +189,12 @@ function animate(): void {
   mapScene.update(dt);
 
   if (state.mode === "playing") {
-    player.update(cameraCtrl.toWorldMovement(joystick.input, movementInput), dt);
+    player.update(
+      cameraCtrl.toWorldMovement(joystick.input, movementInput),
+      dt,
+      joystick.isSprinting(),
+      joystick.consumeJump(),
+    );
     resolveCollisions(player.mesh.position, mapScene.getColliders(), mapScene.mapSize);
     items.update(dt);
 
